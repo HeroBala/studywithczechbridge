@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us — StudyCzechBridge</title>
+  <meta name="description" content="Get a free consultation. Contact our Brno-based team for guidance on studying in the Czech Republic and Europe.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header"></header>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Contact Us</h1>
+    <p>Questions about studying in Europe? Send us a message — we reply within 24–48 hours.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container contact-cols">
+
+    <div class="form-card wide" style="margin:0;">
+      <h2>Request a Free Consultation</h2>
+      <p class="sub">Tell us about yourself and which program interests you. Your message goes straight to our email inbox.</p>
+      <div class="notice" id="contact-notice"></div>
+      <form id="contact-form">
+        <div class="form-row">
+          <div class="field">
+            <label for="c-name">Full Name *</label>
+            <input type="text" id="c-name" required maxlength="120" placeholder="Your full name">
+          </div>
+          <div class="field">
+            <label for="c-email">Email Address *</label>
+            <input type="email" id="c-email" required maxlength="160" placeholder="you@example.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="c-phone">Phone / WhatsApp</label>
+            <input type="tel" id="c-phone" maxlength="30" placeholder="+880 1XXXXXXXXX">
+          </div>
+          <div class="field">
+            <label for="c-program">Program of Interest</label>
+            <select id="c-program">
+              <option value="">— Select a program —</option>
+              <option>Business &amp; Economics</option>
+              <option>Computer Science &amp; IT</option>
+              <option>Engineering &amp; Technology</option>
+              <option>Agriculture &amp; Food Science</option>
+              <option>Medicine &amp; Health Sciences</option>
+              <option>Social Sciences &amp; Humanities</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="c-message">Your Message *</label>
+          <textarea id="c-message" required maxlength="2000" placeholder="Tell us about your education background and your plans..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="c-submit">Send Message</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="contact-item">
+        <div class="ci-icon">📍</div>
+        <div>
+          <h3>Our Office</h3>
+          <p>Brno, Czech Republic<br>Remote support for students across Bangladesh</p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="ci-icon">✉️</div>
+        <div>
+          <h3>General Inquiries</h3>
+          <p><a href="mailto:info@studywithczechbridge.com">info@studywithczechbridge.com</a></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="ci-icon">🎓</div>
+        <div>
+          <h3>Admissions</h3>
+          <p><a href="mailto:admission@studywithczechbridge.com">admission@studywithczechbridge.com</a></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="ci-icon">🛟</div>
+        <div>
+          <h3>Student Support</h3>
+          <p><a href="mailto:support@studywithczechbridge.com">support@studywithczechbridge.com</a></p>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="ci-icon">🕑</div>
+        <div>
+          <h3>Response Time</h3>
+          <p>We reply within 24–48 hours, all week.<br>Time zone: Central European Time (CET).</p>
+        </div>
+      </div>
+      <div class="card" style="background:var(--red-100);border-color:#f0c4cb;">
+        <h3>💡 Ready to apply?</h3>
+        <p>Skip the form — <a href="register.html"><strong>create your free account</strong></a> and submit your full application online with document upload.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer"></footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/layout.js"></script>
+<script>
+document.getElementById("contact-form").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var btn = document.getElementById("c-submit");
+  var notice = document.getElementById("contact-notice");
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  api("contactMessage", {
+    name: document.getElementById("c-name").value.trim(),
+    email: document.getElementById("c-email").value.trim(),
+    phone: document.getElementById("c-phone").value.trim(),
+    program: document.getElementById("c-program").value,
+    message: document.getElementById("c-message").value.trim()
+  }).then(function () {
+    notice.className = "notice success show";
+    notice.textContent = "Thank you! Your message has been sent to our inbox. We will contact you within 24–48 hours.";
+    document.getElementById("contact-form").reset();
+  }).catch(function (err) {
+    notice.className = "notice error show";
+    notice.textContent = err.message || "Something went wrong. Please email us directly at info@studywithczechbridge.com.";
+  }).finally(function () {
+    btn.disabled = false;
+    btn.textContent = "Send Message";
+  });
+});
+</script>
+</body>
+</html>

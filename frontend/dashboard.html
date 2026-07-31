@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard — StudyCzechBridge</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header"></header>
+
+<div class="app-page">
+  <div class="container">
+
+    <div class="app-head">
+      <div>
+        <h1 id="hello">My Dashboard</h1>
+        <p>Track your application and manage your documents.</p>
+      </div>
+      <a class="btn btn-outline btn-sm" href="index.html">← Back to Website</a>
+    </div>
+
+    <div class="notice" id="dash-notice"></div>
+
+    <!-- Application status -->
+    <div class="panel">
+      <h2>📋 My Application & Status</h2>
+      <div id="app-loading" class="muted"><span class="spinner dark"></span> Loading your application...</div>
+
+      <div id="app-none" class="hidden">
+        <p class="muted">You haven't submitted an application yet. It takes about 10 minutes — and it's free.</p>
+        <p class="mt-2"><a class="btn btn-primary" href="apply.html">Start My Application</a></p>
+      </div>
+
+      <div id="app-view" class="hidden">
+        <p>Current status:&nbsp; <span id="app-status" class="badge">—</span></p>
+        <div class="tracker" id="tracker"></div>
+        <div id="admin-note-box" class="notice info" style="display:none;"></div>
+        <dl class="kv mt-2">
+          <dt>Program</dt><dd id="v-program">—</dd>
+          <dt>Level</dt><dd id="v-level">—</dd>
+          <dt>Intake</dt><dd id="v-intake">—</dd>
+          <dt>Submitted</dt><dd id="v-submitted">—</dd>
+          <dt>Last update</dt><dd id="v-updated">—</dd>
+        </dl>
+        <p class="mt-2" id="edit-wrap" style="display:none;">
+          <a class="btn btn-outline btn-sm" href="apply.html">Edit My Application</a>
+          <span class="muted" style="font-size:.82rem;"> (editing is possible while status is "Pending Review")</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- 20-Step European Admission Roadmap -->
+    <div class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <h2 style="margin:0; color: var(--blue-900);">🎓 20-Step European Admission &amp; Visa Roadmap</h2>
+          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.88rem;">Track every single milestone of your journey from initial document verification &amp; legalization to entrance exams, visa, and Brno airport arrival.</p>
+        </div>
+      </div>
+
+      <div id="student-20-steps-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.85rem;">
+        <div class="muted center py-2">Loading your 20-step admission timeline...</div>
+      </div>
+    </div>
+
+    <!-- My Tasks/Steps Checklist -->
+    <div class="panel">
+      <div id="role-taskboard-container"></div>
+    </div>
+
+    <!-- Documents -->
+    <div class="panel">
+      <h2>📁 My Documents</h2>
+      <p class="muted" style="font-size:.9rem;">Upload clear scans (PDF or images, max 10 MB each):
+        passport, SSC &amp; HSC certificates, transcripts, IELTS result and passport-size photo.</p>
+
+      <div class="form-row mt-2">
+        <div class="field">
+          <label for="doc-type">Document Type</label>
+          <select id="doc-type">
+            <option>Passport</option>
+            <option>SSC Certificate</option>
+            <option>HSC Certificate</option>
+            <option>Academic Transcript</option>
+            <option>IELTS / English Test</option>
+            <option>Photo</option>
+            <option>Bachelor Certificate</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <input type="file" id="doc-file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+        </div>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <div class="dz-icon">📤</div>
+        <div><strong>Click to choose a file</strong> or drag &amp; drop it here</div>
+        <div style="font-size:.8rem;">PDF, JPG or PNG — up to 10 MB</div>
+      </div>
+      <p class="mt-1"><button class="btn btn-dark btn-sm" id="upload-btn">Upload Document</button>
+        <span id="upload-state" class="muted" style="font-size:.85rem;"></span></p>
+
+      <ul class="doc-list mt-2" id="doc-list">
+        <li class="muted">Loading documents...</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer"></footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/taskboard.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

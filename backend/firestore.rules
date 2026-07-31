@@ -1,0 +1,66 @@
+rules_version = '2';
+
+// ============================================================
+// StudyCzechBridge — Firestore security rules
+// Paste into: Firebase Console → Firestore Database → Rules
+// ============================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ---------- user profiles ----------
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      // New accounts can only be created as 'student' (never self-made admins).
+      allow create: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.role == 'student';
+      // Users may edit their profile but not change their own role.
+      allow update: if (signedIn() && request.auth.uid == uid
+                        && request.resource.data.role == resource.data.role)
+                    || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ---------- applications (doc id == owner uid) ----------
+    match /applications/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.status == 'Pending Review';
+      // Students may edit only while "Pending Review" and cannot change
+      // status/adminNotes; admins can change anything (set status, notes).
+      allow update: if isAdmin()
+                    || (signedIn() && request.auth.uid == uid
+                        && resource.data.status == 'Pending Review'
+                        && request.resource.data.status == resource.data.status
+                        && request.resource.data.adminNotes == resource.data.adminNotes);
+      allow delete: if isAdmin();
+    }
+
+    // ---------- uploaded documents (metadata + base64 chunks) ----------
+    match /documents/{docId} {
+      allow read, delete: if signedIn()
+                          && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+
+      match /chunks/{chunkId} {
+        allow read, write: if signedIn()
+          && (get(/databases/$(database)/documents/documents/$(docId)).data.userId == request.auth.uid
+              || isAdmin());
+      }
+    }
+
+    // ---------- contact messages ----------
+    match /messages/{id} {
+      allow create: if true;            // public contact form
+      allow read, delete: if isAdmin(); // only admins read the inbox
+    }
+  }
+}

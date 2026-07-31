@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 600" role="img" aria-label="Study With CzechBridge — Your Bridge to European Education">
+  <style>
+    .navy { fill: #14315E; }
+    .red  { fill: #C8102E; }
+    .t    { font-family: 'Segoe UI', Arial, sans-serif; }
+  </style>
+
+  <!-- ===================== EMBLEM ===================== -->
+  <g>
+    <!-- navy short arc (bottom-left) -->
+    <path d="M 52 232 A 168 150 0 0 1 88 100" fill="none" stroke="#14315E" stroke-width="9" stroke-linecap="round"/>
+    <!-- red main arc over the top -->
+    <path d="M 98 88 A 172 152 0 0 1 382 196" fill="none" stroke="#C8102E" stroke-width="9" stroke-linecap="round"/>
+    <!-- red plane trail -->
+    <path d="M 250 118 C 290 96 320 78 348 62" fill="none" stroke="#C8102E" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- plane -->
+    <g transform="translate(352,44) rotate(-18)">
+      <path class="navy" d="M0 10 L34 6 Q40 6 40 10 Q40 14 34 14 L0 10 Z"/>
+      <path class="navy" d="M12 9 L2 -6 L8 -6 L20 8 Z"/>
+      <path class="navy" d="M12 11 L2 26 L8 26 L20 12 Z"/>
+      <path class="navy" d="M32 7 L28 -2 L32 -2 L38 7 Z"/>
+    </g>
+
+    <!-- cathedral (Petrov) -->
+    <g class="navy">
+      <!-- left spire -->
+      <polygon points="142,50 152,110 132,110"/>
+      <rect x="134" y="108" width="16" height="70"/>
+      <!-- right spire -->
+      <polygon points="196,58 206,116 186,116"/>
+      <rect x="188" y="114" width="16" height="64"/>
+      <!-- nave -->
+      <polygon points="126,150 226,150 226,142 176,124 126,142"/>
+      <rect x="120" y="148" width="112" height="60"/>
+      <!-- side wing -->
+      <polygon points="232,160 268,160 268,152 250,144 232,152"/>
+      <rect x="232" y="158" width="36" height="50"/>
+    </g>
+    <!-- windows -->
+    <g fill="#FFFFFF">
+      <rect x="139" y="122" width="6" height="14" rx="3"/>
+      <rect x="193" y="126" width="6" height="12" rx="3"/>
+      <rect x="132" y="162" width="8" height="22" rx="4"/>
+      <rect x="150" y="162" width="8" height="22" rx="4"/>
+      <rect x="168" y="162" width="8" height="22" rx="4"/>
+      <rect x="186" y="162" width="8" height="22" rx="4"/>
+      <rect x="204" y="162" width="8" height="22" rx="4"/>
+      <rect x="240" y="168" width="7" height="18" rx="3.5"/>
+      <rect x="254" y="168" width="7" height="18" rx="3.5"/>
+    </g>
+
+    <!-- bridge -->
+    <g>
+      <!-- top rail -->
+      <rect class="navy" x="42" y="206" width="292" height="5" rx="2.5"/>
+      <!-- railing posts -->
+      <g class="navy">
+        <rect x="48"  y="211" width="5" height="16"/><rect x="70"  y="211" width="5" height="16"/>
+        <rect x="92"  y="211" width="5" height="16"/><rect x="114" y="211" width="5" height="16"/>
+        <rect x="136" y="211" width="5" height="16"/><rect x="158" y="211" width="5" height="16"/>
+        <rect x="180" y="211" width="5" height="16"/><rect x="202" y="211" width="5" height="16"/>
+        <rect x="224" y="211" width="5" height="16"/><rect x="246" y="211" width="5" height="16"/>
+        <rect x="268" y="211" width="5" height="16"/><rect x="290" y="211" width="5" height="16"/>
+        <rect x="312" y="211" width="5" height="16"/>
+      </g>
+      <!-- deck + arches (evenodd cutouts) -->
+      <path class="navy" fill-rule="evenodd" d="
+        M 42 227 H 334 V 292 H 42 Z
+        M 75 292 A 46 46 0 0 1 167 292 Z
+        M 205 292 A 46 46 0 0 1 297 292 Z"/>
+      <!-- end pillars -->
+      <rect class="navy" x="38" y="200" width="12" height="92"/>
+      <rect class="navy" x="326" y="200" width="12" height="92"/>
+    </g>
+
+    <!-- open book -->
+    <g transform="translate(300,236)">
+      <path class="navy" d="M60 40 C 30 22 8 22 -4 30 L -4 44 C 10 36 32 37 60 52 Z"/>
+      <path class="navy" d="M60 40 C 90 22 112 22 124 30 L 124 44 C 110 36 88 37 60 52 Z"/>
+      <path class="red"  d="M60 30 C 34 15 12 15 2 22 L 2 30 C 14 24 34 25 60 40 Z"/>
+      <path class="red"  d="M60 30 C 86 15 108 15 118 22 L 118 30 C 106 24 86 25 60 40 Z"/>
+      <path class="navy" d="M60 20 C 38 7 18 7 8 13 L 8 20 C 20 15 38 16 60 30 Z"/>
+      <path class="navy" d="M60 20 C 82 7 102 7 112 13 L 112 20 C 100 15 82 16 60 30 Z"/>
+    </g>
+
+    <!-- graduation cap -->
+    <g transform="translate(360,196)">
+      <polygon class="navy" points="0,10 52,-8 104,10 52,28"/>
+      <path class="navy" d="M28 22 L28 40 Q52 52 76 40 L76 22 Q52 34 28 22 Z"/>
+      <line x1="96" y1="14" x2="96" y2="44" stroke="#C8102E" stroke-width="4" stroke-linecap="round"/>
+      <circle class="red" cx="96" cy="48" r="5"/>
+    </g>
+  </g>
+
+  <!-- ===================== TEXT LOCKUP ===================== -->
+  <g text-anchor="middle">
+    <!-- STUDY WITH with side dashes -->
+    <rect class="navy" x="26"  y="368" width="42" height="5" rx="2.5"/>
+    <rect class="navy" x="372" y="368" width="42" height="5" rx="2.5"/>
+    <text class="t navy" x="220" y="380" font-size="27" font-weight="700" letter-spacing="6">STUDY WITH</text>
+
+    <!-- CZECHBRIDGE -->
+    <text class="t" x="220" y="442" font-size="55" font-weight="800" letter-spacing="0">
+      <tspan class="navy">CZECH</tspan><tspan class="red">BRIDGE</tspan>
+    </text>
+
+    <!-- red rule -->
+    <rect class="red" x="60" y="458" width="320" height="5" rx="2.5"/>
+
+    <!-- tagline -->
+    <text class="t navy" x="220" y="492" font-size="17" font-weight="700" letter-spacing="0.8">YOUR BRIDGE TO EUROPEAN EDUCATION</text>
+
+    <!-- bottom row -->
+    <g class="t" font-size="11" font-weight="600" text-anchor="start">
+      <!-- pin -->
+      <path class="navy" d="M30 536 a7 7 0 0 1 7 7 c0 5.5 -7 13 -7 13 s-7 -7.5 -7 -13 a7 7 0 0 1 7 -7 Z"/>
+      <circle fill="#FFFFFF" cx="30" cy="543" r="2.8"/>
+      <text class="navy" x="42" y="549" letter-spacing="0.3">BRNO, CZECH REPUBLIC</text>
+      <text class="navy" x="188" y="549" font-weight="400">|</text>
+      <!-- Bangladesh flag -->
+      <rect x="198" y="537" width="21" height="13" rx="2" fill="#006A4E"/>
+      <circle fill="#F42A41" cx="207" cy="543.5" r="4.5"/>
+      <text class="navy" x="226" y="549" letter-spacing="0.3">REMOTE SUPPORT IN BANGLADESH</text>
+    </g>
+  </g>
+</svg>

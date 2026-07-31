@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — StudyCzechBridge</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header"></header>
+
+<div class="app-page">
+  <div class="container">
+
+    <div class="app-head">
+      <div>
+        <h1>🛠️ Admin Panel</h1>
+        <p>Manage applications, statuses, documents and messages.</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <div id="admin-alerts-wrapper" style="position: relative; display: inline-block;">
+          <button class="btn btn-outline btn-sm" id="alerts-toggle-btn" style="display: flex; align-items: center; gap: 0.4rem; border-color: var(--blue-700); color: var(--blue-700); position: relative; font-weight: bold;">
+            🔔 Alerts <span id="alerts-count-badge" class="badge" style="background: var(--red-500); color: white; border-radius: 50%; font-size: 0.75rem; padding: 0.1rem 0.35rem; display: none;">0</span>
+          </button>
+          
+          <!-- Dropdown list -->
+          <div id="alerts-dropdown" style="display: none; position: absolute; right: 0; top: 120%; width: 340px; background: white; border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow-lg); z-index: 1000; padding: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+              <strong style="font-size: 0.9rem; color: var(--blue-900);">Real-time Student Alerts</strong>
+              <button class="btn btn-link btn-sm" id="btn-clear-all-alerts" style="padding: 0; font-size: 0.75rem; color: var(--blue-700); font-weight: 700; text-decoration: none; cursor: pointer; border: none; background: none;">Clear All</button>
+            </div>
+            <div id="alerts-list-container" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div class="muted center py-2" style="font-size: 0.8rem;">No alerts right now.</div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" id="refresh-btn">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="notice" id="admin-notice"></div>
+    <div id="admin-subhead" class="muted mb-2">Logged in as: <span id="admin-role-display" style="font-weight:700;">Staff</span></div>
+
+    <!-- Stats -->
+    <div class="stat-cards" id="stat-cards">
+      <div class="stat-card"><div class="n" id="s-users">—</div><div class="l">Students</div></div>
+      <div class="stat-card"><div class="n" id="s-apps">—</div><div class="l">Applications</div></div>
+      <div class="stat-card"><div class="n" id="s-docs">—</div><div class="l">Documents</div></div>
+      <div class="stat-card"><div class="n" id="s-msgs">—</div><div class="l">Messages</div></div>
+    </div>
+
+    <!-- Tab Controls -->
+    <div class="admin-tabs" id="tab-controls" style="flex-wrap: wrap; gap: 0.5rem;">
+      <button class="admin-tab active" data-tab="applications">📋 Applications</button>
+      <button class="admin-tab" data-tab="journey" style="border-color: var(--blue-700); color: var(--blue-800); font-weight:700;">🎓 20-Step Roadmap</button>
+      <button class="admin-tab" data-tab="taskboard">📋 Task Board</button>
+      <button class="admin-tab" data-tab="users" id="tab-users-btn">👥 Users & Roles</button>
+      <button class="admin-tab" data-tab="email" style="border-color: var(--teal-600); color: var(--teal-700); font-weight:700;">📧 Private Email & SMTP</button>
+      <button class="admin-tab" data-tab="extract" style="border-color: var(--gold); color: #9a6d00; font-weight:700;">📊 Extract & Export Data</button>
+      <button class="admin-tab" data-tab="messages">💬 Contact Messages</button>
+      <button class="admin-tab" data-tab="ops" style="border-color: var(--green); color: var(--green); font-weight:700;">📈 Finance & Ops</button>
+    </div>
+
+    <!-- Tab 1: Applications -->
+    <div class="panel admin-tab-panel" id="panel-applications">
+      <div class="panel-row">
+        <h2>📋 Applications</h2>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="f-search" placeholder="Search name or email...">
+        <select id="f-status">
+          <option value="">All statuses</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Applicant</th><th>Assigned Agent</th><th>Program</th><th>Intake</th>
+              <th>Status</th><th>Submitted</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="apps-body">
+            <tr><td colspan="7" class="muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 20-Step Journey Roadmap -->
+    <div class="panel admin-tab-panel hidden" id="panel-journey">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">🎓 20-Step European Admission Journey Command</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+            Manage and update individual student milestones across all 20 steps (Consultation, Sworn Translation, Superlegalization, Nostrification, Exams, Visa, Airport Pick-up).
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <label style="font-weight: 700; font-size: 0.85rem; color: var(--blue-900);">Select Student:</label>
+          <select id="journey-student-select" style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem; min-width: 240px; font-weight: 600;">
+            <option value="">-- Choose a student application --</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="journey-student-info" style="display: none; background: #f0f7ff; padding: 1rem 1.25rem; border-radius: 8px; border: 1px solid #d0e7ff; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <strong id="j-student-name" style="font-size: 1.1rem; color: var(--blue-900);">Student Name</strong>
+            <span id="j-student-email" class="muted" style="font-size: 0.88rem; margin-left: 0.5rem;">(email@domain.com)</span>
+            <div style="font-size: 0.85rem; color: var(--text-dark); margin-top: 0.2rem;">
+              Program: <span id="j-student-prog" style="font-weight: 700;">—</span> | Status: <span id="j-student-status" class="badge">—</span>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-sm" id="btn-save-all-steps">💾 Save Step Updates &amp; Notify Student</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="journey-steps-container" class="journey-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+        <div class="muted center py-4" style="grid-column: 1 / -1;">Select a student from the dropdown above to view and update their 20 admission steps.</div>
+      </div>
+    </div>
+
+    <!-- Tab: Private Email & SMTP Settings -->
+    <div class="panel admin-tab-panel hidden" id="panel-email">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">📧 Private Email Server & SMTP Integration</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+            Connect your custom domain private email (e.g., Google Workspace, Microsoft 365, cPanel, Amazon SES) to automatically dispatch login security alerts and admission updates directly to students' inboxes.
+          </p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btn-test-smtp" style="border-color: var(--teal-600); color: var(--teal-700); font-weight: 700;">🧪 Send Test Email</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+        
+        <!-- SMTP Server Credentials Card -->
+        <div class="panel" style="margin: 0; padding: 1.25rem;">
+          <h3 style="margin: 0 0 1rem 0; font-size: 1.05rem; color: var(--blue-900); font-weight: 800;">⚙️ SMTP Server Credentials</h3>
+          
+          <form id="form-smtp-config">
+            <div class="field mb-2">
+              <label style="font-weight: 700; font-size: 0.85rem;">SMTP Host (e.g. smtp.gmail.com or mail.yourdomain.com)</label>
+              <input type="text" id="smtp-host" placeholder="smtp.gmail.com" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+            </div>
+
+            <div class="form-row mb-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="field">
+                <label style="font-weight: 700; font-size: 0.85rem;">SMTP Port</label>
+                <input type="number" id="smtp-port" placeholder="587" value="587" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+              </div>
+              <div class="field" style="display: flex; align-items: flex-end; padding-bottom: 0.45rem;">
+                <label style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.85rem; cursor: pointer;">
+                  <input type="checkbox" id="smtp-secure" style="width: 1.1rem; height: 1.1rem;"> SSL/TLS (Port 465)
+                </label>
+              </div>
+            </div>
+
+            <div class="field mb-2">
+              <label style="font-weight: 700; font-size: 0.85rem;">SMTP Username / Email</label>
+              <input type="text" id="smtp-user" placeholder="info@studywithczechbridge.com" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+            </div>
+
+            <div class="field mb-2">
+              <label style="font-weight: 700; font-size: 0.85rem;">SMTP Password / App Password</label>
+              <input type="password" id="smtp-pass" placeholder="••••••••••••" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+            </div>
+
+            <div class="field mb-2">
+              <label style="font-weight: 700; font-size: 0.85rem;">From Sender Name</label>
+              <input type="text" id="smtp-from-name" placeholder="StudyCzechBridge Admissions" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+            </div>
+
+            <div class="field mb-2">
+              <label style="font-weight: 700; font-size: 0.85rem;">From Email Address</label>
+              <input type="email" id="smtp-from-email" placeholder="info@studywithczechbridge.com" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+            </div>
+
+            <div class="field mb-3">
+              <label style="font-weight: 700; font-size: 0.85rem;">Admin Alert Receiver Email</label>
+              <input type="email" id="smtp-admin-email" placeholder="1997herobala@gmail.com" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+            </div>
+
+            <div style="text-align: right;">
+              <button type="submit" class="btn btn-primary btn-sm" id="btn-save-smtp">💾 Save Email Configuration</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Notification Trigger Rules & Live Logs Card -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          
+          <div class="panel" style="margin: 0; padding: 1.25rem;">
+            <h3 style="margin: 0 0 1rem 0; font-size: 1.05rem; color: var(--blue-900); font-weight: 800;">🔔 Automatic Email Notification Triggers</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+              <label style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.88rem; cursor: pointer;">
+                <input type="checkbox" id="notify-login" checked style="width: 1.2rem; height: 1.2rem; margin-top: 0.1rem;">
+                <div>
+                  <strong>User Login Security Alert</strong>
+                  <div class="muted" style="font-size: 0.8rem;">Sends login confirmation email to student and alert email to admin on every login.</div>
+                </div>
+              </label>
+
+              <label style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.88rem; cursor: pointer;">
+                <input type="checkbox" id="notify-admission" checked style="width: 1.2rem; height: 1.2rem; margin-top: 0.1rem;">
+                <div>
+                  <strong>Admission Step &amp; Milestone Updates</strong>
+                  <div class="muted" style="font-size: 0.8rem;">Sends beautiful HTML notification to student whenever an admin changes their status or notes.</div>
+                </div>
+              </label>
+
+              <label style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.88rem; cursor: pointer;">
+                <input type="checkbox" id="notify-doc" checked style="width: 1.2rem; height: 1.2rem; margin-top: 0.1rem;">
+                <div>
+                  <strong>Document Upload Alerts</strong>
+                  <div class="muted" style="font-size: 0.8rem;">Triggers real-time alerts when students upload new transcripts or certificates.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="panel" style="margin: 0; padding: 1.25rem; flex: 1;">
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.05rem; color: var(--blue-900); font-weight: 800;">📋 Email Outbox Activity Log</h3>
+            <div id="email-log-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; padding: 0.5rem; font-size: 0.8rem; background: #fafafa;">
+              <div class="muted center py-2">Loading email logs...</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tab: Super Admin Data Extraction & Export -->
+    <div class="panel admin-tab-panel hidden" id="panel-extract">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">📊 Super Admin Data Extraction &amp; Export Center</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+            Export complete database records, user profiles, 20-step admission matrices, uploaded document logs, and financial records into standardized CSV or JSON files.
+          </p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+        
+        <!-- Card 1: Users Directory Export -->
+        <div class="panel" style="margin: 0; padding: 1.25rem; border-left: 4px solid var(--blue-700);">
+          <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--blue-900);">👥 Full Users Directory</h3>
+          <p class="muted" style="font-size: 0.82rem; margin-bottom: 1rem;">Export list of all students, advisors, admins, emails, roles, phones, assigned agents, and registration dates.</p>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-outline btn-sm btn-export" data-type="users" data-format="csv" style="border-color: var(--green); color: var(--green);">📥 Export CSV</button>
+            <button class="btn btn-outline btn-sm btn-export" data-type="users" data-format="json" style="border-color: var(--blue-700); color: var(--blue-700);">📥 Export JSON</button>
+          </div>
+        </div>
+
+        <!-- Card 2: 20-Step Admission Journey Matrix -->
+        <div class="panel" style="margin: 0; padding: 1.25rem; border-left: 4px solid var(--teal-600);">
+          <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--blue-900);">🎓 20-Step Admission Matrix</h3>
+          <p class="muted" style="font-size: 0.82rem; margin-bottom: 1rem;">Export complete matrix of all student applicants mapped across all 20 steps (consultation through visa &amp; arrival).</p>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-outline btn-sm btn-export" data-type="matrix" data-format="csv" style="border-color: var(--green); color: var(--green);">📥 Export CSV</button>
+            <button class="btn btn-outline btn-sm btn-export" data-type="matrix" data-format="json" style="border-color: var(--blue-700); color: var(--blue-700);">📥 Export JSON</button>
+          </div>
+        </div>
+
+        <!-- Card 3: Uploaded Documents Audit Log -->
+        <div class="panel" style="margin: 0; padding: 1.25rem; border-left: 4px solid var(--gold);">
+          <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--blue-900);">📁 Documents Audit Log</h3>
+          <p class="muted" style="font-size: 0.82rem; margin-bottom: 1rem;">Export list of all uploaded passports, transcripts, diplomas, file sizes, and legalization statuses.</p>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-outline btn-sm btn-export" data-type="docs" data-format="csv" style="border-color: var(--green); color: var(--green);">📥 Export CSV</button>
+            <button class="btn btn-outline btn-sm btn-export" data-type="docs" data-format="json" style="border-color: var(--blue-700); color: var(--blue-700);">📥 Export JSON</button>
+          </div>
+        </div>
+
+        <!-- Card 4: Financial Budgets & Commissions -->
+        <div class="panel" style="margin: 0; padding: 1.25rem; border-left: 4px solid var(--green);">
+          <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--blue-900);">💶 Financials &amp; Commissions</h3>
+          <p class="muted" style="font-size: 0.82rem; margin-bottom: 1rem;">Export student contract fees, consultant commissions, payout status, and revenue breakdown.</p>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-outline btn-sm btn-export" data-type="financials" data-format="csv" style="border-color: var(--green); color: var(--green);">📥 Export CSV</button>
+            <button class="btn btn-outline btn-sm btn-export" data-type="financials" data-format="json" style="border-color: var(--blue-700); color: var(--blue-700);">📥 Export JSON</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tab 2: Task Board -->
+    <div class="panel admin-tab-panel hidden" id="panel-taskboard">
+      <div id="role-taskboard-container"></div>
+    </div>
+
+    <!-- Tab 3: User & Agent Management -->
+    <div class="panel admin-tab-panel hidden" id="panel-users">
+      <div class="panel-row">
+        <h2>👥 User & Agent Assignment</h2>
+      </div>
+      <p class="muted" style="margin-top:-0.5rem; margin-bottom:1.5rem;">Super Admins and Admins can update roles and allocate dedicated agents to support students.</p>
+      
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Full Name</th><th>Email</th><th>Current Role</th><th>Assigned Agent</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-body">
+            <tr><td colspan="5" class="muted">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 4: Messages -->
+    <div class="panel admin-tab-panel hidden" id="panel-messages">
+      <h2>💬 Contact Messages</h2>
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Date</th><th>Name</th><th>Email / Phone</th><th>Program</th><th>Message</th></tr>
+          </thead>
+          <tbody id="msgs-body">
+            <tr><td colspan="5" class="muted">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 5: Solo Operator & Finance Command Center -->
+    <div class="panel admin-tab-panel hidden" id="panel-ops">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">💼 Solopreneur Ops & Finance</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+            One-person operations scale engine. Handle 10,000+ worldwide students easily with integrated budgets, notes, document status, and data exports.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-outline btn-sm" id="btn-export-csv" style="border-color: var(--green); color: var(--green);">📥 Export CSV</button>
+          <button class="btn btn-outline btn-sm" id="btn-export-json" style="border-color: var(--blue-700); color: var(--blue-700);">📥 Export JSON</button>
+        </div>
+      </div>
+
+      <!-- Financial Metrics Bento Grid -->
+      <div class="stat-cards" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 1.5rem; gap: 1rem;">
+        <div class="stat-card" style="border-left: 4px solid var(--green); text-align: left; padding: 1rem 1.25rem;">
+          <div class="l" style="font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase;">Gross Service Fees</div>
+          <div class="n" id="ops-gross-fees" style="font-size: 1.8rem; font-weight: 800; color: var(--blue-900); margin-top: 0.2rem;">€0.00</div>
+          <div class="muted" style="font-size: 0.75rem; margin-top: 0.1rem;">From student service contracts</div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--red-500); text-align: left; padding: 1rem 1.25rem;">
+          <div class="l" style="font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase;">Consultant Commissions</div>
+          <div class="n" id="ops-commissions" style="font-size: 1.8rem; font-weight: 800; color: var(--red-700); margin-top: 0.2rem;">€0.00</div>
+          <div class="muted" style="font-size: 0.75rem; margin-top: 0.1rem;">Referrals & field sub-agents payouts</div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--blue-700); text-align: left; padding: 1rem 1.25rem;">
+          <div class="l" style="font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase;">Net Agency Profit</div>
+          <div class="n" id="ops-net-profit" style="font-size: 1.8rem; font-weight: 800; color: var(--green); margin-top: 0.2rem;">€0.00</div>
+          <div class="muted" style="font-size: 0.75rem; margin-top: 0.1rem;">Gross minus advisor commission payouts</div>
+        </div>
+        <div class="stat-card" style="border-left: 4px solid var(--ink-soft); text-align: left; padding: 1rem 1.25rem;">
+          <div class="l" style="font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase;">Operational Leverage</div>
+          <div class="n" id="ops-leverage" style="font-size: 1.8rem; font-weight: 800; color: var(--ink); margin-top: 0.2rem;">1 : 0</div>
+          <div class="muted" style="font-size: 0.75rem; margin-top: 0.1rem;">Operator-to-Active Student multiplier</div>
+        </div>
+      </div>
+
+      <!-- Bento Core Row -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+        
+        <!-- Quick Notes Hub Card -->
+        <div class="panel" style="margin: 0; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--blue-900); display: flex; align-items: center; gap: 0.4rem;">
+              📝 Private Operator Notes
+            </h3>
+            <p class="muted" style="font-size: 0.8rem; margin-bottom: 1rem;">
+              Write administrative secrets, verification logs, or high-touch notices. Private to you!
+            </p>
+            <div class="field" style="margin-bottom: 0.75rem;">
+              <label for="ops-notes-student" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.3rem; display: block;">Select Student</label>
+              <select id="ops-notes-student" style="width: 100%; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;">
+                <option value="">-- Choose a student --</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="ops-notes-text" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.3rem; display: block;">Internal Memo / Private Note</label>
+              <textarea id="ops-notes-text" rows="3" placeholder="e.g. Needs Superlegalization in Abuja before September! Embassy visa backlog likely." style="width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.85rem; font-family: inherit; line-height: 1.4; resize: none;"></textarea>
+            </div>
+          </div>
+          <div style="text-align: right; margin-top: 1rem;">
+            <span id="ops-notes-status" class="muted" style="font-size: 0.8rem; margin-right: 0.5rem;"></span>
+            <button class="btn btn-primary btn-sm" id="btn-ops-save-notes">Save Memo</button>
+          </div>
+        </div>
+
+        <!-- Document Legalization Pipeline Hub -->
+        <div class="panel" style="margin: 0; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--blue-900); display: flex; align-items: center; gap: 0.4rem;">
+              🗃️ Legalization Status Checker
+            </h3>
+            <p class="muted" style="font-size: 0.8rem; margin-bottom: 1rem;">
+              Check document legalization tracks. Update states immediately to ensure paper accuracy.
+            </p>
+            <div class="field" style="margin-bottom: 0.75rem;">
+              <label for="ops-legal-student" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.3rem; display: block;">Select Student</label>
+              <select id="ops-legal-student" style="width: 100%; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;">
+                <option value="">-- Choose a student --</option>
+              </select>
+            </div>
+            
+            <div id="ops-legal-docs-list" style="max-height: 140px; overflow-y: auto; border: 1px solid var(--blue-50); border-radius: 6px; padding: 0.4rem;">
+              <div class="muted center py-2" style="font-size: 0.85rem;">Select a student above to inspect paper-trail legalizations.</div>
+            </div>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.5rem; border-top: 1px dashed var(--line); padding-top: 0.4rem;">
+            💡 Options: <strong>MFA</strong> (Ministry of Foreign Affairs), <strong>Super</strong> (Embassy Legalization), <strong>Nostrif</strong> (School Recognition).
+          </div>
+        </div>
+
+        <!-- System Diagnostics & Developer Comfort -->
+        <div class="panel" style="margin: 0; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; border: 1px dashed var(--line);">
+          <div>
+            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--blue-900); display: flex; align-items: center; gap: 0.4rem;">
+              💻 Developer & Analyst Station
+            </h3>
+            <p class="muted" style="font-size: 0.8rem; margin-bottom: 0.75rem;">
+              Database health diagnostic markers & clean analytical pipeline telemetry.
+            </p>
+            
+            <div style="background: var(--blue-50); border-radius: 6px; padding: 0.75rem; font-size: 0.8rem; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                <span class="muted">Primary Datastore:</span>
+                <span style="font-weight: 700; color: var(--green);">Active (Firebase/LS)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                <span class="muted">Global Region Tracking:</span>
+                <span style="font-weight: 700; color: var(--blue-700);">Enabled (Multi-Country)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                <span class="muted">Simulation Latency:</span>
+                <span id="diagnostic-latency" style="font-weight: 700;">250 ms (Avg)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span class="muted">Storage Health Check:</span>
+                <span style="font-weight: 700; color: var(--green);">OK (No corruption)</span>
+              </div>
+            </div>
+            
+            <!-- Global nationality table list inside diagnostics -->
+            <h4 style="font-size: 0.85rem; margin-bottom: 0.3rem;">Worldwide Student Locations</h4>
+            <div id="ops-global-distribution" style="font-size: 0.75rem; max-height: 80px; overflow-y: auto;">
+              <div class="muted">No data.</div>
+            </div>
+          </div>
+          <div style="text-align: right; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn btn-outline btn-sm" id="btn-ops-reseed" style="font-size: 0.75rem; border-color: var(--red-500); color: var(--red-500);">⚠️ Re-seed Demo Data</button>
+            <span class="badge" style="background: rgba(30,142,90,0.15); color: var(--green); font-size: 0.7rem; border-radius: 4px;">● System Healthy</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Financial commissions and budgets table list -->
+      <div class="panel" style="margin: 0; padding: 1.25rem;">
+        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: var(--blue-900);">
+          💶 Budget & Consultant Commissions Sheets
+        </h3>
+        <p class="muted" style="font-size: 0.8rem; margin-bottom: 1.2rem;">
+          Assigned student financial plans. Set contract fees, referrers commissions, and track the payouts status dynamically.
+        </p>
+        
+        <div class="table-wrap">
+          <table class="data" style="font-size: 0.85rem;">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Program & Level</th>
+                <th>Nationality</th>
+                <th>Service Fee (€)</th>
+                <th>Commission (€)</th>
+                <th>Payout Status</th>
+                <th style="width: 100px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ops-budget-body">
+              <tr><td colspan="7" class="muted center">No students available.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Application detail modal -->
+<div class="modal-back" id="modal-back">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <h2 id="m-title">Application</h2>
+
+    <div class="panel" style="box-shadow:none;">
+      <h2 style="font-size:1rem;">Status Control</h2>
+      <div class="form-row">
+        <div class="field">
+          <label for="m-status">Application Status</label>
+          <select id="m-status"></select>
+        </div>
+        <div class="field">
+          <label for="m-note">Note to Student (shown on their dashboard)</label>
+          <input type="text" id="m-note" maxlength="500" placeholder="e.g. Please upload a clearer passport scan">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="m-save">Save Status</button>
+      <span id="m-save-state" class="muted" style="font-size:.85rem;"></span>
+    </div>
+
+    <div class="panel" style="box-shadow:none;">
+      <h2 style="font-size:1rem;">Applicant Details</h2>
+      <dl class="kv" id="m-details"></dl>
+    </div>
+
+    <div class="panel" style="box-shadow:none;margin-bottom:0;">
+      <h2 style="font-size:1rem;">Documents</h2>
+      <ul class="doc-list" id="m-docs"><li class="muted">Loading...</li></ul>
+    </div>
+  </div>
+</div>
+
+
+
+<div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; max-width: 360px;"></div>
+
+<footer class="site-footer"></footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/taskboard.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account — StudyCzechBridge</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header"></header>
+
+<div class="app-page">
+  <div class="container">
+    <div class="form-card">
+      <h2>Create Your Free Account</h2>
+      <p class="sub">Register to submit your application online and upload your documents.</p>
+      <div class="notice" id="reg-notice"></div>
+      <form id="reg-form">
+        <div class="field">
+          <label for="r-name">Full Name *</label>
+          <input type="text" id="r-name" required maxlength="120" placeholder="As written in your passport">
+        </div>
+        <div class="field">
+          <label for="r-email">Email Address *</label>
+          <input type="email" id="r-email" required maxlength="160" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="r-phone">Phone / WhatsApp</label>
+          <input type="tel" id="r-phone" maxlength="30" placeholder="+880 1XXXXXXXXX">
+        </div>
+        <div class="field">
+          <label for="r-pass">Password *</label>
+          <input type="password" id="r-pass" required minlength="6" placeholder="At least 6 characters">
+        </div>
+        <div class="field">
+          <label for="r-pass2">Confirm Password *</label>
+          <input type="password" id="r-pass2" required minlength="6" placeholder="Repeat your password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="r-submit">Create Account</button>
+      </form>
+      <p class="center mt-2 muted">Already have an account? <a href="login.html"><strong>Log in</strong></a></p>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer"></footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/layout.js"></script>
+<script>
+// Already logged in? Go straight to the dashboard.
+(function () {
+  var s = getSession();
+  if (s && s.token) location.href = s.role === "admin" ? "admin.html" : "dashboard.html";
+})();
+
+document.getElementById("reg-form").addEventListener("submit", function (ev) {
+  ev.preventDefault();
+  var p1 = document.getElementById("r-pass").value;
+  var p2 = document.getElementById("r-pass2").value;
+  if (p1 !== p2) {
+    showNotice("reg-notice", "error", "Passwords do not match.");
+    return;
+  }
+  var btn = document.getElementById("r-submit");
+  btn.disabled = true;
+  btn.textContent = "Creating account...";
+  api("register", {
+    fullName: document.getElementById("r-name").value.trim(),
+    email: document.getElementById("r-email").value.trim(),
+    phone: document.getElementById("r-phone").value.trim(),
+    password: p1
+  }).then(afterAuth).catch(function (err) {
+    showNotice("reg-notice", "error", err.message);
+    btn.disabled = false;
+    btn.textContent = "Create Account";
+  });
+});
+</script>
+</body>
+</html>
