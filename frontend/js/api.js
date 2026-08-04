@@ -75,6 +75,53 @@ var ADMISSION_20_STEPS = [
   { step: 20, id: "arrival_enrollment", title: "Arrival in Brno & University Matriculation", category: "Phase 5: Arrival", desc: "Flight booking, airport greeting in Brno/Prague, and official university enrollment!" }
 ];
 
+var DEFAULT_PACKAGES = [
+  {
+    id: "pkg-std",
+    name: "Standard European University Package",
+    priceEur: 1450,
+    advisorCommission: 300,
+    targetProgram: "Bachelor / Master Degree",
+    description: "Full university matching, application processing, diploma sworn translation & exam prep.",
+    inclusions: [
+      "University Selection & Application (Up to 3 Faculties)",
+      "Sworn Czech Translation of Diploma & Marksheets",
+      "Nostrification File Verification & Equivalence Handling",
+      "Online Entrance Exam Mock Preparation & Interview Coaching"
+    ]
+  },
+  {
+    id: "pkg-visa",
+    name: "Premium Czech Visa & Legalization Package",
+    priceEur: 2450,
+    advisorCommission: 500,
+    targetProgram: "Full Degree & Study Visa",
+    description: "End-to-end Ministry Apostille, Czech Embassy Superlegalization & Embassy Visa slot booking.",
+    inclusions: [
+      "Everything in Standard European Package",
+      "Ministry Apostille & Embassy Superlegalization",
+      "Certified Dormitory Accommodation Contract in Brno / Prague",
+      "Czech Embassy Visa Slot Appointment Booking & Interview Prep",
+      "Health Insurance & Proof of Funds Financial Guidance"
+    ]
+  },
+  {
+    id: "pkg-vip",
+    name: "VIP Executive Concierge & Relocation Package",
+    priceEur: 3850,
+    advisorCommission: 850,
+    targetProgram: "Full VIP All-Inclusive",
+    description: "All-inclusive VIP service with Brno airport greeting, local SIM card, bank account opening, and residence permit registration.",
+    inclusions: [
+      "Everything in Premium Visa Package",
+      "VIP Private Airport Greeting & Transfer in Vienna / Prague / Brno",
+      "Czech SIM Card, Public Transit Pass & Bank Account Setup",
+      "Foreigners Police Residence Registration in Brno",
+      "24/7 Personal Counselor Support throughout 1st Academic Year"
+    ]
+  }
+];
+
 var CHUNK_SIZE = 700000; // base64 chars per Firestore chunk doc (~0.5 MB binary)
 
 function getSession() {
@@ -629,6 +676,83 @@ function fbHandle(fb, action, d) {
         });
       });
     }
+
+    /* ---------- Packages & Service Charges ---------- */
+    case "getPackages": {
+      return db.collection("packages").get().then(function (q) {
+        var pkgs = q.docs.map(function (s) { var x = s.data(); x.id = s.id; return x; });
+        if (!pkgs.length) {
+          return { ok: true, packages: DEFAULT_PACKAGES };
+        }
+        return { ok: true, packages: pkgs };
+      });
+    }
+
+    case "adminSavePackage": {
+      return fbRequireAdminOrSuper(fb).then(function () {
+        var pkgData = {
+          name: String(d.name || "Custom Package"),
+          priceEur: Number(d.priceEur || 0),
+          advisorCommission: Number(d.advisorCommission || 0),
+          targetProgram: String(d.targetProgram || "All Degrees"),
+          description: String(d.description || ""),
+          inclusions: Array.isArray(d.inclusions) ? d.inclusions : String(d.inclusions || "").split("\n").filter(Boolean),
+          updatedAt: fbNow()
+        };
+        if (d.id) {
+          return db.collection("packages").doc(String(d.id)).set(pkgData, { merge: true }).then(function () {
+            pkgData.id = String(d.id);
+            return { ok: true, package: pkgData };
+          });
+        } else {
+          pkgData.createdAt = fbNow();
+          return db.collection("packages").add(pkgData).then(function (ref) {
+            pkgData.id = ref.id;
+            return { ok: true, package: pkgData };
+          });
+        }
+      });
+    }
+
+    case "adminDeletePackage": {
+      return fbRequireAdminOrSuper(fb).then(function () {
+        return db.collection("packages").doc(String(d.packageId)).delete().then(function () {
+          return { ok: true };
+        });
+      });
+    }
+
+    /* ---------- Super Admin Document Assignment ---------- */
+    case "adminAssignDocumentToUser": {
+      return fbRequireAdminOrSuper(fb).then(function (u) {
+        var base64 = String(d.base64 || "RGVtbyBkb2N1bWVudCDigJQgU3R1ZHlDemVjaEJyaWRnZSBzYW1wbGUgZmlsZS4=");
+        var chunks = [];
+        for (var i = 0; i < base64.length; i += CHUNK_SIZE) chunks.push(base64.substr(i, CHUNK_SIZE));
+        var meta = {
+          userId: String(d.targetUserId),
+          docType: String(d.docType || "Official Document"),
+          fileName: String(d.fileName || "document"),
+          mimeType: String(d.mimeType || "application/octet-stream"),
+          sizeKb: Math.round(base64.length * 3 / 4 / 1024),
+          chunkCount: chunks.length,
+          uploadedAt: fbNow(),
+          assignedBySuperAdmin: true,
+          assignedBy: u.uid,
+          notesFromAdmin: String(d.notes || "")
+        };
+        var docRef = db.collection("documents").doc();
+        return docRef.set(meta).then(function () {
+          var writes = chunks.map(function (c, idx) {
+            return docRef.collection("chunks").doc(String(idx)).set({ data: c });
+          });
+          return Promise.all(writes);
+        }).then(function () {
+          meta.id = docRef.id;
+          fbTriggerAlert(db, String(d.targetUserId), "document_assigned", "Super Admin assigned a new document to you: " + meta.fileName);
+          return { ok: true, document: meta };
+        });
+      });
+    }
   }
   fail("SERVER_ERROR");
 }
@@ -637,7 +761,7 @@ function fbHandle(fb, action, d) {
    MOCK BACKEND (localStorage) — for local testing only.
    Mirrors the real API contract above.
    ============================================================ */
-var MOCK_SEED_VERSION = 4; // bump to re-seed demo data in browsers that already have old data
+var MOCK_SEED_VERSION = 5; // bump to re-seed demo data in browsers that already have old data
 
 function mockDb() {
   var raw = localStorage.getItem("cb_mockdb");
@@ -652,6 +776,7 @@ function mockDb() {
 
   var db = {
     version: MOCK_SEED_VERSION,
+    packages: DEFAULT_PACKAGES,
     users: [
       { id: "superadmin1", email: "superadmin@test.com", password: "admin123",
         fullName: "Mock Super Admin", phone: "+420 111 222 333", role: "super_admin", createdAt: daysAgo(60) },
@@ -884,7 +1009,19 @@ function mockHandle(action, data) {
     case "getMe": {
       needSession();
       var me = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-      return { ok: true, user: { email: me.email, fullName: me.fullName, phone: me.phone, role: me.role, assignedAgentId: me.assignedAgentId || "", assignedAgentName: me.assignedAgentName || "" } };
+      return {
+        ok: true,
+        user: {
+          email: me.email,
+          fullName: me.fullName,
+          phone: me.phone,
+          role: me.role,
+          assignedAgentId: me.assignedAgentId || "",
+          assignedAgentName: me.assignedAgentName || "",
+          assignedAgentEmail: me.assignedAgentEmail || "",
+          assignedAgentPhone: me.assignedAgentPhone || ""
+        }
+      };
     }
     case "submitApplication": {
       needSession();
@@ -977,7 +1114,7 @@ function mockHandle(action, data) {
       a4.updatedAt = new Date().toISOString();
       mockSave(db);
 
-      // Trigger admission update email
+      // Trigger admission update email (notifies student + assigned counselor/admin)
       fetch('/api/notify-admission-update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -986,7 +1123,9 @@ function mockHandle(action, data) {
           studentName: a4.fullName || 'Student',
           stepTitle: a4.status,
           newStatus: a4.status,
-          adminNotes: a4.adminNotes || ''
+          adminNotes: a4.adminNotes || '',
+          counselorEmail: a4.assignedAgentEmail || '',
+          counselorName: a4.assignedAgentName || ''
         })
       }).catch(function(err) { console.warn("Admission update notify error:", err); });
 
@@ -1007,7 +1146,18 @@ function mockHandle(action, data) {
     case "adminListUsers":
       needStaff();
       return { ok: true, users: db.users.map(function (u4) {
-        return { id: u4.id, email: u4.email, fullName: u4.fullName, phone: u4.phone, role: u4.role, createdAt: u4.createdAt, assignedAgentId: u4.assignedAgentId || "", assignedAgentName: u4.assignedAgentName || "" };
+        return {
+          id: u4.id,
+          email: u4.email,
+          fullName: u4.fullName,
+          phone: u4.phone,
+          role: u4.role,
+          createdAt: u4.createdAt,
+          assignedAgentId: u4.assignedAgentId || "",
+          assignedAgentName: u4.assignedAgentName || "",
+          assignedAgentEmail: u4.assignedAgentEmail || "",
+          assignedAgentPhone: u4.assignedAgentPhone || ""
+        };
       }) };
     case "adminUpdateUserRole": {
       needAdminOrSuper();
@@ -1021,16 +1171,39 @@ function mockHandle(action, data) {
       needAdminOrSuper();
       var stud = db.users.filter(function (u) { return u.id === data.studentId; })[0];
       if (!stud) fail("NOT_FOUND");
+
+      var agentUser = data.agentId ? db.users.filter(function (u) { return u.id === data.agentId; })[0] : null;
+
       stud.assignedAgentId = data.agentId || "";
-      stud.assignedAgentName = data.agentName || "";
+      stud.assignedAgentName = data.agentName || (agentUser ? agentUser.fullName : "");
+      stud.assignedAgentEmail = agentUser ? agentUser.email : "";
+      stud.assignedAgentPhone = agentUser ? agentUser.phone : "";
       
       // Update in applications too
       var app = db.applications.filter(function (a) { return a.userId === data.studentId; })[0];
       if (app) {
-        app.assignedAgentId = data.agentId || "";
-        app.assignedAgentName = data.agentName || "";
+        app.assignedAgentId = stud.assignedAgentId;
+        app.assignedAgentName = stud.assignedAgentName;
+        app.assignedAgentEmail = stud.assignedAgentEmail;
+        app.assignedAgentPhone = stud.assignedAgentPhone;
       }
       mockSave(db);
+
+      // Trigger Counselor Assignment Notification via email
+      if (stud.assignedAgentId) {
+        fetch('/api/notify-counselor-assigned', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            studentEmail: stud.email,
+            studentName: stud.fullName || 'Student',
+            counselorName: stud.assignedAgentName,
+            counselorEmail: stud.assignedAgentEmail,
+            counselorPhone: stud.assignedAgentPhone
+          })
+        }).catch(function(err) { console.warn("Counselor assignment notify error:", err); });
+      }
+
       return { ok: true };
     }
     case "adminListTasks": {
@@ -1145,6 +1318,55 @@ function mockHandle(action, data) {
       db.alerts = db.alerts.filter(function (a) { return a.id !== data.alertId; });
       mockSave(db);
       return { ok: true };
+    }
+    case "getPackages": {
+      db.packages = db.packages || DEFAULT_PACKAGES;
+      return { ok: true, packages: db.packages };
+    }
+    case "adminSavePackage": {
+      needAdminOrSuper();
+      db.packages = db.packages || DEFAULT_PACKAGES;
+      var newPkg = {
+        id: data.id || ("pkg-" + mockId()),
+        name: String(data.name || "Custom Package"),
+        priceEur: Number(data.priceEur || 0),
+        advisorCommission: Number(data.advisorCommission || 0),
+        targetProgram: String(data.targetProgram || "All Degrees"),
+        description: String(data.description || ""),
+        inclusions: Array.isArray(data.inclusions) ? data.inclusions : String(data.inclusions || "").split("\n").filter(Boolean),
+        updatedAt: new Date().toISOString()
+      };
+      if (data.id) {
+        db.packages = db.packages.map(function (p) { return p.id === data.id ? newPkg : p; });
+      } else {
+        db.packages.push(newPkg);
+      }
+      mockSave(db);
+      return { ok: true, package: newPkg };
+    }
+    case "adminDeletePackage": {
+      needAdminOrSuper();
+      db.packages = (db.packages || DEFAULT_PACKAGES).filter(function (p) { return p.id !== data.packageId; });
+      mockSave(db);
+      return { ok: true };
+    }
+    case "adminAssignDocumentToUser": {
+      needAdminOrSuper();
+      var assignDoc = {
+        id: "doc-asgn-" + mockId(),
+        userId: data.targetUserId,
+        docType: data.docType || "Official Document",
+        fileName: data.fileName || "document.pdf",
+        mimeType: data.mimeType || "application/pdf",
+        base64: data.base64 || "RGVtbyBkb2N1bWVudCDigJQgU3R1ZHlDemVjaEJyaWRnZSBzYW1wbGUgZmlsZS4=",
+        sizeKb: Math.round((data.base64 || "").length * 3 / 4 / 1024) || 15,
+        uploadedAt: new Date().toISOString(),
+        assignedBySuperAdmin: true,
+        notesFromAdmin: data.notes || ""
+      };
+      db.documents.push(assignDoc);
+      mockSave(db);
+      return { ok: true, document: assignDoc };
     }
   }
   fail("SERVER_ERROR");

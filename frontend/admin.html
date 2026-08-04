@@ -54,13 +54,16 @@
     <!-- Tab Controls -->
     <div class="admin-tabs" id="tab-controls" style="flex-wrap: wrap; gap: 0.5rem;">
       <button class="admin-tab active" data-tab="applications">📋 Applications</button>
+      <button class="admin-tab" data-tab="counselor" style="border-color: var(--blue-700); color: var(--blue-800); font-weight:800; background: #f0f7ff;">🇨🇿 Counselor Workspace</button>
       <button class="admin-tab" data-tab="journey" style="border-color: var(--blue-700); color: var(--blue-800); font-weight:700;">🎓 20-Step Roadmap</button>
       <button class="admin-tab" data-tab="taskboard">📋 Task Board</button>
-      <button class="admin-tab" data-tab="users" id="tab-users-btn">👥 Users & Roles</button>
-      <button class="admin-tab" data-tab="email" style="border-color: var(--teal-600); color: var(--teal-700); font-weight:700;">📧 Private Email & SMTP</button>
-      <button class="admin-tab" data-tab="extract" style="border-color: var(--gold); color: #9a6d00; font-weight:700;">📊 Extract & Export Data</button>
+      <button class="admin-tab" data-tab="packages" style="border-color: var(--green); color: var(--green); font-weight:700;">🏷️ Packages &amp; Service Charges</button>
+      <button class="admin-tab" data-tab="superdocs" style="border-color: var(--purple-600); color: var(--purple-700); font-weight:700;">📄 Assign Documents</button>
+      <button class="admin-tab" data-tab="users" id="tab-users-btn">👥 Users &amp; Roles</button>
+      <button class="admin-tab" data-tab="email" style="border-color: var(--teal-600); color: var(--teal-700); font-weight:700;">📧 Private Email &amp; SMTP</button>
+      <button class="admin-tab" data-tab="extract" style="border-color: var(--gold); color: #9a6d00; font-weight:700;">📊 Extract &amp; Export Data</button>
       <button class="admin-tab" data-tab="messages">💬 Contact Messages</button>
-      <button class="admin-tab" data-tab="ops" style="border-color: var(--green); color: var(--green); font-weight:700;">📈 Finance & Ops</button>
+      <button class="admin-tab" data-tab="ops" style="border-color: var(--green); color: var(--green); font-weight:700;">📈 Finance &amp; Ops</button>
     </div>
 
     <!-- Tab 1: Applications -->
@@ -299,12 +302,191 @@
       <div id="role-taskboard-container"></div>
     </div>
 
+    <!-- Tab: Counselor Workspace -->
+    <div class="panel admin-tab-panel hidden" id="panel-counselor">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">🇨🇿 Counselor &amp; Agent Guidance Hub</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+            Dedicated counseling dashboard to oversee assigned students, track 20-step progress, review packages, and handle communications.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <label style="font-weight: 700; font-size: 0.85rem; color: var(--blue-900);">Show Students:</label>
+          <select id="counselor-student-filter" style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600;">
+            <option value="mine" selected>Only My Assigned Students</option>
+            <option value="all">All Registered Students</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Counselor Stat Summary Bar -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: #f0f7ff; padding: 1rem; border-radius: 8px; border: 1px solid #cce3ff;">
+          <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--blue-700); font-weight: 800;">Assigned Students</div>
+          <div id="c-stat-assigned" style="font-size: 1.8rem; font-weight: 800; color: var(--blue-900);">0</div>
+        </div>
+        <div style="background: #f0fff4; padding: 1rem; border-radius: 8px; border: 1px solid #c6f6d5;">
+          <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--green); font-weight: 800;">Active Milestones</div>
+          <div id="c-stat-active" style="font-size: 1.8rem; font-weight: 800; color: var(--green);">0</div>
+        </div>
+        <div style="background: #fffaf0; padding: 1rem; border-radius: 8px; border: 1px solid #feebc8;">
+          <div style="font-size: 0.8rem; text-transform: uppercase; color: #c05621; font-weight: 800;">Advisor Commissions</div>
+          <div id="c-stat-commission" style="font-size: 1.8rem; font-weight: 800; color: #c05621;">€0</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Student Name</th><th>Program &amp; Intake</th><th>Current Status</th><th>20-Step Stage</th><th>Assigned Counselor</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="counselor-students-body">
+            <tr><td colspan="6" class="muted">Loading assigned students...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Counselor Quick Reference: Package Systems & Service Charges -->
+      <div style="margin-top: 2rem; border-top: 2px dashed var(--line); padding-top: 1.5rem;">
+        <h3 style="color: var(--blue-900); font-size: 1.1rem; margin-bottom: 0.5rem;">🏷️ Package Systems &amp; Service Charge Matrix</h3>
+        <p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem;">Official package tiers, total student service charges, and advisor commissions configured by Super Admin.</p>
+        <div id="counselor-packages-summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+          <div class="muted">Loading package details...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Package System & Service Charges -->
+    <div class="panel admin-tab-panel hidden" id="panel-packages">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">🏷️ Package System &amp; Service Charge Manager</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+            Super Admins can define pricing structures, package inclusions, and advisor commissions for university admissions in Czechia.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-add-package-modal">+ Add New Package</button>
+      </div>
+
+      <div id="packages-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+        <div class="muted">Loading packages...</div>
+      </div>
+
+      <!-- Add/Edit Package Modal -->
+      <div id="package-editor-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: white; width: 100%; max-width: 550px; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-lg);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+            <h3 id="pkg-modal-title" style="margin: 0; color: var(--blue-900);">Add New Service Package</h3>
+            <button id="pkg-modal-close" class="btn btn-outline btn-sm" style="border: none; font-size: 1.2rem; cursor: pointer;">✕</button>
+          </div>
+          <input type="hidden" id="pkg-edit-id">
+          <div class="field mb-2">
+            <label for="pkg-name">Package Name</label>
+            <input type="text" id="pkg-name" placeholder="e.g. Standard European Admission Package">
+          </div>
+          <div class="form-row mb-2">
+            <div class="field">
+              <label for="pkg-price">Total Student Fee (EUR €)</label>
+              <input type="number" id="pkg-price" placeholder="1450">
+            </div>
+            <div class="field">
+              <label for="pkg-commission">Advisor Commission (EUR €)</label>
+              <input type="number" id="pkg-commission" placeholder="300">
+            </div>
+          </div>
+          <div class="field mb-2">
+            <label for="pkg-program">Target Program / Degree</label>
+            <input type="text" id="pkg-program" placeholder="e.g. Bachelor / Master / PhD Degree">
+          </div>
+          <div class="field mb-2">
+            <label for="pkg-desc">Package Overview</label>
+            <textarea id="pkg-desc" rows="2" placeholder="Brief summary of services included..."></textarea>
+          </div>
+          <div class="field mb-2">
+            <label for="pkg-inclusions">Package Inclusions (One feature per line)</label>
+            <textarea id="pkg-inclusions" rows="4" placeholder="University Selection &amp; Application&#10;Sworn Czech Translation&#10;Nostrification Handling"></textarea>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid var(--line); padding-top: 1rem;">
+            <button class="btn btn-outline btn-sm" id="pkg-modal-cancel">Cancel</button>
+            <button class="btn btn-primary btn-sm" id="pkg-modal-save">Save Package</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Assign Documents -->
+    <div class="panel admin-tab-panel hidden" id="panel-superdocs">
+      <div style="border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0; color: var(--blue-900);">📄 Super Admin Document Assignment Hub</h2>
+        <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+          Super Admins can assign official documents, forms, contract templates, or offer letters directly to any student/user.
+        </p>
+      </div>
+
+      <div class="panel mb-3" style="background: #fafafa; border: 1px solid var(--line); padding: 1.25rem;">
+        <h3 style="margin: 0 0 1rem 0; font-size: 1rem; color: var(--blue-900);">📌 Assign New Document to Student</h3>
+        <div class="form-row mb-2">
+          <div class="field">
+            <label for="asgn-student-select">Select Student / User</label>
+            <select id="asgn-student-select" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--line);">
+              <option value="">-- Choose target student --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="asgn-doc-type">Document Category</label>
+            <select id="asgn-doc-type" style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--line);">
+              <option value="Nostrification Application Form">Nostrification Application Form</option>
+              <option value="Czech Embassy Visa Checklist">Czech Embassy Visa Checklist</option>
+              <option value="Accommodation Contract">Accommodation Contract</option>
+              <option value="Conditional Offer Letter">Conditional Offer Letter</option>
+              <option value="Final Admission Offer">Final Admission Offer</option>
+              <option value="Sworn Czech Translation Copy">Sworn Czech Translation Copy</option>
+              <option value="Official Form / Template">Official Form / Template</option>
+            </select>
+          </div>
+        </div>
+        <div class="field mb-2">
+          <label for="asgn-file-input">Select Document File (PDF / Image / TXT - Max 10MB)</label>
+          <input type="file" id="asgn-file-input">
+        </div>
+        <div class="field mb-2">
+          <label for="asgn-notes">Instructions for Student</label>
+          <input type="text" id="asgn-notes" placeholder="e.g. Please print, sign page 3, and re-upload scanned copy in your dashboard.">
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-assign-doc-submit">📤 Assign Document to Student</button>
+        <span id="asgn-doc-state" class="muted" style="margin-left: 0.5rem; font-size: 0.85rem;"></span>
+      </div>
+    </div>
+
     <!-- Tab 3: User & Agent Management -->
     <div class="panel admin-tab-panel hidden" id="panel-users">
       <div class="panel-row">
-        <h2>👥 User & Agent Assignment</h2>
+        <h2>👥 User &amp; Agent Assignment</h2>
       </div>
       <p class="muted" style="margin-top:-0.5rem; margin-bottom:1.5rem;">Super Admins and Admins can update roles and allocate dedicated agents to support students.</p>
+
+      <!-- Firebase Super Admin Instruction Card -->
+      <div class="panel" style="background: linear-gradient(135deg, #fef8ec 0%, #fffbf0 100%); border-left: 4px solid var(--gold); margin-bottom: 1.5rem; padding: 1.25rem;">
+        <h3 style="margin: 0 0 0.5rem 0; color: #855300; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
+          🔥 How to Set Someone as Super Admin in Firebase
+        </h3>
+        <p style="margin: 0 0 0.75rem 0; font-size: 0.88rem; color: #5c3b00; line-height: 1.5;">
+          To grant <strong>Super Admin</strong> access using Firebase Firestore:
+        </p>
+        <ol style="margin: 0 0 0.75rem 1.25rem; font-size: 0.85rem; color: #4a2e00; line-height: 1.6;">
+          <li>Open the <a href="https://console.firebase.google.com" target="_blank" style="color: var(--blue-700); font-weight:700;">Firebase Console</a> and select your project.</li>
+          <li>Go to <strong>Build &gt; Firestore Database</strong> and click on the <strong><code>users</code></strong> collection.</li>
+          <li>Select the document corresponding to the user's Auth UID (or email).</li>
+          <li>Set or edit the field <strong><code>role</code></strong> (Type: <code>string</code>) to <strong><code>super_admin</code></strong>.</li>
+          <li>Save changes. The account now has full Super Admin rights!</li>
+        </ol>
+        <p style="margin: 0; font-size: 0.82rem; color: #734e00;">
+          💡 <em>Note: Existing Super Admins or Admins can also update any user's role directly using the role dropdown in the table below!</em>
+        </p>
+      </div>
       
       <div class="table-wrap">
         <table class="data">
@@ -511,18 +693,24 @@
     <h2 id="m-title">Application</h2>
 
     <div class="panel" style="box-shadow:none;">
-      <h2 style="font-size:1rem;">Status Control</h2>
+      <h2 style="font-size:1rem;">Status Control &amp; Counselor Assignment</h2>
       <div class="form-row">
         <div class="field">
           <label for="m-status">Application Status</label>
           <select id="m-status"></select>
         </div>
         <div class="field">
-          <label for="m-note">Note to Student (shown on their dashboard)</label>
-          <input type="text" id="m-note" maxlength="500" placeholder="e.g. Please upload a clearer passport scan">
+          <label for="m-agent">Assigned Brno Counselor</label>
+          <select id="m-agent">
+            <option value="">-- Select Counselor / Agent --</option>
+          </select>
         </div>
       </div>
-      <button class="btn btn-primary btn-sm" id="m-save">Save Status</button>
+      <div class="field mb-2">
+        <label for="m-note">Note to Student (shown on dashboard &amp; emailed)</label>
+        <input type="text" id="m-note" maxlength="500" placeholder="e.g. Please upload a clearer passport scan or IELTS score card">
+      </div>
+      <button class="btn btn-primary btn-sm" id="m-save">Save Status &amp; Update Counselor</button>
       <span id="m-save-state" class="muted" style="font-size:.85rem;"></span>
     </div>
 

@@ -76,6 +76,11 @@
   /* ---------- Application ---------- */
 
   function loadApplication() {
+    api("getMe").then(function (meRes) {
+      var user = meRes.user || {};
+      renderCounselorCard(user);
+    }).catch(function (err) { console.warn("getMe error:", err); });
+
     api("getMyApplication").then(function (res) {
       document.getElementById("app-loading").classList.add("hidden");
       if (!res.application) {
@@ -92,6 +97,7 @@
 
       renderTracker(a.status);
       render20StepsGrid(a.status, a);
+      renderCounselorCard(a);
 
       if (a.adminNotes) {
         var note = document.getElementById("admin-note-box");
@@ -111,6 +117,36 @@
     }).catch(function (err) {
       showNotice("dash-notice", "error", err.message);
     });
+  }
+
+  function renderCounselorCard(dataObj) {
+    var nameEl = document.getElementById("counselor-name");
+    var descEl = document.getElementById("counselor-desc");
+    var emailBtn = document.getElementById("counselor-email-btn");
+    var emailTxt = document.getElementById("counselor-email-text");
+
+    if (!nameEl) return;
+
+    var cName = dataObj ? (dataObj.assignedAgentName || dataObj.assignedAgentId) : "";
+    var cEmail = dataObj ? dataObj.assignedAgentEmail : "";
+
+    if (cName) {
+      nameEl.textContent = cName + " (Brno Admissions Counselor)";
+      descEl.textContent = "Your counselor oversees your document translation, university submission, nostrification, and Czech visa appointment.";
+      if (emailBtn) {
+        emailBtn.href = "mailto:" + (cEmail || "info@studywithczechbridge.com");
+        emailBtn.textContent = "✉️ Message " + cName;
+      }
+      if (emailTxt) emailTxt.textContent = cEmail || "info@studywithczechbridge.com";
+    } else {
+      nameEl.textContent = "StudyCzechBridge Senior Admissions Counselor (Brno HQ)";
+      descEl.textContent = "Your application is under initial review. A dedicated counselor in Brno will be assigned shortly.";
+      if (emailBtn) {
+        emailBtn.href = "mailto:info@studywithczechbridge.com";
+        emailBtn.textContent = "✉️ Contact Admissions Desk";
+      }
+      if (emailTxt) emailTxt.textContent = "info@studywithczechbridge.com";
+    }
   }
 
   function render20StepsGrid(currentStatus, appObj) {

@@ -232,31 +232,122 @@ app.post('/api/notify-login', async (req, res) => {
   res.json({ ok: true, userAlert: resultUser, adminAlert: resultAdmin });
 });
 
-// Route: Admission Update Notification
+// Route: Admission Update Notification (Notifies both Student and Admin/Counselor)
 app.post('/api/notify-admission-update', async (req, res) => {
-  const { studentEmail, studentName, stepTitle, stepNumber, newStatus, adminNotes } = req.body;
+  const { studentEmail, studentName, stepTitle, stepNumber, newStatus, adminNotes, counselorEmail, counselorName } = req.body;
 
-  let result = null;
-  if (emailConfig.notifyOnAdmissionUpdate && studentEmail) {
-    const subject = `🇨🇿 Admission Milestone Updated: ${stepTitle || 'Step Update'} (${newStatus || 'Updated'})`;
-    const text = `Dear ${studentName || 'Student'},\n\nYour university admission journey status has been updated!\n\nMilestone / Step: ${stepNumber ? 'Step ' + stepNumber + ': ' : ''}${stepTitle || 'Admission Progress'}\nNew Status: ${newStatus}\n${adminNotes ? 'Notes from Advisor: ' + adminNotes + '\n' : ''}\nPlease log into your student dashboard to review your 20-step admission tracker and document requirements.\n\nDashboard: http://localhost:3000/dashboard.html\n\nBest regards,\nStudyCzechBridge Admissions Team (Brno, Czech Republic)`;
+  let resultUser = null;
+  let resultAdmin = null;
+
+  if (emailConfig.notifyOnAdmissionUpdate) {
+    const timeStr = new Date().toLocaleString();
+
+    // 1. Notify Student via Email
+    if (studentEmail) {
+      const subject = `🇨🇿 Admission Milestone Updated: ${stepTitle || 'Step Update'} (${newStatus || 'Updated'})`;
+      const text = `Dear ${studentName || 'Student'},\n\nYour university admission journey status has been updated!\n\nMilestone / Step: ${stepNumber ? 'Step ' + stepNumber + ': ' : ''}${stepTitle || 'Admission Progress'}\nNew Status: ${newStatus}\n${adminNotes ? 'Notes from Advisor: ' + adminNotes + '\n' : ''}\nPlease log into your student dashboard to review your 20-step admission tracker and document requirements.\n\nBest regards,\nStudyCzechBridge Admissions Team (Brno, Czech Republic)`;
+
+      const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+          <div style="background: #14315e; color: #ffffff; padding: 16px 20px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h2 style="margin: 0; font-size: 1.3rem;">🇨🇿 StudyCzechBridge Admission Update</h2>
+          </div>
+          <div style="padding: 20px 0;">
+            <p style="color: #334155; font-size: 1rem;">Dear <strong>${studentName || 'Student'}</strong>,</p>
+            <p style="color: #334155; line-height: 1.5;">There is a new update on your European university admission timeline:</p>
+            
+            <div style="background: #f0f7ff; border-left: 5px solid #1e8e5a; padding: 15px; border-radius: 6px; margin: 18px 0;">
+              <div style="font-weight: bold; color: #14315e; font-size: 1.05rem;">${stepNumber ? 'Step ' + stepNumber + ': ' : ''}${stepTitle || 'Admission Status'}</div>
+              <div style="margin-top: 6px; font-size: 0.95rem; color: #0f172a;">Status: <span style="background: #1e8e5a; color: white; padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 0.8rem;">${newStatus}</span></div>
+              ${adminNotes ? `<div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; color: #475569; font-size: 0.9rem;">📌 <strong>Note from Brno Counselor:</strong> ${adminNotes}</div>` : ''}
+            </div>
+
+            <p style="color: #334155;">Log into your student portal to view your complete 20-step admission roadmap and track your progress.</p>
+            <div style="text-align: center; margin: 24px 0;">
+              <a href="/dashboard.html" style="background: #14315e; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; display: inline-block;">Open Student Dashboard →</a>
+            </div>
+          </div>
+          <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; text-align: center; color: #94a3b8; font-size: 0.8rem;">
+            StudyCzechBridge · Veveří, Brno, Czech Republic · ${emailConfig.fromEmail}
+          </div>
+        </div>
+      `;
+
+      resultUser = await sendEmail({
+        to: studentEmail,
+        subject,
+        text,
+        html,
+        type: 'admission_update_student'
+      });
+    }
+
+    // 2. Notify Admin & Counselor via Email
+    const notifyAdminTarget = counselorEmail || emailConfig.adminEmail || '1997herobala@gmail.com';
+    if (notifyAdminTarget) {
+      const adminSubject = `🔔 Status Update Notification: ${studentName || 'Student'} (${newStatus})`;
+      const adminText = `Admin & Counselor Notification:\n\nStudent: ${studentName || 'Student'} (${studentEmail})\nStatus Updated To: ${newStatus}\nStep: ${stepTitle || 'General Status'}\nCounselor Notes: ${adminNotes || 'None'}\nUpdated At: ${timeStr}`;
+
+      const adminHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 20px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fafafa;">
+          <h3 style="color: #14315e; margin-top: 0;">🔔 Admission Status Change Alert</h3>
+          <p style="color: #334155;">Status update logged for student <strong>${studentName || 'Student'}</strong> (${studentEmail}).</p>
+          <div style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin: 12px 0;">
+            <strong>Milestone:</strong> ${stepTitle || 'General Application Status'}<br>
+            <strong>New Status:</strong> <span style="color: #1e8e5a; font-weight: bold;">${newStatus}</span><br>
+            <strong>Counselor Notes:</strong> ${adminNotes || 'No notes added'}<br>
+            <strong>Timestamp:</strong> ${timeStr}
+          </div>
+          <p style="color: #64748b; font-size: 0.82rem;">StudyCzechBridge Super Admin Command Center</p>
+        </div>
+      `;
+
+      resultAdmin = await sendEmail({
+        to: notifyAdminTarget,
+        subject: adminSubject,
+        text: adminText,
+        html: adminHtml,
+        type: 'admission_update_admin'
+      });
+    }
+  }
+
+  res.json({ ok: true, userAlert: resultUser, adminAlert: resultAdmin });
+});
+
+// Route: Counselor Assignment Notification
+app.post('/api/notify-counselor-assigned', async (req, res) => {
+  const { studentEmail, studentName, counselorName, counselorEmail, counselorPhone } = req.body;
+
+  let resultStudent = null;
+  let resultCounselor = null;
+
+  const timeStr = new Date().toLocaleString();
+
+  // 1. Send Email to Student
+  if (studentEmail) {
+    const subject = `🎓 Your Dedicated StudyCzechBridge Counselor Has Been Assigned: ${counselorName || 'Counselor'}`;
+    const text = `Dear ${studentName || 'Student'},\n\nGreat news! Your application to study in the Czech Republic is moving forward.\n\n${counselorName || 'An expert counselor'} (${counselorEmail || ''}) has been assigned as your personal study counselor in Brno.\n\nYour counselor will assist you with university admissions, document sworn translation, nostrification, entrance exam preparation, and embassy visa scheduling.\n\nLog in to your portal to communicate with your counselor.\n\nBest regards,\nStudyCzechBridge Admissions Team`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
-        <div style="background: #14315e; color: #ffffff; padding: 16px 20px; border-radius: 8px 8px 0 0; text-align: center;">
-          <h2 style="margin: 0; font-size: 1.3rem;">🇨🇿 StudyCzechBridge Admission Update</h2>
+        <div style="background: #14315e; color: #ffffff; padding: 18px 20px; border-radius: 8px 8px 0 0; text-align: center;">
+          <h2 style="margin: 0; font-size: 1.35rem;">🇨🇿 Counselor Assigned to Your Application</h2>
         </div>
         <div style="padding: 20px 0;">
           <p style="color: #334155; font-size: 1rem;">Dear <strong>${studentName || 'Student'}</strong>,</p>
-          <p style="color: #334155; line-height: 1.5;">There is an update on your European university admission timeline:</p>
+          <p style="color: #334155; line-height: 1.5;">We are pleased to inform you that a dedicated admissions counselor in Brno, Czech Republic has been assigned to support your European study journey!</p>
           
-          <div style="background: #f0f7ff; border-left: 5px solid #1e8e5a; padding: 15px; border-radius: 6px; margin: 18px 0;">
-            <div style="font-weight: bold; color: #14315e; font-size: 1.05rem;">${stepNumber ? 'Step ' + stepNumber + ': ' : ''}${stepTitle || 'Admission Status'}</div>
-            <div style="margin-top: 6px; font-size: 0.95rem; color: #0f172a;">Status: <span style="background: #1e8e5a; color: white; padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 0.8rem;">${newStatus}</span></div>
-            ${adminNotes ? `<div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1; color: #475569; font-size: 0.9rem;">📌 <strong>Note from Brno Advisor:</strong> ${adminNotes}</div>` : ''}
+          <div style="background: #f0f7ff; border: 1px solid #bae6fd; padding: 16px; border-radius: 8px; margin: 18px 0;">
+            <div style="font-weight: bold; color: #14315e; font-size: 1.1rem; margin-bottom: 6px;">👤 Assigned Counselor: ${counselorName || 'Brno Staff Counselor'}</div>
+            <div style="color: #0369a1; font-size: 0.95rem;">📧 Email: <a href="mailto:${counselorEmail}" style="color:#0284c7;">${counselorEmail || 'counselor@studywithczechbridge.com'}</a></div>
+            ${counselorPhone ? `<div style="color: #0369a1; font-size: 0.95rem; margin-top: 4px;">📞 Phone / WhatsApp: ${counselorPhone}</div>` : ''}
+            <div style="margin-top: 10px; font-size: 0.88rem; color: #334155; border-top: 1px solid #e0f2fe; padding-top: 8px;">
+              📍 Location: Brno Admissions Headquarters, Czech Republic
+            </div>
           </div>
 
-          <p style="color: #334155;">Log into your portal to view your complete 20-step admission roadmap, upload requested documents, and message your assigned counselor.</p>
+          <p style="color: #334155;">Your counselor will oversee your 20-step university admission and visa roadmap.</p>
           <div style="text-align: center; margin: 24px 0;">
             <a href="/dashboard.html" style="background: #14315e; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; display: inline-block;">Open Student Dashboard →</a>
           </div>
@@ -267,16 +358,44 @@ app.post('/api/notify-admission-update', async (req, res) => {
       </div>
     `;
 
-    result = await sendEmail({
+    resultStudent = await sendEmail({
       to: studentEmail,
       subject,
       text,
       html,
-      type: 'admission_update'
+      type: 'counselor_assigned_student'
     });
   }
 
-  res.json({ ok: true, emailResult: result });
+  // 2. Send Email to Counselor (if email provided)
+  if (counselorEmail) {
+    const cSubject = `📌 New Student Assigned to You: ${studentName || 'Student'}`;
+    const cText = `Hello ${counselorName || 'Counselor'},\n\nYou have been assigned as the counselor for ${studentName || 'Student'} (${studentEmail}).\n\nPlease log into the Super Admin panel to review their 20-step admission roadmap, verify uploaded documents, and contact the student.\n\nTimestamp: ${timeStr}`;
+
+    const cHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 20px; border: 1px solid #cbd5e1; border-radius: 8px;">
+        <h3 style="color: #14315e; margin-top: 0;">📌 New Student Assigned to Your Workspace</h3>
+        <p style="color: #334155;">Hello <strong>${counselorName || 'Counselor'}</strong>,</p>
+        <p style="color: #334155;">Super Admin has assigned student <strong>${studentName}</strong> (${studentEmail}) to you.</p>
+        <div style="background: #f8fafc; padding: 12px; border-left: 4px solid #14315e; margin: 12px 0;">
+          <strong>Student:</strong> ${studentName}<br>
+          <strong>Email:</strong> ${studentEmail}<br>
+          <strong>Assigned Date:</strong> ${timeStr}
+        </div>
+        <p style="color: #334155;">Log into your portal to manage their 20-step admission checklist and tasks.</p>
+      </div>
+    `;
+
+    resultCounselor = await sendEmail({
+      to: counselorEmail,
+      subject: cSubject,
+      text: cText,
+      html: cHtml,
+      type: 'counselor_assigned_counselor'
+    });
+  }
+
+  res.json({ ok: true, studentAlert: resultStudent, counselorAlert: resultCounselor });
 });
 
 // Route to simulate sending a welcome email

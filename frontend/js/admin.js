@@ -134,6 +134,12 @@
       initEmailTab();
     } else if (tabName === "extract") {
       initExtractTab();
+    } else if (tabName === "counselor") {
+      initCounselorTab();
+    } else if (tabName === "packages") {
+      initPackagesTab();
+    } else if (tabName === "superdocs") {
+      initSuperDocsTab();
     }
   }
 
@@ -623,6 +629,19 @@
       }).join("");
       document.getElementById("m-note").value = currentApp.adminNotes || "";
 
+      // Populate counselor select
+      var agentSel = document.getElementById("m-agent");
+      if (agentSel) {
+        var agentsList = allUsers.filter(function (u) {
+          return u.role === "agent" || u.role === "admin" || u.role === "super_admin";
+        });
+        agentSel.innerHTML = '<option value="">-- No Counselor Assigned --</option>' +
+          agentsList.map(function (ag) {
+            var selected = ag.id === currentApp.assignedAgentId ? " selected" : "";
+            return '<option value="' + ag.id + '"' + selected + '>' + esc(ag.fullName || ag.email) + ' (' + ag.role + ')</option>';
+          }).join("");
+      }
+
       var dl = document.getElementById("m-details");
       dl.innerHTML = DETAIL_FIELDS.map(function (f) {
         var v = currentApp[f[0]];
@@ -691,13 +710,26 @@
     var state = document.getElementById("m-save-state");
     btn.disabled = true;
     state.textContent = "Saving...";
-    api("adminSetStatus", {
-      appId: currentApp.id,
-      status: document.getElementById("m-status").value,
-      adminNotes: document.getElementById("m-note").value.trim()
+
+    var agentSel = document.getElementById("m-agent");
+    var selectedAgentId = agentSel ? agentSel.value : "";
+    var selectedAgentName = (agentSel && agentSel.selectedIndex >= 0 && selectedAgentId) ? agentSel.options[agentSel.selectedIndex].text.split(" (")[0] : "";
+
+    // First assign counselor if changed
+    var assignPromise = (selectedAgentId !== currentApp.assignedAgentId) 
+      ? api("adminAssignAgent", { studentId: currentApp.userId, agentId: selectedAgentId, agentName: selectedAgentName })
+      : Promise.resolve();
+
+    assignPromise.then(function () {
+      return api("adminSetStatus", {
+        appId: currentApp.id,
+        status: document.getElementById("m-status").value,
+        adminNotes: document.getElementById("m-note").value.trim()
+      });
     }).then(function () {
-      state.textContent = "✅ Saved.";
+      state.textContent = "✅ Saved & email notification sent.";
       loadApps();
+      loadUsers();
       loadStats();
     }).catch(function (err) {
       state.textContent = "❌ " + err.message;
@@ -1447,6 +1479,329 @@
         setTimeout(function () { toast.remove(); }, 300);
       }
     }, 6000);
+  }
+
+  /* ============================================================
+     Counselor Workspace Tab
+     ============================================================ */
+  function initCounselorTab() {
+    var filterSel = document.getElementById("counselor-student-filter");
+    if (filterSel) {
+      filterSel.removeEventListener("change", renderCounselorWorkspace);
+      filterSel.addEventListener("change", renderCounselorWorkspace);
+    }
+    renderCounselorWorkspace();
+    renderCounselorPackagesSummary();
+  }
+
+  function renderCounselorWorkspace() {
+    var body = document.getElementById("counselor-students-body");
+    if (!body) return;
+
+    var filterVal = document.getElementById("counselor-student-filter") ? document.getElementById("counselor-student-filter").value : "mine";
+    var currentUser = getCurrentUser(); // from session or token
+
+    var filteredApps = allApps.filter(function (a) {
+      if (filterVal === "all") return true;
+      if (!a.assignedAgentId && !a.assignedAgentName) return false;
+      if (currentUser && (a.assignedAgentId === currentUser.uid || a.assignedAgentId === currentUser.id || a.assignedAgentName === currentUser.fullName || currentUser.role === "admin" || currentUser.role === "super_admin")) {
+        return true;
+      }
+      return false;
+    });
+
+    // Stats
+    document.getElementById("c-stat-assigned").textContent = filteredApps.length;
+    var activeCount = filteredApps.filter(function (a) { return a.status !== "Completed" && a.status !== "Rejected"; }).length;
+    document.getElementById("c-stat-active").textContent = activeCount;
+    var totalComm = filteredApps.reduce(function (sum, a) { return sum + (Number(a.advisorCommission) || 0); }, 0);
+    document.getElementById("c-stat-commission").textContent = "€" + totalComm;
+
+    if (!filteredApps.length) {
+      body.innerHTML = '<tr><td colspan="6" class="muted py-4">No students assigned to you yet. Super Admin can assign students in the "Users & Roles" tab.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = "";
+    filteredApps.forEach(function (a) {
+      var tr = document.createElement("tr");
+      var currentStepNum = a.stepProgress ? a.stepProgress : 1;
+      var currentStepTitle = JOURNEY_20_STEPS[currentStepNum - 1] ? JOURNEY_20_STEPS[currentStepNum - 1].title : "Application Initiated";
+
+      tr.innerHTML =
+        "<td><strong>" + esc(a.fullName) + "</strong><br><span class='muted' style='font-size:.8rem;'>" + esc(a.email) + "</span></td>" +
+        "<td>" + esc(a.program) + "<br><span class='muted' style='font-size:.8rem;'>" + esc(a.level) + " (" + esc(a.intake) + ")</span></td>" +
+        "<td><span class='badge " + (BADGE_CLASS[a.status] || "st-pending") + "'>" + esc(a.status) + "</span></td>" +
+        "<td><strong style='color:var(--blue-800);'>Step " + currentStepNum + "/20:</strong> " + esc(currentStepTitle) + "</td>" +
+        "<td>" + (a.assignedAgentName ? "<strong>" + esc(a.assignedAgentName) + "</strong>" : "<span class='muted'>Unassigned</span>") + "</td>" +
+        "<td></td>";
+
+      var actionsTd = tr.lastElementChild;
+      var btnJourney = document.createElement("button");
+      btnJourney.className = "btn btn-outline btn-sm mr-1";
+      btnJourney.style.fontSize = "0.75rem";
+      btnJourney.style.borderColor = "var(--blue-700)";
+      btnJourney.style.color = "var(--blue-700)";
+      btnJourney.textContent = "🎓 Update 20 Steps";
+      btnJourney.addEventListener("click", function () {
+        switchTab("journey");
+        var sel = document.getElementById("journey-student-select");
+        if (sel) {
+          sel.value = a.id;
+          sel.dispatchEvent(new Event("change"));
+        }
+      });
+
+      var btnManage = document.createElement("button");
+      btnManage.className = "btn btn-dark btn-sm";
+      btnManage.style.fontSize = "0.75rem";
+      btnManage.textContent = "Manage App";
+      btnManage.addEventListener("click", function () {
+        openModal(a);
+      });
+
+      actionsTd.appendChild(btnJourney);
+      actionsTd.appendChild(btnManage);
+      body.appendChild(tr);
+    });
+  }
+
+  function renderCounselorPackagesSummary() {
+    var container = document.getElementById("counselor-packages-summary");
+    if (!container) return;
+
+    api("getPackages").then(function (res) {
+      var pkgs = res.packages || [];
+      if (!pkgs.length) {
+        container.innerHTML = '<div class="muted">No packages configured yet.</div>';
+        return;
+      }
+      container.innerHTML = pkgs.map(function (p) {
+        var inclList = Array.isArray(p.inclusions) ? p.inclusions : String(p.inclusions || "").split("\n").filter(Boolean);
+        return (
+          '<div style="background: white; border: 1px solid var(--line); border-radius: 8px; padding: 1rem; box-shadow: var(--shadow-sm);">' +
+            '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">' +
+              '<strong style="font-size: 1rem; color: var(--blue-900);">' + esc(p.name) + '</strong>' +
+              '<span class="badge" style="background: #e6fffa; color: #234e52; font-weight: 700;">€' + p.priceEur + ' Fee</span>' +
+            '</div>' +
+            '<div style="font-size: 0.82rem; color: var(--text-dark); margin-bottom: 0.5rem;">Target: <strong>' + esc(p.targetProgram) + '</strong> | Commission: <strong style="color:var(--green);">€' + p.advisorCommission + '</strong></div>' +
+            '<p class="muted" style="font-size: 0.8rem; margin-bottom: 0.75rem;">' + esc(p.description) + '</p>' +
+            '<ul style="margin: 0; padding-left: 1.2rem; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">' +
+              inclList.slice(0, 4).map(function (inc) { return '<li>' + esc(inc) + '</li>'; }).join("") +
+              (inclList.length > 4 ? '<li style="font-weight:700; color:var(--blue-700);">+ ' + (inclList.length - 4) + ' more inclusions</li>' : '') +
+            '</ul>' +
+          '</div>'
+        );
+      }).join("");
+    }).catch(function (err) {
+      container.innerHTML = '<div class="muted">Error loading packages: ' + esc(err.message) + '</div>';
+    });
+  }
+
+  /* ============================================================
+     Package System & Service Charges Tab
+     ============================================================ */
+  function initPackagesTab() {
+    var addBtn = document.getElementById("btn-add-package-modal");
+    var modal = document.getElementById("package-editor-modal");
+    var closeBtn = document.getElementById("pkg-modal-close");
+    var cancelBtn = document.getElementById("pkg-modal-cancel");
+    var saveBtn = document.getElementById("pkg-modal-save");
+
+    if (addBtn) {
+      addBtn.onclick = function () {
+        document.getElementById("pkg-modal-title").textContent = "Add New Service Package";
+        document.getElementById("pkg-edit-id").value = "";
+        document.getElementById("pkg-name").value = "";
+        document.getElementById("pkg-price").value = "";
+        document.getElementById("pkg-commission").value = "";
+        document.getElementById("pkg-program").value = "All Degrees (Bachelor & Master)";
+        document.getElementById("pkg-desc").value = "";
+        document.getElementById("pkg-inclusions").value = "";
+        modal.style.display = "flex";
+      };
+    }
+
+    if (closeBtn) closeBtn.onclick = function () { modal.style.display = "none"; };
+    if (cancelBtn) cancelBtn.onclick = function () { modal.style.display = "none"; };
+
+    if (saveBtn) {
+      saveBtn.onclick = function () {
+        saveBtn.disabled = true;
+        var pkgData = {
+          id: document.getElementById("pkg-edit-id").value,
+          name: document.getElementById("pkg-name").value.trim(),
+          priceEur: Number(document.getElementById("pkg-price").value) || 0,
+          advisorCommission: Number(document.getElementById("pkg-commission").value) || 0,
+          targetProgram: document.getElementById("pkg-program").value.trim(),
+          description: document.getElementById("pkg-desc").value.trim(),
+          inclusions: document.getElementById("pkg-inclusions").value.split("\n").map(function (s) { return s.trim(); }).filter(Boolean)
+        };
+
+        api("adminSavePackage", pkgData).then(function () {
+          saveBtn.disabled = false;
+          modal.style.display = "none";
+          renderPackagesCards();
+          renderCounselorPackagesSummary();
+        }).catch(function (err) {
+          saveBtn.disabled = false;
+          alert("Error saving package: " + err.message);
+        });
+      };
+    }
+
+    renderPackagesCards();
+  }
+
+  function renderPackagesCards() {
+    var grid = document.getElementById("packages-cards-grid");
+    if (!grid) return;
+
+    api("getPackages").then(function (res) {
+      var pkgs = res.packages || [];
+      if (!pkgs.length) {
+        grid.innerHTML = '<div class="muted py-4">No packages defined. Click "+ Add New Package" to create one.</div>';
+        return;
+      }
+
+      grid.innerHTML = pkgs.map(function (p) {
+        var inclList = Array.isArray(p.inclusions) ? p.inclusions : String(p.inclusions || "").split("\n").filter(Boolean);
+        return (
+          '<div style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); display: flex; flex-direction: column; justify-content: space-between;">' +
+            '<div>' +
+              '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">' +
+                '<h3 style="margin: 0; font-size: 1.15rem; color: var(--blue-900);">' + esc(p.name) + '</h3>' +
+                '<span class="badge" style="background: #e6fffa; color: #234e52; font-size: 0.9rem; font-weight: 800; padding: 0.3rem 0.6rem;">€' + p.priceEur + '</span>' +
+              '</div>' +
+              '<div style="font-size: 0.85rem; color: var(--text-dark); margin-bottom: 0.75rem; background: #fafafa; padding: 0.5rem; border-radius: 6px; border: 1px solid #eee;">' +
+                '🎯 Target: <strong>' + esc(p.targetProgram) + '</strong><br>' +
+                '💼 Counselor Commission: <strong style="color:var(--green);">€' + p.advisorCommission + '</strong>' +
+              '</div>' +
+              '<p class="muted" style="font-size: 0.88rem; margin-bottom: 1rem; line-height: 1.5;">' + esc(p.description) + '</p>' +
+              '<strong style="font-size: 0.82rem; text-transform: uppercase; color: var(--blue-800); display: block; margin-bottom: 0.4rem;">Included Services (' + inclList.length + '):</strong>' +
+              '<ul style="margin: 0 0 1.25rem 0; padding-left: 1.25rem; font-size: 0.82rem; color: var(--text-dark); line-height: 1.6;">' +
+                inclList.map(function (inc) { return '<li>' + esc(inc) + '</li>'; }).join("") +
+              '</ul>' +
+            '</div>' +
+            '<div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--line); padding-top: 1rem;">' +
+              '<button class="btn btn-outline btn-sm btn-edit-pkg" data-id="' + p.id + '" style="flex: 1;">✏️ Edit</button>' +
+              '<button class="btn btn-outline btn-sm btn-delete-pkg" data-id="' + p.id + '" style="border-color: var(--red-500); color: var(--red-500);">🗑️ Delete</button>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join("");
+
+      // Bind Edit & Delete buttons
+      grid.querySelectorAll(".btn-edit-pkg").forEach(function (btn) {
+        btn.onclick = function () {
+          var pkgId = this.getAttribute("data-id");
+          var pkg = pkgs.filter(function (x) { return x.id === pkgId; })[0];
+          if (!pkg) return;
+          document.getElementById("pkg-modal-title").textContent = "Edit Package: " + pkg.name;
+          document.getElementById("pkg-edit-id").value = pkg.id;
+          document.getElementById("pkg-name").value = pkg.name;
+          document.getElementById("pkg-price").value = pkg.priceEur;
+          document.getElementById("pkg-commission").value = pkg.advisorCommission;
+          document.getElementById("pkg-program").value = pkg.targetProgram;
+          document.getElementById("pkg-desc").value = pkg.description;
+          document.getElementById("pkg-inclusions").value = Array.isArray(pkg.inclusions) ? pkg.inclusions.join("\n") : pkg.inclusions;
+          document.getElementById("package-editor-modal").style.display = "flex";
+        };
+      });
+
+      grid.querySelectorAll(".btn-delete-pkg").forEach(function (btn) {
+        btn.onclick = function () {
+          var pkgId = this.getAttribute("data-id");
+          if (!confirm("Are you sure you want to delete this package?")) return;
+          api("adminDeletePackage", { packageId: pkgId }).then(function () {
+            renderPackagesCards();
+            renderCounselorPackagesSummary();
+          }).catch(function (err) {
+            alert("Error deleting package: " + err.message);
+          });
+        };
+      });
+    }).catch(function (err) {
+      grid.innerHTML = '<div class="muted py-4">Error loading packages: ' + esc(err.message) + '</div>';
+    });
+  }
+
+  /* ============================================================
+     Super Admin Document Assignment Hub
+     ============================================================ */
+  function initSuperDocsTab() {
+    var select = document.getElementById("asgn-student-select");
+    if (!select) return;
+
+    select.innerHTML = '<option value="">-- Choose target student --</option>';
+    allUsers.filter(function (u) { return u.role === "student"; }).forEach(function (u) {
+      var opt = document.createElement("option");
+      opt.value = u.id;
+      opt.textContent = u.fullName + " (" + u.email + ")";
+      select.appendChild(opt);
+    });
+
+    var submitBtn = document.getElementById("btn-assign-doc-submit");
+    if (submitBtn) {
+      submitBtn.onclick = function () {
+        var targetUserId = select.value;
+        if (!targetUserId) {
+          alert("Please select a target student first.");
+          return;
+        }
+        var docType = document.getElementById("asgn-doc-type").value;
+        var notes = document.getElementById("asgn-notes").value.trim();
+        var fileInput = document.getElementById("asgn-file-input");
+        var stateSpan = document.getElementById("asgn-doc-state");
+
+        submitBtn.disabled = true;
+        stateSpan.textContent = "Uploading and assigning document...";
+
+        if (fileInput.files && fileInput.files[0]) {
+          var file = fileInput.files[0];
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var rawBase64 = e.target.result.split(",")[1] || "";
+            api("adminAssignDocumentToUser", {
+              targetUserId: targetUserId,
+              docType: docType,
+              fileName: file.name,
+              mimeType: file.type || "application/octet-stream",
+              base64: rawBase64,
+              notes: notes
+            }).then(function () {
+              submitBtn.disabled = false;
+              stateSpan.textContent = "✅ Document assigned successfully!";
+              fileInput.value = "";
+              document.getElementById("asgn-notes").value = "";
+              setTimeout(function () { stateSpan.textContent = ""; }, 4000);
+            }).catch(function (err) {
+              submitBtn.disabled = false;
+              stateSpan.textContent = "❌ Error: " + err.message;
+            });
+          };
+          reader.readAsDataURL(file);
+        } else {
+          // Fallback sample document
+          api("adminAssignDocumentToUser", {
+            targetUserId: targetUserId,
+            docType: docType,
+            fileName: docType.replace(/\s+/g, "_").toLowerCase() + "_official.pdf",
+            mimeType: "application/pdf",
+            base64: "RGVtbyBvZmZpY2lhbCBkb2N1bWVudCBhc3NpZ25lZCBieSBTdXBlciBBZG1pbi4=",
+            notes: notes
+          }).then(function () {
+            submitBtn.disabled = false;
+            stateSpan.textContent = "✅ Sample official document assigned successfully!";
+            document.getElementById("asgn-notes").value = "";
+            setTimeout(function () { stateSpan.textContent = ""; }, 4000);
+          }).catch(function (err) {
+            submitBtn.disabled = false;
+            stateSpan.textContent = "❌ Error: " + err.message;
+          });
+        }
+      };
+    }
   }
 
 })();
