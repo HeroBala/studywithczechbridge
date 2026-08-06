@@ -20,6 +20,7 @@
         <p>Manage applications, statuses, documents and messages.</p>
       </div>
       <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <button class="btn btn-primary btn-sm" id="header-add-task-btn" style="font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">📌 + Assign Task</button>
         <div id="admin-alerts-wrapper" style="position: relative; display: inline-block;">
           <button class="btn btn-outline btn-sm" id="alerts-toggle-btn" style="display: flex; align-items: center; gap: 0.4rem; border-color: var(--blue-700); color: var(--blue-700); position: relative; font-weight: bold;">
             🔔 Alerts <span id="alerts-count-badge" class="badge" style="background: var(--red-500); color: white; border-radius: 50%; font-size: 0.75rem; padding: 0.1rem 0.35rem; display: none;">0</span>
@@ -419,11 +420,14 @@
 
     <!-- Tab: Assign Documents -->
     <div class="panel admin-tab-panel hidden" id="panel-superdocs">
-      <div style="border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
-        <h2 style="margin: 0; color: var(--blue-900);">📄 Super Admin Document Assignment Hub</h2>
-        <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
-          Super Admins can assign official documents, forms, contract templates, or offer letters directly to any student/user.
-        </p>
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">📄 Super Admin Document Assignment & Repository Hub</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.9rem;">
+            Super Admins can assign official documents, forms, contract templates, or offer letters directly to any student/user and inspect all student uploads.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btn-docs-add-task">📌 + Assign Task for User</button>
       </div>
 
       <div class="panel mb-3" style="background: #fafafa; border: 1px solid var(--line); padding: 1.25rem;">
@@ -459,14 +463,35 @@
         <button class="btn btn-primary btn-sm" id="btn-assign-doc-submit">📤 Assign Document to Student</button>
         <span id="asgn-doc-state" class="muted" style="margin-left: 0.5rem; font-size: 0.85rem;"></span>
       </div>
+
+      <!-- Super Admin Document Repository Table -->
+      <div class="panel" style="margin-top: 1.5rem; padding: 1.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h3 style="margin:0; font-size:1.05rem; color:var(--blue-900);">📁 All Registered Users & Document Vault</h3>
+          <button class="btn btn-outline btn-sm" id="btn-refresh-all-docs" style="font-size:0.75rem;">↻ Refresh Documents</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data">
+            <thead>
+              <tr>
+                <th>Student / User</th><th>Email</th><th>Role</th><th>Document Category</th><th>File Name / Link</th><th>Date Uploaded</th><th>Legalization</th>
+              </tr>
+            </thead>
+            <tbody id="all-docs-body">
+              <tr><td colspan="7" class="muted">Loading document repository...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Tab 3: User & Agent Management -->
     <div class="panel admin-tab-panel hidden" id="panel-users">
-      <div class="panel-row">
-        <h2>👥 User &amp; Agent Assignment</h2>
+      <div class="panel-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h2>👥 User &amp; Agent Assignment &amp; Document Management</h2>
+        <button class="btn btn-primary btn-sm" id="btn-admin-add-task">📌 + Assign Task for User</button>
       </div>
-      <p class="muted" style="margin-top:-0.5rem; margin-bottom:1.5rem;">Super Admins and Admins can update roles and allocate dedicated agents to support students.</p>
+      <p class="muted" style="margin-top:-0.5rem; margin-bottom:1.5rem;">Super Admins and Admins can update roles, allocate dedicated agents, inspect user documents, and assign tasks.</p>
 
       <!-- Firebase Super Admin Instruction Card -->
       <div class="panel" style="background: linear-gradient(135deg, #fef8ec 0%, #fffbf0 100%); border-left: 4px solid var(--gold); margin-bottom: 1.5rem; padding: 1.25rem;">
@@ -492,11 +517,11 @@
         <table class="data">
           <thead>
             <tr>
-              <th>Full Name</th><th>Email</th><th>Current Role</th><th>Assigned Agent</th><th>Actions</th>
+              <th>Full Name</th><th>Email</th><th>Current Role</th><th>Assigned Agent</th><th>Documents</th><th>Actions</th>
             </tr>
           </thead>
           <tbody id="users-body">
-            <tr><td colspan="5" class="muted">Loading users...</td></tr>
+            <tr><td colspan="6" class="muted">Loading users...</td></tr>
           </tbody>
         </table>
       </div>
@@ -711,7 +736,8 @@
         <input type="text" id="m-note" maxlength="500" placeholder="e.g. Please upload a clearer passport scan or IELTS score card">
       </div>
       <button class="btn btn-primary btn-sm" id="m-save">Save Status &amp; Update Counselor</button>
-      <span id="m-save-state" class="muted" style="font-size:.85rem;"></span>
+      <button class="btn btn-outline btn-sm" id="m-assign-task" style="margin-left:0.5rem; border-color:var(--blue-700); color:var(--blue-700); font-weight:700;">📌 Assign Task to Student</button>
+      <span id="m-save-state" class="muted" style="margin-left:0.5rem; font-size:.85rem;"></span>
     </div>
 
     <div class="panel" style="box-shadow:none;">
@@ -722,6 +748,28 @@
     <div class="panel" style="box-shadow:none;margin-bottom:0;">
       <h2 style="font-size:1rem;">Documents</h2>
       <ul class="doc-list" id="m-docs"><li class="muted">Loading...</li></ul>
+    </div>
+  </div>
+</div>
+
+<!-- User Document Vault Modal -->
+<div class="modal-back" id="user-docs-modal">
+  <div class="modal" style="max-width: 680px;">
+    <button class="modal-close" id="user-docs-close">✕</button>
+    <h2 id="ud-title">📄 User Document Vault</h2>
+    <p id="ud-subtitle" class="muted" style="margin-top:-0.3rem; margin-bottom:1.2rem; font-size:0.88rem;"></p>
+
+    <div class="table-wrap mb-2">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Document Category</th><th>File Name</th><th>Uploaded / Assigned</th><th>Legalization</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="ud-list-body">
+          <tr><td colspan="5" class="muted">Loading documents...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

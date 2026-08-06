@@ -100,6 +100,60 @@
       if (e.target === this) closeModal();
     });
     document.getElementById("m-save").addEventListener("click", saveStatus);
+
+    var headerAddTaskBtn = document.getElementById("header-add-task-btn");
+    if (headerAddTaskBtn) {
+      headerAddTaskBtn.addEventListener("click", function () {
+        switchTab("taskboard");
+        if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.assignTaskToUser) {
+          TaskBoardComponent.assignTaskToUser("");
+        }
+      });
+    }
+
+    var adminAddTaskBtn = document.getElementById("btn-admin-add-task");
+    if (adminAddTaskBtn) {
+      adminAddTaskBtn.addEventListener("click", function () {
+        switchTab("taskboard");
+        if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.assignTaskToUser) {
+          TaskBoardComponent.assignTaskToUser("");
+        }
+      });
+    }
+
+    var docsAddTaskBtn = document.getElementById("btn-docs-add-task");
+    if (docsAddTaskBtn) {
+      docsAddTaskBtn.addEventListener("click", function () {
+        switchTab("taskboard");
+        if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.assignTaskToUser) {
+          TaskBoardComponent.assignTaskToUser("");
+        }
+      });
+    }
+
+    var modalAssignTaskBtn = document.getElementById("m-assign-task");
+    if (modalAssignTaskBtn) {
+      modalAssignTaskBtn.addEventListener("click", function () {
+        if (!currentApp) return;
+        closeModal();
+        switchTab("taskboard");
+        if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.assignTaskToUser) {
+          TaskBoardComponent.assignTaskToUser(currentApp.userId || currentApp.id);
+        }
+      });
+    }
+
+    var userDocsClose = document.getElementById("user-docs-close");
+    if (userDocsClose) {
+      userDocsClose.addEventListener("click", function () {
+        document.getElementById("user-docs-modal").classList.remove("show");
+      });
+    }
+
+    var refreshDocsBtn = document.getElementById("btn-refresh-all-docs");
+    if (refreshDocsBtn) {
+      refreshDocsBtn.addEventListener("click", loadAllDocumentsRepository);
+    }
   });
 
   function switchTab(tabName) {
@@ -765,7 +819,7 @@
     if (!body) return;
 
     if (!allUsers.length) {
-      body.innerHTML = '<tr><td colspan="5" class="muted">No users found.</td></tr>';
+      body.innerHTML = '<tr><td colspan="6" class="muted">No users found.</td></tr>';
       return;
     }
 
@@ -815,8 +869,40 @@
         });
       });
 
+      var assignTaskBtn = document.createElement("button");
+      assignTaskBtn.className = "btn btn-outline btn-sm";
+      assignTaskBtn.textContent = "📌 Assign Task";
+      assignTaskBtn.style.padding = "0.2rem 0.5rem";
+      assignTaskBtn.style.fontSize = "0.75rem";
+      assignTaskBtn.style.marginLeft = "0.4rem";
+      assignTaskBtn.style.borderColor = "var(--blue-700)";
+      assignTaskBtn.style.color = "var(--blue-700)";
+      
+      assignTaskBtn.addEventListener("click", function () {
+        switchTab("taskboard");
+        if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.assignTaskToUser) {
+          TaskBoardComponent.assignTaskToUser(u.id);
+        }
+      });
+
       actionsTd.appendChild(roleSelect);
       actionsTd.appendChild(saveRoleBtn);
+      actionsTd.appendChild(assignTaskBtn);
+
+      // Documents Column
+      var docsTd = document.createElement("td");
+      var viewDocsBtn = document.createElement("button");
+      viewDocsBtn.className = "btn btn-outline btn-sm";
+      viewDocsBtn.style.fontSize = "0.75rem";
+      viewDocsBtn.style.padding = "0.2rem 0.55rem";
+      viewDocsBtn.style.borderColor = "var(--purple-600)";
+      viewDocsBtn.style.color = "var(--purple-700)";
+      viewDocsBtn.style.fontWeight = "700";
+      viewDocsBtn.textContent = "📄 View Documents";
+      viewDocsBtn.addEventListener("click", function () {
+        openUserDocsModal(u);
+      });
+      docsTd.appendChild(viewDocsBtn);
 
       // Agent Assignee Dropdown for Students
       var assignedAgentDisplay = "";
@@ -860,8 +946,10 @@
         "<td>" + esc(u.email) + "</td>" +
         "<td><span class='badge-role " + u.role + "'>" + u.role + "</span></td>" +
         "<td>" + assignedAgentDisplay + "</td>" +
+        "<td></td>" +
         "<td></td>";
 
+      tr.children[4].appendChild(viewDocsBtn);
       tr.lastElementChild.appendChild(actionsTd);
       
       // Bind inline dynamically compiled select events since we used outerHTML above
@@ -880,6 +968,43 @@
       }
 
       body.appendChild(tr);
+    });
+  }
+
+  function openUserDocsModal(u) {
+    var modal = document.getElementById("user-docs-modal");
+    if (!modal) return;
+
+    modal.classList.add("show");
+    document.getElementById("ud-title").textContent = "📄 User Document Vault: " + (u.fullName || u.email);
+    document.getElementById("ud-subtitle").textContent = "Email: " + u.email + " | Role: " + (u.role || "student") + " | ID: " + u.id;
+
+    var body = document.getElementById("ud-list-body");
+    body.innerHTML = '<tr><td colspan="5" class="muted">Fetching user documents...</td></tr>';
+
+    api("adminListUserDocuments", { userId: u.id }).then(function (res) {
+      var docs = res.documents || [];
+      if (!docs.length) {
+        body.innerHTML = '<tr><td colspan="5" class="muted">No documents uploaded or assigned for this user yet.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = docs.map(function (d) {
+        var fileLink = d.fileUrl || d.url || "#";
+        var fileName = d.fileName ? esc(d.fileName) : "View File";
+        var dateStr = fmtDate(d.uploadedAt || d.createdAt);
+        var legState = d.legalizationState || "None";
+
+        return '<tr>' +
+          '<td><strong>' + esc(d.docType || "Official Document") + '</strong></td>' +
+          '<td><a href="' + esc(fileLink) + '" target="_blank" style="color:var(--blue-700); font-weight:600;">📄 ' + fileName + '</a></td>' +
+          '<td>' + dateStr + '</td>' +
+          '<td><span class="badge" style="font-size:0.75rem;">' + esc(legState) + '</span></td>' +
+          '<td><a href="' + esc(fileLink) + '" target="_blank" class="btn btn-dark btn-sm" style="padding:0.2rem 0.5rem; font-size:0.75rem;">⬇ Download / View</a></td>' +
+        '</tr>';
+      }).join("");
+    }).catch(function (err) {
+      body.innerHTML = '<tr><td colspan="5" class="muted error">Error loading documents: ' + esc(err.message) + '</td></tr>';
     });
   }
 
@@ -1729,17 +1854,55 @@
   /* ============================================================
      Super Admin Document Assignment Hub
      ============================================================ */
+  function loadAllDocumentsRepository() {
+    var tbody = document.getElementById("all-docs-body");
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="7" class="muted">Loading document repository...</td></tr>';
+
+    api("adminListAllDocuments").then(function (res) {
+      var docs = res.documents || [];
+      if (!docs.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="muted">No documents recorded in repository.</td></tr>';
+        return;
+      }
+
+      var userMap = {};
+      allUsers.forEach(function (u) { userMap[u.id] = u; });
+
+      tbody.innerHTML = docs.map(function (d) {
+        var u = userMap[d.userId] || { fullName: d.userName || "Student User", email: d.userEmail || d.userId || "", role: "student" };
+        var fileLink = d.fileUrl || d.url || "#";
+        var fileName = d.fileName ? esc(d.fileName) : "View Document";
+        var dateStr = fmtDate(d.uploadedAt || d.createdAt);
+
+        return '<tr>' +
+          '<td><strong>' + esc(u.fullName) + '</strong></td>' +
+          '<td><span class="muted" style="font-size:0.8rem;">' + esc(u.email) + '</span></td>' +
+          '<td><span class="badge-role ' + esc(u.role) + '" style="font-size:0.7rem;">' + esc(u.role) + '</span></td>' +
+          '<td><strong>' + esc(d.docType || "Official Document") + '</strong></td>' +
+          '<td><a href="' + esc(fileLink) + '" target="_blank" style="color:var(--blue-700); font-weight:600;">📄 ' + fileName + '</a></td>' +
+          '<td>' + dateStr + '</td>' +
+          '<td><span class="badge" style="font-size:0.75rem;">' + esc(d.legalizationState || "None") + '</span></td>' +
+        '</tr>';
+      }).join("");
+    }).catch(function (err) {
+      tbody.innerHTML = '<tr><td colspan="7" class="muted error">Error loading documents: ' + esc(err.message) + '</td></tr>';
+    });
+  }
+
   function initSuperDocsTab() {
     var select = document.getElementById("asgn-student-select");
     if (!select) return;
 
-    select.innerHTML = '<option value="">-- Choose target student --</option>';
-    allUsers.filter(function (u) { return u.role === "student"; }).forEach(function (u) {
+    select.innerHTML = '<option value="">-- Choose target student / user --</option>';
+    allUsers.forEach(function (u) {
       var opt = document.createElement("option");
       opt.value = u.id;
-      opt.textContent = u.fullName + " (" + u.email + ")";
+      opt.textContent = (u.fullName || u.email) + " (" + (u.role || "user") + " — " + u.email + ")";
       select.appendChild(opt);
     });
+
+    loadAllDocumentsRepository();
 
     var submitBtn = document.getElementById("btn-assign-doc-submit");
     if (submitBtn) {
@@ -1774,6 +1937,7 @@
               stateSpan.textContent = "✅ Document assigned successfully!";
               fileInput.value = "";
               document.getElementById("asgn-notes").value = "";
+              loadAllDocumentsRepository();
               setTimeout(function () { stateSpan.textContent = ""; }, 4000);
             }).catch(function (err) {
               submitBtn.disabled = false;
@@ -1794,6 +1958,7 @@
             submitBtn.disabled = false;
             stateSpan.textContent = "✅ Sample official document assigned successfully!";
             document.getElementById("asgn-notes").value = "";
+            loadAllDocumentsRepository();
             setTimeout(function () { stateSpan.textContent = ""; }, 4000);
           }).catch(function (err) {
             submitBtn.disabled = false;

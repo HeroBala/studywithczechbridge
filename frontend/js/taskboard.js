@@ -56,7 +56,7 @@ var TaskBoardComponent = (function () {
   var _modalEl = null;
   var _editingTask = null;
 
-  function renderModal() {
+  function renderModal(targetUserId) {
     if (_modalEl) {
       document.body.removeChild(_modalEl);
       _modalEl = null;
@@ -67,25 +67,57 @@ var TaskBoardComponent = (function () {
     _modalEl.style.zIndex = "2000";
 
     var isEdit = !!_editingTask;
-    var title = isEdit ? "✏️ Edit Task" : "📝 Assign New Task";
+    var title = isEdit ? "✏️ Edit Task" : "📝 Assign Task to Any User";
 
     var modalHtml = 
-      '<div class="modal" style="max-width: 500px; padding: 2rem; position: relative;">' +
+      '<div class="modal" style="max-width: 540px; padding: 2rem; position: relative;">' +
         '<button class="modal-close" id="tb-modal-close" style="position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; font-size: 1.2rem; cursor: pointer;">✕</button>' +
-        '<h2 style="margin-bottom: 1.2rem; color: var(--blue-900); font-weight: 800; border-bottom: 2px solid var(--line); padding-bottom: 0.5rem;">' + title + '</h2>' +
+        '<h2 style="margin-bottom: 0.5rem; color: var(--blue-900); font-weight: 800; border-bottom: 2px solid var(--line); padding-bottom: 0.5rem;">' + title + '</h2>' +
+        '<p class="muted" style="font-size: 0.82rem; margin-bottom: 1.2rem;">Super Admin can assign custom tasks with due dates &amp; instant email notifications to any student, counselor, or admin.</p>' +
         '<form id="tb-task-form">' +
           '<div class="field" style="margin-bottom: 1rem;">' +
-            '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Target Student</label>' +
+            '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Target User (Student, Counselor, or Admin)</label>' +
             '<select id="tb-task-student" required style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.5rem; background: var(--white);"' + (isEdit ? " disabled" : "") + '>';
 
     if (!isEdit) {
-      modalHtml += '<option value="">-- Select a Student --</option>';
-      _students.forEach(function (s) {
-        modalHtml += '<option value="' + s.id + '">' + esc(s.fullName) + ' (' + esc(s.email) + ')</option>';
-      });
+      modalHtml += '<option value="">-- Select Target User --</option>';
+      
+      // Group by roles
+      var stus = _users.filter(function (u) { return u.role === "student"; });
+      var ags = _users.filter(function (u) { return u.role === "agent"; });
+      var adm = _users.filter(function (u) { return u.role === "admin" || u.role === "super_admin"; });
+
+      if (stus.length) {
+        modalHtml += '<optgroup label="🎓 Students (' + stus.length + ')">';
+        stus.forEach(function (u) {
+          var sel = (targetUserId && u.id === targetUserId) ? " selected" : "";
+          modalHtml += '<option value="' + u.id + '"' + sel + ' data-email="' + esc(u.email) + '" data-name="' + esc(u.fullName) + '">' + esc(u.fullName) + ' (' + esc(u.email) + ')</option>';
+        });
+        modalHtml += '</optgroup>';
+      }
+
+      if (ags.length) {
+        modalHtml += '<optgroup label="💼 Counselors & Agents (' + ags.length + ')">';
+        ags.forEach(function (u) {
+          var sel = (targetUserId && u.id === targetUserId) ? " selected" : "";
+          modalHtml += '<option value="' + u.id + '"' + sel + ' data-email="' + esc(u.email) + '" data-name="' + esc(u.fullName) + '">' + esc(u.fullName) + ' (' + esc(u.email) + ') — Counselor</option>';
+        });
+        modalHtml += '</optgroup>';
+      }
+
+      if (adm.length) {
+        modalHtml += '<optgroup label="🛡️ Administrators (' + adm.length + ')">';
+        adm.forEach(function (u) {
+          var sel = (targetUserId && u.id === targetUserId) ? " selected" : "";
+          modalHtml += '<option value="' + u.id + '"' + sel + ' data-email="' + esc(u.email) + '" data-name="' + esc(u.fullName) + '">' + esc(u.fullName) + ' (' + esc(u.email) + ') — Admin</option>';
+        });
+        modalHtml += '</optgroup>';
+      }
     } else {
       modalHtml += '<option value="' + _editingTask.assignedTo + '" selected>' + esc(_editingTask.assignedToName) + '</option>';
     }
+
+    var defaultDate = isEdit && _editingTask.dueDate ? _editingTask.dueDate : new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0];
 
     modalHtml += 
             '</select>' +
@@ -93,15 +125,30 @@ var TaskBoardComponent = (function () {
 
           '<div class="field" style="margin-bottom: 1rem;">' +
             '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Task Title</label>' +
-            '<input type="text" id="tb-task-title" required placeholder="e.g. Upload high school certificate" value="' + (isEdit ? esc(_editingTask.title) : "") + '" style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.5rem;">' +
+            '<input type="text" id="tb-task-title" required placeholder="e.g. Complete Sworn Document Translation / Verify Passport" value="' + (isEdit ? esc(_editingTask.title) : "") + '" style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.5rem;">' +
           '</div>' +
 
           '<div class="field" style="margin-bottom: 1rem;">' +
-            '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Task Description</label>' +
-            '<textarea id="tb-task-desc" rows="3" placeholder="Provide instructions for the student..." style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.5rem; font-family:inherit;">' + (isEdit ? esc(_editingTask.description || "") : "") + '</textarea>' +
+            '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Task Instructions &amp; Notes</label>' +
+            '<textarea id="tb-task-desc" rows="3" placeholder="Detailed instructions for the user..." style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.5rem; font-family:inherit;">' + (isEdit ? esc(_editingTask.description || "") : "") + '</textarea>' +
           '</div>' +
 
-          '<div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">' +
+          '<div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">' +
+            '<div class="field">' +
+              '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Priority Level</label>' +
+              '<select id="tb-task-priority" required style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.5rem; background: var(--white);">' +
+                '<option value="high"' + (isEdit && _editingTask.priority === "high" ? " selected" : "") + '>🚨 High Priority</option>' +
+                '<option value="normal"' + (!isEdit || _editingTask.priority === "normal" ? " selected" : "") + '>🔵 Normal Priority</option>' +
+                '<option value="low"' + (isEdit && _editingTask.priority === "low" ? " selected" : "") + '>🟢 Low Priority</option>' +
+              '</select>' +
+            '</div>' +
+            '<div class="field">' +
+              '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Due Date</label>' +
+              '<input type="date" id="tb-task-duedate" value="' + defaultDate + '" style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.45rem; background: var(--white);">' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">' +
             '<div class="field">' +
               '<label style="font-weight:700; display:block; margin-bottom:0.3rem;">Workflow Phase</label>' +
               '<select id="tb-task-stage" required style="width:100%; border:1px solid var(--line); border-radius:6px; padding:0.5rem; background: var(--white);">' +
@@ -119,9 +166,17 @@ var TaskBoardComponent = (function () {
             '</div>' +
           '</div>' +
 
+          (!isEdit ? 
+            '<div style="background: #f0f7ff; border: 1px solid #bae6fd; padding: 0.75rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.85rem; color: #0369a1;">' +
+              '<label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; cursor: pointer;">' +
+                '<input type="checkbox" id="tb-notify-email" checked style="width: 1.1rem; height: 1.1rem; accent-color: var(--blue-700);">' +
+                '📧 Send instant email notification to assigned user (from info@studywithczechbridge.com)' +
+              '</label>' +
+            '</div>' : '') +
+
           '<div style="text-align:right; border-top:1px solid var(--line); padding-top:1rem; display:flex; justify-content:flex-end; gap:0.5rem;">' +
             '<button type="button" class="btn btn-outline btn-sm" id="tb-modal-cancel">Cancel</button>' +
-            '<button type="submit" class="btn btn-primary btn-sm" id="tb-modal-submit">' + (isEdit ? "Save Changes" : "Assign Task") + '</button>' +
+            '<button type="submit" class="btn btn-primary btn-sm" id="tb-modal-submit">' + (isEdit ? "Save Changes" : "Assign Task & Send Alert") + '</button>' +
           '</div>' +
         '</form>' +
       '</div>';
@@ -152,20 +207,25 @@ var TaskBoardComponent = (function () {
     var studSelect = document.getElementById("tb-task-student");
     var titleInput = document.getElementById("tb-task-title");
     var descInput = document.getElementById("tb-task-desc");
+    var prioritySelect = document.getElementById("tb-task-priority");
+    var dueDateInput = document.getElementById("tb-task-duedate");
     var stageSelect = document.getElementById("tb-task-stage");
     var statusSelect = document.getElementById("tb-task-status");
+    var notifyCheck = document.getElementById("tb-notify-email");
     var submitBtn = document.getElementById("tb-modal-submit");
 
-    var studentId = studSelect.value;
-    var studentName = studSelect.options[studSelect.selectedIndex].text.split(" (")[0];
+    var targetUserId = studSelect.value;
+    var targetUserOpt = studSelect.options[studSelect.selectedIndex];
+    var targetUserName = targetUserOpt ? (targetUserOpt.getAttribute("data-name") || targetUserOpt.text.split(" (")[0]) : "";
+    var targetUserEmail = targetUserOpt ? (targetUserOpt.getAttribute("data-email") || "") : "";
 
-    if (!studentId || !titleInput.value.trim()) {
-      alert("Please fill in all required fields.");
+    if (!targetUserId || !titleInput.value.trim()) {
+      alert("Please select a target user and enter a task title.");
       return;
     }
 
     submitBtn.disabled = true;
-    submitBtn.textContent = "Processing...";
+    submitBtn.textContent = "Processing & Notifying...";
 
     if (_editingTask) {
       // Edit mode
@@ -174,7 +234,9 @@ var TaskBoardComponent = (function () {
         title: titleInput.value.trim(),
         description: descInput.value.trim(),
         stage: stageSelect.value,
-        status: statusSelect.value
+        status: statusSelect.value,
+        priority: prioritySelect ? prioritySelect.value : "normal",
+        dueDate: dueDateInput ? dueDateInput.value : ""
       }).then(function () {
         closeModal();
         reloadTasks();
@@ -185,11 +247,15 @@ var TaskBoardComponent = (function () {
       });
     } else {
       // Create mode
+      var shouldNotify = notifyCheck ? notifyCheck.checked : true;
       api("adminCreateTask", {
         title: titleInput.value.trim(),
         description: descInput.value.trim(),
-        assignedTo: studentId,
-        assignedToName: studentName,
+        assignedTo: targetUserId,
+        assignedToName: targetUserName,
+        assignedToEmail: shouldNotify ? targetUserEmail : "",
+        priority: prioritySelect ? prioritySelect.value : "normal",
+        dueDate: dueDateInput ? dueDateInput.value : "",
         stage: stageSelect.value,
         status: statusSelect.value
       }).then(function () {
@@ -869,6 +935,10 @@ var TaskBoardComponent = (function () {
           _container.innerHTML = '<div class="notice error">Failed to load milestones: ' + esc(err.message) + '</div>';
         });
       });
+    },
+    assignTaskToUser: function (userId) {
+      _editingTask = null;
+      renderModal(userId);
     }
   };
 })();

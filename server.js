@@ -23,7 +23,7 @@ let emailConfig = {
   pass: process.env.EMAIL_SMTP_PASS || '',
   fromEmail: process.env.EMAIL_FROM || 'info@studywithczechbridge.com',
   fromName: process.env.EMAIL_FROM_NAME || 'StudyCzechBridge Admissions',
-  adminEmail: process.env.EMAIL_ADMIN_NOTIFY || '1997herobala@gmail.com',
+  adminEmail: process.env.EMAIL_ADMIN_NOTIFY || 'info@studywithczechbridge.com',
   notifyOnLogin: true,
   notifyOnAdmissionUpdate: true,
   notifyOnDocumentUpload: true
@@ -396,6 +396,57 @@ app.post('/api/notify-counselor-assigned', async (req, res) => {
   }
 
   res.json({ ok: true, studentAlert: resultStudent, counselorAlert: resultCounselor });
+});
+
+// Route: Super Admin Task Assignment Notification
+app.post('/api/notify-task-assigned', async (req, res) => {
+  const { toEmail, toName, taskTitle, taskDescription, dueDate, priority, assignedByName } = req.body;
+  const timeStr = new Date().toLocaleString();
+
+  let result = null;
+  if (toEmail) {
+    const subject = `📌 New Task Assigned to You: ${taskTitle || 'Admissions Task'}`;
+    const text = `Dear ${toName || 'User'},\n\nSuper Admin (${assignedByName || 'Admissions Director'}) has assigned a new task to your account on StudyCzechBridge.\n\nTask Title: ${taskTitle}\nDescription: ${taskDescription || 'No description provided'}\nPriority: ${priority || 'Normal'}\nDue Date: ${dueDate || 'As soon as possible'}\nAssigned At: ${timeStr}\n\nPlease log into your portal to view and update task progress.\n\nBest regards,\nStudyCzechBridge Admissions Command Center\ninfo@studywithczechbridge.com`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 10px; background: #ffffff;">
+        <div style="background: #14315e; color: #ffffff; padding: 18px 20px; border-radius: 8px 8px 0 0; text-align: center;">
+          <h2 style="margin: 0; font-size: 1.35rem;">📌 Super Admin Task Assignment</h2>
+        </div>
+        <div style="padding: 20px 0;">
+          <p style="color: #334155; font-size: 1rem;">Dear <strong>${toName || 'User'}</strong>,</p>
+          <p style="color: #334155; line-height: 1.5;">Super Admin (<strong>${assignedByName || 'Admissions Command Center'}</strong>) has assigned a new task to your workspace:</p>
+          
+          <div style="background: #f8fafc; border-left: 5px solid #2563eb; padding: 16px; border-radius: 6px; margin: 18px 0; border: 1px solid #e2e8f0; border-left-width: 5px;">
+            <div style="font-weight: bold; color: #1e3a8a; font-size: 1.15rem; margin-bottom: 6px;">${taskTitle || 'Untitled Task'}</div>
+            ${taskDescription ? `<div style="color: #475569; font-size: 0.95rem; margin-bottom: 10px;">${taskDescription}</div>` : ''}
+            <div style="display: flex; gap: 15px; font-size: 0.88rem; color: #334155; border-top: 1px solid #cbd5e1; padding-top: 10px; flex-wrap: wrap;">
+              <span>🚨 <strong>Priority:</strong> <span style="text-transform: capitalize; color: ${priority === 'high' ? '#dc2626' : '#2563eb'}; font-weight: bold;">${priority || 'Normal'}</span></span>
+              <span>📅 <strong>Due Date:</strong> ${dueDate || 'Flexible'}</span>
+            </div>
+          </div>
+
+          <p style="color: #334155;">Please complete or update status on this task in your StudyCzechBridge dashboard.</p>
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="/admin.html" style="background: #14315e; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; display: inline-block;">Open Command Center →</a>
+          </div>
+        </div>
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; text-align: center; color: #94a3b8; font-size: 0.8rem;">
+          StudyCzechBridge · Veveří, Brno, Czech Republic · info@studywithczechbridge.com
+        </div>
+      </div>
+    `;
+
+    result = await sendEmail({
+      to: toEmail,
+      subject,
+      text,
+      html,
+      type: 'task_assigned'
+    });
+  }
+
+  res.json({ ok: true, alert: result });
 });
 
 // Route to simulate sending a welcome email

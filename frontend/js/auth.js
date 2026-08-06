@@ -13,7 +13,7 @@ function requireLogin() {
 function requireAdmin() {
   var s = requireLogin();
   if (s) {
-    var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "agent";
+    var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email));
     if (!isStaff) {
       location.href = "dashboard.html";
       return null;

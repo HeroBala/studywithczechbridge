@@ -64,44 +64,63 @@
 
   function buildFooter() {
     var year = new Date().getFullYear();
+    var mapUrl = "https://maps.app.goo.gl/wvngYMsLtrz4feYH8";
+    var embedMapUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d167058.0772718104!2d16.51659914757304!3d49.19506013661148!2m3!1f0!0!f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471294397f358361%3A0xa70d11790776f29e!2sBrno%2C%20Czechia!5e0!3m2!1sen!2sbd!4v1710000000000!5m2!1sen!2sbd";
+
     return (
-      '<div class="container">' +
+      '<div class="footer-map-container">' +
+        '<iframe class="footer-map-iframe" src="' + embedMapUrl + '" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Study with Czech Bridge Location Map"></iframe>' +
+        '<div class="footer-map-overlay"></div>' +
+      '</div>' +
+
+      '<div class="container footer-glass-card">' +
+        '<div class="footer-top-bar">' +
+          '<div class="footer-location-badge">' +
+            '<span class="pulse-dot"></span> 📍 <strong>Study with Czech Bridge</strong> · Brno, Czech Republic' +
+          '</div>' +
+          '<a class="btn-map-direct" href="' + mapUrl + '" target="_blank" rel="noopener">' +
+            '🗺️ Open Location in Google Maps ↗' +
+          '</a>' +
+        '</div>' +
+
         '<div class="footer-grid">' +
-          "<div>" +
+          '<div>' +
             '<img src="assets/logo-mark.svg" alt="CzechBridge logo" class="footer-logo">' +
-            "<h4>StudyCzechBridge</h4>" +
-            "<p>Based in Brno, Czech Republic — providing remote guidance and support to students in Bangladesh planning to study in Europe.</p>" +
-          "</div>" +
-          "<div>" +
-            "<h4>Quick Links</h4>" +
-            "<ul>" +
+            '<h4>StudyCzechBridge</h4>' +
+            '<p>Based in Brno, Czech Republic — providing remote guidance and support to students in Bangladesh planning to study in Europe.</p>' +
+          '</div>' +
+          '<div>' +
+            '<h4>Quick Links</h4>' +
+            '<ul>' +
               '<li><a href="about.html">About Us</a></li>' +
               '<li><a href="services.html">Services</a></li>' +
               '<li><a href="programs.html">Programs</a></li>' +
               '<li><a href="process.html">Application Process</a></li>' +
-            "</ul>" +
-          "</div>" +
-          "<div>" +
-            "<h4>Students</h4>" +
-            "<ul>" +
+            '</ul>' +
+          '</div>' +
+          '<div>' +
+            '<h4>Students</h4>' +
+            '<ul>' +
               '<li><a href="register.html">Create Account</a></li>' +
               '<li><a href="login.html">Login</a></li>' +
               '<li><a href="dashboard.html">My Dashboard</a></li>' +
               '<li><a href="contact.html">Free Consultation</a></li>' +
-            "</ul>" +
-          "</div>" +
-          "<div>" +
-            "<h4>Contact</h4>" +
-            "<ul>" +
+            '</ul>' +
+          '</div>' +
+          '<div>' +
+            '<h4>Contact &amp; Location</h4>' +
+            '<ul>' +
               '<li>📍 Brno, Czech Republic</li>' +
+              '<li>🗺️ <a href="' + mapUrl + '" target="_blank" rel="noopener" style="text-decoration:underline; font-weight:600;">Google Maps Location</a></li>' +
               '<li>✉️ <a href="mailto:info@studywithczechbridge.com">info@studywithczechbridge.com</a></li>' +
               '<li>✉️ <a href="mailto:admission@studywithczechbridge.com">admission@studywithczechbridge.com</a></li>' +
               '<li>✉️ <a href="mailto:support@studywithczechbridge.com">support@studywithczechbridge.com</a></li>' +
-            "</ul>" +
-          "</div>" +
-        "</div>" +
-        '<div class="footer-bottom">© ' + year + " StudyCzechBridge. All rights reserved.</div>" +
-      "</div>"
+            '</ul>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="footer-bottom">© ' + year + ' StudyCzechBridge. All rights reserved.</div>' +
+      '</div>'
     );
   }
 
@@ -109,7 +128,10 @@
     var header = document.querySelector(".site-header");
     var footer = document.querySelector(".site-footer");
     if (header) header.innerHTML = buildHeader();
-    if (footer) footer.innerHTML = buildFooter();
+    if (footer) {
+      footer.classList.add("site-footer-map");
+      footer.innerHTML = buildFooter();
+    }
 
     var toggle = document.getElementById("nav-toggle");
     if (toggle) {
