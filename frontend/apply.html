@@ -106,36 +106,64 @@
         </fieldset>
 
         <fieldset>
-          <legend>🏛️ Study Preference</legend>
+          <legend>🌍 Destination Country &amp; Application Track</legend>
           <div class="form-row">
-            <div class="field"><label for="a-program">Desired Program *</label>
-              <select id="a-program" required>
-                <option value="">— Select a program —</option>
-                <option>Business &amp; Economics</option>
-                <option>Computer Science &amp; IT</option>
-                <option>Engineering &amp; Technology</option>
-                <option>Agriculture &amp; Food Science</option>
-                <option>Medicine &amp; Health Sciences</option>
-                <option>Social Sciences &amp; Humanities</option>
-                <option>Not sure — need guidance</option>
+            <div class="field"><label for="a-targetCountry">Target Country *</label>
+              <select id="a-targetCountry" required>
+                <option value="">— Select Destination —</option>
+                <option value="Czech Republic">🇨🇿 Czech Republic (Study &amp; University Admissions)</option>
+                <option value="Malaysia">🇲🇾 Malaysia (Work Permit &amp; ESD Employment Pass)</option>
+                <option value="Serbia">🇷🇸 Serbia (Work Permit &amp; Temporary Residence)</option>
+                <option value="Poland">🇵🇱 Poland (Study &amp; Work Visa)</option>
+                <option value="Hungary">🇭🇺 Hungary (Study &amp; Work Visa)</option>
+                <option value="Slovakia">🇸🇰 Slovakia (Study &amp; Work Visa)</option>
               </select></div>
-            <div class="field"><label for="a-level">Study Level *</label>
-              <select id="a-level" required>
-                <option value="">— Select —</option>
-                <option>Bachelor's</option><option>Master's</option><option>Foundation / Language Year</option>
+            <div class="field"><label for="a-serviceTrack">Service Track *</label>
+              <select id="a-serviceTrack" required>
+                <option value="">— Select Service Track —</option>
+                <option value="University Degree (Bachelor/Master)">University Degree (Bachelor / Master)</option>
+                <option value="Foundation & Language Year">Foundation &amp; Czech Language Year</option>
+                <option value="Work Permit / Employment Visa">Work Permit / Employment Visa</option>
+                <option value="Document Super-Legalization & Nostrification">Document Super-Legalization &amp; Nostrification</option>
               </select></div>
           </div>
           <div class="form-row">
-            <div class="field"><label for="a-intake">Preferred Intake *</label>
+            <div class="field"><label for="a-program">Program / Job Field *</label>
+              <select id="a-program" required>
+                <option value="">— Select Field / Sector —</option>
+                <option>Computer Science &amp; IT / Software</option>
+                <option>Business &amp; Economics / Management</option>
+                <option>Engineering &amp; Construction / Technology</option>
+                <option>Hospitality &amp; Tourism / Food Service</option>
+                <option>Logistics &amp; Supply Chain / Factory</option>
+                <option>Agriculture &amp; Food Science</option>
+                <option>Medicine &amp; Healthcare</option>
+                <option>General Skilled Labour / Other</option>
+              </select></div>
+            <div class="field"><label for="a-level">Level / Category *</label>
+              <select id="a-level" required>
+                <option value="">— Select —</option>
+                <option>Bachelor's Degree</option>
+                <option>Master's Degree</option>
+                <option>Foundation / Preparatory</option>
+                <option>Skilled Work Permit (Professional/ESD)</option>
+                <option>General Work Permit (NES)</option>
+              </select></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="a-intake">Preferred Target Date / Intake *</label>
               <select id="a-intake" required>
                 <option value="">— Select —</option>
-                <option>September 2026</option><option>February 2027</option>
-                <option>September 2027</option><option>Flexible</option>
+                <option>Immediate / Next Available Slot</option>
+                <option>September 2026</option>
+                <option>February 2027</option>
+                <option>September 2027</option>
+                <option>Flexible</option>
               </select></div>
             <div class="field"></div>
           </div>
           <div class="field"><label for="a-notes">Anything else we should know?</label>
-            <textarea id="a-notes" maxlength="2000" placeholder="Budget range, preferred city, scholarship interest, questions..."></textarea></div>
+            <textarea id="a-notes" maxlength="2000" placeholder="Budget range, work experience, preferred city, visa history, specific questions..."></textarea></div>
         </fieldset>
 
         <button type="submit" class="btn btn-primary btn-block" id="a-submit">Submit Application</button>

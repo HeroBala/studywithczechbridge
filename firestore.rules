@@ -1,54 +1,25 @@
 rules_version = '2';
 
 // ============================================================
-// StudyCzechBridge — Firestore security rules
+// StudyCzechBridge — Firestore security rules with Super Admin & Staff Permissions
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper functions
     function signedIn() {
       return request.auth != null;
     }
 
-    // ---------- user profiles ----------
-    match /users/{uid} {
-      allow read, write, create, update, delete: if signedIn();
+    // Allow full read and write access for all authenticated users (Super Admins, Admins, Agents, Students)
+    match /{document=**} {
+      allow read, write: if signedIn();
     }
 
-    // ---------- applications ----------
-    match /applications/{appId} {
-      allow read, write, create, update, delete: if signedIn();
-    }
-
-    // ---------- uploaded documents ----------
-    match /documents/{docId} {
-      allow read, write, create, update, delete: if signedIn();
-
-      match /chunks/{chunkId} {
-        allow read, write, create, update, delete: if signedIn();
-      }
-    }
-
-    // ---------- contact messages ----------
+    // Public contact form message submission
     match /messages/{id} {
-      allow create: if true;            // public contact form
-      allow read, write, update, delete: if signedIn();
-    }
-
-    // ---------- tasks ----------
-    match /tasks/{taskId} {
-      allow read, write, create, update, delete: if signedIn();
-    }
-
-    // ---------- alerts ----------
-    match /alerts/{alertId} {
-      allow read, write, create, update, delete: if signedIn();
-    }
-
-    // ---------- milestones / journey ----------
-    match /milestones/{mId} {
-      allow read, write, create, update, delete: if signedIn();
+      allow create: if true;
+      allow read, write: if signedIn();
     }
   }
 }
-

@@ -120,10 +120,116 @@ async function sendEmail({ to, subject, text, html, type = 'general' }) {
   return logEntry;
 }
 
+// Saved Email Templates handling
+const TEMPLATES_FILE = path.join(__dirname, 'email-templates.json');
+
+function loadEmailTemplates() {
+  if (fs.existsSync(TEMPLATES_FILE)) {
+    try {
+      return JSON.parse(fs.readFileSync(TEMPLATES_FILE, 'utf-8'));
+    } catch (err) {
+      console.error('Error reading email-templates.json:', err);
+    }
+  }
+  return [];
+}
+
+function saveEmailTemplates(templates) {
+  try {
+    fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(templates, null, 2));
+  } catch (err) {
+    console.error('Error writing email-templates.json:', err);
+  }
+}
+
 // Serve static assets from 'frontend' directory
 app.use(express.static(path.join(__dirname, 'frontend'), {
   extensions: ['html']
 }));
+
+// Route to get saved email templates
+app.get('/api/email-templates', (req, res) => {
+  const templates = loadEmailTemplates();
+  res.json({ ok: true, templates });
+});
+
+// Route to save or update an email template
+app.post('/api/email-templates', (req, res) => {
+  const { id, title, category, subject, body } = req.body;
+  if (!title || !subject || !body) {
+    return res.status(400).json({ ok: false, message: 'Title, subject, and body are required.' });
+  }
+
+  let templates = loadEmailTemplates();
+  if (id) {
+    const idx = templates.findIndex(t => t.id === id);
+    if (idx !== -1) {
+      templates[idx] = { ...templates[idx], title, category: category || 'General', subject, body };
+    } else {
+      templates.unshift({ id, title, category: category || 'General', subject, body });
+    }
+  } else {
+    const newId = 'tpl-' + Math.random().toString(36).substring(2, 9);
+    templates.unshift({ id: newId, title, category: category || 'General', subject, body });
+  }
+
+  saveEmailTemplates(templates);
+  res.json({ ok: true, message: 'Email template saved successfully.', templates });
+});
+
+// Route to delete an email template
+app.delete('/api/email-templates/:id', (req, res) => {
+  const { id } = req.params;
+  let templates = loadEmailTemplates();
+  templates = templates.filter(t => t.id !== id);
+  saveEmailTemplates(templates);
+  res.json({ ok: true, message: 'Template deleted.', templates });
+});
+
+// Route to send email using a saved template
+app.post('/api/send-template-email', async (req, res) => {
+  const { to, subject, body, variables } = req.body;
+  if (!to || !subject || !body) {
+    return res.status(400).json({ ok: false, message: 'Recipient, subject, and body are required.' });
+  }
+
+  // Replace variable placeholders like {student_name}, {country}, {counselor_name}, {notes}, {program_or_job}
+  let finalSubject = subject;
+  let finalBody = body;
+
+  const vars = variables || {};
+  Object.keys(vars).forEach(key => {
+    const regex = new RegExp(`\\{${key}\\}`, 'gi');
+    const val = vars[key] != null ? String(vars[key]) : '';
+    finalSubject = finalSubject.replace(regex, val);
+    finalBody = finalBody.replace(regex, val);
+  });
+
+  // Convert plaintext body with line breaks to clean HTML format
+  const formattedHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #cbd5e1; border-radius: 10px; background: #ffffff;">
+      <div style="background: #14315e; color: #ffffff; padding: 18px 20px; border-radius: 8px 8px 0 0; text-align: center;">
+        <h2 style="margin: 0; font-size: 1.3rem;">Study with Czech Bridge — Admissions & Mobility</h2>
+      </div>
+      <div style="padding: 22px 0; color: #334155; font-size: 0.98rem; line-height: 1.6; white-space: pre-line;">
+        ${finalBody}
+      </div>
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; text-align: center; color: #94a3b8; font-size: 0.82rem;">
+        Study with Czech Bridge · Veveří 111, Brno, Czech Republic · ${emailConfig.fromEmail}
+      </div>
+    </div>
+  `;
+
+  const logResult = await sendEmail({
+    to,
+    subject: finalSubject,
+    text: finalBody,
+    html: formattedHtml,
+    type: 'admin_template_email'
+  });
+
+  res.json({ ok: true, message: `Email sent to ${to}`, result: logResult });
+});
 
 // Route to get current email config
 app.get('/api/email-config', (req, res) => {

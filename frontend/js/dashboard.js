@@ -153,8 +153,10 @@
     var grid = document.getElementById("student-20-steps-grid");
     if (!grid) return;
 
-    var steps = typeof ADMISSION_20_STEPS !== "undefined" ? ADMISSION_20_STEPS : [];
+    var steps = typeof getStudentTrackSteps === "function" ? getStudentTrackSteps(appObj) : (typeof ADMISSION_20_STEPS !== "undefined" ? ADMISSION_20_STEPS : []);
     if (!steps.length) return;
+
+    var totalSteps = steps.length;
 
     // Map current overall application status to approximate step index
     var statusStepMap = {
@@ -162,22 +164,22 @@
       "Under Review": 2,
       "Document Requested": 3,
       "Document Received": 4,
-      "Document Evaluated": 7,
-      "Legalization": 5,
-      "Super Legalization": 6,
-      "Nostrification": 9,
+      "Document Evaluated": Math.min(7, totalSteps),
+      "Legalization": Math.min(5, totalSteps),
+      "Super Legalization": Math.min(6, totalSteps),
+      "Nostrification": Math.min(9, totalSteps),
       "University Selected": 2,
       "Program Selected": 2,
-      "Applied to Universities": 8,
-      "Waiting for Entrance Exam": 11,
-      "Conditional Admission Letter Received": 13,
-      "Tuition Fees Paid": 14,
-      "Main Offer Letter Received": 15,
-      "Prepared Documents for Visa": 16,
-      "Appointment Scheduled": 17,
-      "Interview Preparation": 18,
-      "Visa Processing": 18,
-      "Accepted": 20
+      "Applied to Universities": Math.min(8, totalSteps),
+      "Waiting for Entrance Exam": Math.min(11, totalSteps),
+      "Conditional Admission Letter Received": Math.min(13, totalSteps),
+      "Tuition Fees Paid": Math.min(14, totalSteps),
+      "Main Offer Letter Received": Math.min(15, totalSteps),
+      "Prepared Documents for Visa": Math.min(16, totalSteps),
+      "Appointment Scheduled": Math.min(17, totalSteps),
+      "Interview Preparation": Math.min(18, totalSteps),
+      "Visa Processing": Math.min(18, totalSteps),
+      "Accepted": totalSteps
     };
 
     var currentStepNum = statusStepMap[currentStatus] || 1;
@@ -203,7 +205,7 @@
 
       card.innerHTML =
         '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem;">' +
-          '<span style="font-size:0.75rem; font-weight:800; color:var(--blue-800); background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + sNum + '/20</span>' +
+          '<span style="font-size:0.75rem; font-weight:800; color:var(--blue-800); background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + sNum + '/' + totalSteps + '</span>' +
           '<span style="font-size:0.75rem; font-weight:700; background:' + badgeBg + '; color:' + badgeColor + '; padding:2px 8px; border-radius:12px;">' + badgeText + '</span>' +
         '</div>' +
         '<div style="font-weight:700; font-size:0.92rem; color:var(--blue-900); margin-bottom:0.25rem;">' + escapeHtml(sObj.title) + '</div>' +

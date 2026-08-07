@@ -69,25 +69,75 @@
 
     <!-- Tab 1: Applications -->
     <div class="panel admin-tab-panel" id="panel-applications">
-      <div class="panel-row">
-        <h2>📋 Applications</h2>
+      <div class="panel-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
+        <div>
+          <h2 style="margin:0; color:var(--blue-900);">📋 Applications &amp; Candidate Management</h2>
+          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.85rem;">Manage university admissions &amp; work permit candidates across Czechia, Malaysia, Serbia, Poland &amp; Europe.</p>
+        </div>
       </div>
-      <div class="filter-bar">
-        <input type="text" id="f-search" placeholder="Search name or email...">
-        <select id="f-status">
-          <option value="">All statuses</option>
+
+      <!-- Multi-Filter Bar -->
+      <div class="filter-bar" style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center; margin-bottom:1rem;">
+        <input type="text" id="f-search" placeholder="🔍 Search name, email, phone..." style="min-width:200px; flex:1;">
+        
+        <select id="f-country" style="padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+          <option value="">🌍 All Target Countries</option>
+          <option value="Czech Republic">🇨🇿 Czech Republic</option>
+          <option value="Malaysia">🇲🇾 Malaysia</option>
+          <option value="Serbia">🇷🇸 Serbia</option>
+          <option value="Poland">🇵🇱 Poland</option>
+          <option value="Hungary">🇭🇺 Hungary</option>
+          <option value="Slovakia">🇸🇰 Slovakia</option>
+        </select>
+
+        <select id="f-track" style="padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+          <option value="">🎓 All Service Tracks</option>
+          <option value="University Degree">University Degree</option>
+          <option value="Work Permit">Work Permit / Employment Visa</option>
+          <option value="Foundation">Foundation &amp; Czech Language</option>
+        </select>
+
+        <select id="f-status" style="padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+          <option value="">📌 All Statuses</option>
         </select>
       </div>
+
+      <!-- Bulk Actions Bar -->
+      <div id="bulk-actions-bar" style="display:none; background:#f0f7ff; border:1px solid #cce3ff; border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-weight:800; color:var(--blue-900); font-size:0.9rem;">⚡ Bulk Operations</span>
+          <span id="bulk-selected-count" class="badge" style="background:var(--blue-900); color:white; font-size:0.8rem;">0 Selected</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+          <select id="bulk-status-select" style="padding:0.35rem 0.6rem; border-radius:6px; border:1px solid var(--line); font-size:0.82rem;">
+            <option value="">-- Bulk Set Status --</option>
+          </select>
+
+          <select id="bulk-agent-select" style="padding:0.35rem 0.6rem; border-radius:6px; border:1px solid var(--line); font-size:0.82rem;">
+            <option value="">-- Bulk Assign Counselor --</option>
+          </select>
+
+          <button class="btn btn-primary btn-sm" id="btn-apply-bulk-action" style="font-weight:700;">Execute Bulk Action</button>
+          <button class="btn btn-outline btn-sm" id="btn-clear-bulk-selection" style="font-size:0.8rem;">Clear Selection</button>
+        </div>
+      </div>
+
       <div class="table-wrap">
         <table class="data">
           <thead>
             <tr>
-              <th>Applicant</th><th>Assigned Agent</th><th>Program</th><th>Intake</th>
-              <th>Status</th><th>Submitted</th><th></th>
+              <th style="width:36px; text-align:center;"><input type="checkbox" id="chk-select-all-apps" title="Select All"></th>
+              <th>Applicant &amp; Contact</th>
+              <th>Target Country &amp; Track</th>
+              <th>Program / Job Sector</th>
+              <th>Intake</th>
+              <th>Status</th>
+              <th>Counselor</th>
+              <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody id="apps-body">
-            <tr><td colspan="7" class="muted">Loading...</td></tr>
+            <tr><td colspan="8" class="muted">Loading applications...</td></tr>
           </tbody>
         </table>
       </div>
@@ -240,7 +290,99 @@
         </div>
 
       </div>
-    </div>
+
+      <!-- Saved Email Templates & Direct Email Dispatch Studio -->
+      <div style="border-top: 2px dashed var(--line); margin-top: 1.5rem; padding-top: 1.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+          <div>
+            <h3 style="margin:0; font-size:1.15rem; color:var(--blue-900); font-weight:800;">✉️ Saved Email Templates &amp; Direct Student Dispatch Studio</h3>
+            <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.88rem;">Select a student and a saved template (or custom message) to dispatch official updates with dynamic variables.</p>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btn-create-template-modal" style="border-color:var(--blue-700); color:var(--blue-700); font-weight:700;">+ Create New Email Template</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+          <!-- Left: Direct Template Dispatch Tool -->
+          <div class="panel" style="margin:0; padding:1.25rem; border-left:4px solid var(--teal-600);">
+            <h4 style="margin:0 0 0.75rem 0; color:var(--blue-900); font-size:1rem;">🚀 Send Email to Candidate</h4>
+            
+            <div class="field mb-2">
+              <label style="font-weight:700; font-size:0.85rem;">Select Recipient Student / Candidate *</label>
+              <select id="tpl-send-student" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+                <option value="">-- Choose student / applicant --</option>
+              </select>
+            </div>
+
+            <div class="field mb-2">
+              <label style="font-weight:700; font-size:0.85rem;">Select Saved Template *</label>
+              <select id="tpl-select-template" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+                <option value="">-- Choose a saved template --</option>
+              </select>
+            </div>
+
+            <div class="field mb-2">
+              <label style="font-weight:700; font-size:0.85rem;">Custom Notes / Advisor Guidance (Replaces {notes})</label>
+              <textarea id="tpl-dispatch-notes" rows="2" placeholder="e.g. Missing certified HSC translation and bank financial statement. Upload by Friday." style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.85rem; font-family:inherit;"></textarea>
+            </div>
+
+            <div class="field mb-2">
+              <label style="font-weight:700; font-size:0.85rem;">Email Subject *</label>
+              <input type="text" id="tpl-dispatch-subject" placeholder="Subject line..." style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+            </div>
+
+            <div class="field mb-3">
+              <label style="font-weight:700; font-size:0.85rem;">Email Body Content *</label>
+              <textarea id="tpl-dispatch-body" rows="7" placeholder="Email body..." style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.85rem; font-family:inherit; line-height:1.5;"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span id="tpl-send-status" class="muted" style="font-size:0.8rem; font-weight:700;"></span>
+              <button class="btn btn-primary btn-sm" id="btn-dispatch-template-email" style="font-weight:800; padding:0.5rem 1.2rem;">🚀 Send Email Now</button>
+            </div>
+          </div>
+
+          <!-- Right: Saved Template Library List -->
+          <div class="panel" style="margin:0; padding:1.25rem; border-left:4px solid var(--purple-600);">
+            <h4 style="margin:0 0 0.5rem 0; color:var(--blue-900); font-size:1rem;">📚 Saved Template Library</h4>
+            <p class="muted" style="font-size:0.8rem; margin-bottom:1rem;">Available tokens: <code>{student_name}</code>, <code>{country}</code>, <code>{program_or_job}</code>, <code>{counselor_name}</code>, <code>{notes}</code></p>
+            
+            <div id="saved-templates-list" style="display:flex; flex-direction:column; gap:0.75rem; max-height:480px; overflow-y:auto; padding-right:0.25rem;">
+              <div class="muted center py-3">Loading templates...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create / Edit Template Modal -->
+      <div id="template-editor-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; padding:1rem;">
+        <div style="background:white; width:100%; max-width:550px; border-radius:12px; padding:1.5rem; box-shadow:var(--shadow-lg);">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:0.75rem; margin-bottom:1rem;">
+            <h3 id="tpl-modal-title" style="margin:0; color:var(--blue-900);">Create Email Template</h3>
+            <button id="tpl-modal-close" class="btn btn-outline btn-sm" style="border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+          </div>
+          <input type="hidden" id="tpl-edit-id">
+          <div class="field mb-2">
+            <label for="tpl-edit-title" style="font-weight:700; font-size:0.85rem;">Template Title / Name</label>
+            <input type="text" id="tpl-edit-title" placeholder="e.g. Serbia Work Permit Approval Notice">
+          </div>
+          <div class="field mb-2">
+            <label for="tpl-edit-category" style="font-weight:700; font-size:0.85rem;">Category</label>
+            <input type="text" id="tpl-edit-category" placeholder="e.g. Work Visas, Documents, Finance">
+          </div>
+          <div class="field mb-2">
+            <label for="tpl-edit-subject" style="font-weight:700; font-size:0.85rem;">Email Subject Line</label>
+            <input type="text" id="tpl-edit-subject" placeholder="Subject with tokens like {student_name} or {country}">
+          </div>
+          <div class="field mb-2">
+            <label for="tpl-edit-body" style="font-weight:700; font-size:0.85rem;">Email Body Text</label>
+            <textarea id="tpl-edit-body" rows="6" placeholder="Body with tokens {student_name}, {notes}, {country}, {counselor_name}..." style="font-family:inherit; line-height:1.5;"></textarea>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:0.5rem; border-top:1px solid var(--line); padding-top:1rem;">
+            <button class="btn btn-outline btn-sm" id="tpl-modal-cancel">Cancel</button>
+            <button class="btn btn-primary btn-sm" id="tpl-modal-save">Save Template</button>
+          </div>
+        </div>
+      </div>
 
     <!-- Tab: Super Admin Data Extraction & Export -->
     <div class="panel admin-tab-panel hidden" id="panel-extract">
@@ -713,9 +855,16 @@
 
 <!-- Application detail modal -->
 <div class="modal-back" id="modal-back">
-  <div class="modal">
+  <div class="modal" style="max-width: 780px;">
     <button class="modal-close" id="modal-close">✕</button>
-    <h2 id="m-title">Application</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; border-bottom:2px solid var(--line); padding-bottom:0.75rem; margin-bottom:1rem;">
+      <h2 id="m-title" style="margin:0; color:var(--blue-900);">Application</h2>
+      <div id="m-quick-actions-bar" style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+        <a id="m-wa-btn" target="_blank" class="btn btn-outline btn-sm" style="border-color:#25d366; color:#128c7e; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:0.25rem;">💬 WhatsApp Candidate</a>
+        <button id="m-email-btn" class="btn btn-outline btn-sm" style="border-color:var(--teal-600); color:var(--teal-700); font-weight:700;">✉️ Dispatch Template Email</button>
+        <button id="m-roadmap-btn" class="btn btn-outline btn-sm" style="border-color:var(--blue-700); color:var(--blue-700); font-weight:700;">🎓 Roadmap Steps</button>
+      </div>
+    </div>
 
     <div class="panel" style="box-shadow:none;">
       <h2 style="font-size:1rem;">Status Control &amp; Counselor Assignment</h2>
@@ -725,7 +874,7 @@
           <select id="m-status"></select>
         </div>
         <div class="field">
-          <label for="m-agent">Assigned Brno Counselor</label>
+          <label for="m-agent">Assigned Counselor / Agent</label>
           <select id="m-agent">
             <option value="">-- Select Counselor / Agent --</option>
           </select>
@@ -733,11 +882,13 @@
       </div>
       <div class="field mb-2">
         <label for="m-note">Note to Student (shown on dashboard &amp; emailed)</label>
-        <input type="text" id="m-note" maxlength="500" placeholder="e.g. Please upload a clearer passport scan or IELTS score card">
+        <input type="text" id="m-note" maxlength="500" placeholder="e.g. Please upload a certified English or Czech transcript scan">
       </div>
-      <button class="btn btn-primary btn-sm" id="m-save">Save Status &amp; Update Counselor</button>
-      <button class="btn btn-outline btn-sm" id="m-assign-task" style="margin-left:0.5rem; border-color:var(--blue-700); color:var(--blue-700); font-weight:700;">📌 Assign Task to Student</button>
-      <span id="m-save-state" class="muted" style="margin-left:0.5rem; font-size:.85rem;"></span>
+      <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" id="m-save">Save Status &amp; Update Counselor</button>
+        <button class="btn btn-outline btn-sm" id="m-assign-task" style="border-color:var(--blue-700); color:var(--blue-700); font-weight:700;">📌 Assign Task</button>
+        <span id="m-save-state" class="muted" style="font-size:.85rem;"></span>
+      </div>
     </div>
 
     <div class="panel" style="box-shadow:none;">
@@ -746,7 +897,7 @@
     </div>
 
     <div class="panel" style="box-shadow:none;margin-bottom:0;">
-      <h2 style="font-size:1rem;">Documents</h2>
+      <h2 style="font-size:1rem;">Documents &amp; Verification Vault</h2>
       <ul class="doc-list" id="m-docs"><li class="muted">Loading...</li></ul>
     </div>
   </div>

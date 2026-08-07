@@ -95,6 +95,40 @@
     document.getElementById("refresh-btn").addEventListener("click", loadAll);
     document.getElementById("f-search").addEventListener("input", renderApps);
     document.getElementById("f-status").addEventListener("change", renderApps);
+    
+    var fCountry = document.getElementById("f-country");
+    if (fCountry) fCountry.addEventListener("change", renderApps);
+    
+    var fTrack = document.getElementById("f-track");
+    if (fTrack) fTrack.addEventListener("change", renderApps);
+
+    var selectAllApps = document.getElementById("chk-select-all-apps");
+    if (selectAllApps) {
+      selectAllApps.addEventListener("change", function () {
+        var isChecked = this.checked;
+        document.querySelectorAll(".chk-app-item").forEach(function (chk) {
+          chk.checked = isChecked;
+        });
+        updateBulkBarState();
+      });
+    }
+
+    var clearBulkBtn = document.getElementById("btn-clear-bulk-selection");
+    if (clearBulkBtn) {
+      clearBulkBtn.addEventListener("click", function () {
+        if (selectAllApps) selectAllApps.checked = false;
+        document.querySelectorAll(".chk-app-item").forEach(function (chk) {
+          chk.checked = false;
+        });
+        updateBulkBarState();
+      });
+    }
+
+    var applyBulkBtn = document.getElementById("btn-apply-bulk-action");
+    if (applyBulkBtn) {
+      applyBulkBtn.addEventListener("click", executeBulkAction);
+    }
+
     document.getElementById("modal-close").addEventListener("click", closeModal);
     document.getElementById("modal-back").addEventListener("click", function (e) {
       if (e.target === this) closeModal();
@@ -254,8 +288,9 @@
     var grid = document.getElementById("journey-steps-container");
     if (!grid) return;
 
-    var steps = typeof ADMISSION_20_STEPS !== "undefined" ? ADMISSION_20_STEPS : [];
+    var steps = typeof getStudentTrackSteps === "function" ? getStudentTrackSteps(appObj) : (typeof ADMISSION_20_STEPS !== "undefined" ? ADMISSION_20_STEPS : []);
     var custom = appObj.stepCustomData || {};
+    var totalSteps = steps.length;
 
     grid.innerHTML = "";
     steps.forEach(function (s) {
@@ -272,7 +307,7 @@
 
       card.innerHTML =
         '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">' +
-          '<strong style="color:var(--blue-900); font-size:0.85rem; background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + s.step + '/20</strong>' +
+          '<strong style="color:var(--blue-900); font-size:0.85rem; background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + s.step + '/' + totalSteps + '</strong>' +
           '<span class="muted" style="font-size:0.75rem;">' + esc(s.category) + '</span>' +
         '</div>' +
         '<div style="font-weight:700; font-size:0.95rem; color:var(--blue-900); margin-bottom:0.3rem;">' + esc(s.title) + '</div>' +
@@ -365,6 +400,9 @@
         renderEmailLogs(data.logs || []);
       })
       .catch(function (err) { console.warn("Load SMTP config error:", err); });
+
+    // Load Email Templates & Populate Recipient Student Dropdown
+    loadEmailTemplatesStudio();
 
     var form = document.getElementById("form-smtp-config");
     if (form) {
@@ -462,6 +500,307 @@
     }).join("");
 
     container.innerHTML = html;
+  }
+
+  /* Email Template Studio Handlers */
+  var loadedTemplatesCache = [];
+
+  function loadEmailTemplatesStudio() {
+    // Populate Student Recipients Dropdown
+    var studentSelect = document.getElementById("tpl-send-student");
+    if (studentSelect) {
+      studentSelect.innerHTML = '<option value="">-- Choose student / applicant --</option>';
+      allUsers.forEach(function (u) {
+        var opt = document.createElement("option");
+        opt.value = u.email;
+        opt.dataset.name = u.fullName || u.email;
+        opt.dataset.country = u.targetCountry || u.country || u.nationality || "Czech Republic";
+        opt.dataset.program = u.program || u.serviceTrack || "Study Program";
+        opt.textContent = (u.fullName || u.email) + " (" + u.email + ")";
+        studentSelect.appendChild(opt);
+      });
+    }
+
+    // Fetch Saved Email Templates
+    fetch("/api/email-templates")
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        loadedTemplatesCache = res.templates || [];
+        renderSavedTemplatesList();
+        populateTemplateDropdown();
+      })
+      .catch(function (err) {
+        console.warn("Could not load email templates:", err);
+      });
+
+    setupTemplateStudioEvents();
+  }
+
+  function renderSavedTemplatesList() {
+    var listEl = document.getElementById("saved-templates-list");
+    if (!listEl) return;
+
+    if (!loadedTemplatesCache.length) {
+      listEl.innerHTML = '<div class="muted center py-3">No saved email templates yet. Click "+ Create New Email Template" above.</div>';
+      return;
+    }
+
+    listEl.innerHTML = loadedTemplatesCache.map(function (tpl) {
+      return (
+        '<div style="background:white; border:1px solid var(--line); border-radius:8px; padding:0.85rem; box-shadow:var(--shadow-sm);">' +
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.35rem;">' +
+            '<strong style="color:var(--blue-900); font-size:0.9rem;">' + esc(tpl.name) + '</strong>' +
+            '<span class="badge" style="background:#edf2f7; color:#2d3748; font-size:0.7rem; font-weight:700;">' + esc(tpl.category || "General") + '</span>' +
+          '</div>' +
+          '<div style="font-size:0.8rem; font-weight:600; color:var(--blue-800); margin-bottom:0.35rem;">Subject: ' + esc(tpl.subject) + '</div>' +
+          '<div class="muted" style="font-size:0.75rem; white-space:pre-wrap; max-height:60px; overflow:hidden; text-overflow:ellipsis; margin-bottom:0.5rem; background:#fafafa; padding:0.4rem; border-radius:4px; border:1px solid #eee;">' + esc(tpl.body) + '</div>' +
+          '<div style="display:flex; gap:0.4rem; justify-content:flex-end;">' +
+            '<button class="btn btn-outline btn-sm btn-use-tpl" data-id="' + tpl.id + '" style="font-size:0.75rem; padding:0.2rem 0.5rem; border-color:var(--teal-600); color:var(--teal-700);">⚡ Use Template</button>' +
+            '<button class="btn btn-outline btn-sm btn-edit-tpl" data-id="' + tpl.id + '" style="font-size:0.75rem; padding:0.2rem 0.5rem;">✏️ Edit</button>' +
+            '<button class="btn btn-outline btn-sm btn-del-tpl" data-id="' + tpl.id + '" style="font-size:0.75rem; padding:0.2rem 0.5rem; border-color:var(--red-500); color:var(--red-500);">🗑️</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join("");
+
+    // Bind action buttons
+    listEl.querySelectorAll(".btn-use-tpl").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        var sel = document.getElementById("tpl-select-template");
+        if (sel) {
+          sel.value = id;
+          sel.dispatchEvent(new Event("change"));
+        }
+      };
+    });
+
+    listEl.querySelectorAll(".btn-edit-tpl").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        var tpl = loadedTemplatesCache.filter(function (x) { return x.id === id; })[0];
+        if (!tpl) return;
+        document.getElementById("tpl-modal-title").textContent = "Edit Email Template: " + tpl.name;
+        document.getElementById("tpl-edit-id").value = tpl.id;
+        document.getElementById("tpl-edit-title").value = tpl.name;
+        document.getElementById("tpl-edit-category").value = tpl.category || "General";
+        document.getElementById("tpl-edit-subject").value = tpl.subject;
+        document.getElementById("tpl-edit-body").value = tpl.body;
+        document.getElementById("template-editor-modal").style.display = "flex";
+      };
+    });
+
+    listEl.querySelectorAll(".btn-del-tpl").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        if (!confirm("Are you sure you want to delete this email template?")) return;
+        fetch("/api/email-templates/" + id, { method: "DELETE" })
+          .then(function (r) { return r.json(); })
+          .then(function () { loadEmailTemplatesStudio(); })
+          .catch(function (err) { alert("Delete template error: " + err.message); });
+      };
+    });
+  }
+
+  function populateTemplateDropdown() {
+    var sel = document.getElementById("tpl-select-template");
+    if (!sel) return;
+
+    sel.innerHTML = '<option value="">-- Choose a saved template --</option>';
+    loadedTemplatesCache.forEach(function (t) {
+      var opt = document.createElement("option");
+      opt.value = t.id;
+      opt.textContent = "[" + (t.category || "General") + "] " + t.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  var _tplEventsInitialized = false;
+  function setupTemplateStudioEvents() {
+    if (_tplEventsInitialized) return;
+    _tplEventsInitialized = true;
+
+    // Change template event
+    var tplSelect = document.getElementById("tpl-select-template");
+    if (tplSelect) {
+      tplSelect.addEventListener("change", applyTemplatePreview);
+    }
+
+    var studentSelect = document.getElementById("tpl-send-student");
+    if (studentSelect) {
+      studentSelect.addEventListener("change", applyTemplatePreview);
+    }
+
+    var notesArea = document.getElementById("tpl-dispatch-notes");
+    if (notesArea) {
+      notesArea.addEventListener("input", applyTemplatePreview);
+    }
+
+    // Modal triggers
+    var createBtn = document.getElementById("btn-create-template-modal");
+    var modal = document.getElementById("template-editor-modal");
+    var closeBtn = document.getElementById("tpl-modal-close");
+    var cancelBtn = document.getElementById("tpl-modal-cancel");
+    var saveBtn = document.getElementById("tpl-modal-save");
+
+    if (createBtn) {
+      createBtn.onclick = function () {
+        document.getElementById("tpl-modal-title").textContent = "Create Email Template";
+        document.getElementById("tpl-edit-id").value = "";
+        document.getElementById("tpl-edit-title").value = "";
+        document.getElementById("tpl-edit-category").value = "General";
+        document.getElementById("tpl-edit-subject").value = "";
+        document.getElementById("tpl-edit-body").value = "";
+        modal.style.display = "flex";
+      };
+    }
+
+    if (closeBtn) closeBtn.onclick = function () { modal.style.display = "none"; };
+    if (cancelBtn) cancelBtn.onclick = function () { modal.style.display = "none"; };
+
+    if (saveBtn) {
+      saveBtn.onclick = function () {
+        saveBtn.disabled = true;
+        var payload = {
+          id: document.getElementById("tpl-edit-id").value,
+          name: document.getElementById("tpl-edit-title").value.trim(),
+          category: document.getElementById("tpl-edit-category").value.trim(),
+          subject: document.getElementById("tpl-edit-subject").value.trim(),
+          body: document.getElementById("tpl-edit-body").value.trim()
+        };
+
+        if (!payload.name || !payload.subject || !payload.body) {
+          alert("Template Name, Subject, and Body are required.");
+          saveBtn.disabled = false;
+          return;
+        }
+
+        fetch("/api/email-templates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            saveBtn.disabled = false;
+            if (res.ok) {
+              modal.style.display = "none";
+              loadEmailTemplatesStudio();
+            } else {
+              alert("Save template failed: " + (res.error || "Unknown error"));
+            }
+          })
+          .catch(function (err) {
+            saveBtn.disabled = false;
+            alert("Save template error: " + err.message);
+          });
+      };
+    }
+
+    // Direct Email Dispatch Trigger
+    var sendBtn = document.getElementById("btn-dispatch-template-email");
+    if (sendBtn) {
+      sendBtn.onclick = function () {
+        var recipientEmail = document.getElementById("tpl-send-student").value;
+        var subject = document.getElementById("tpl-dispatch-subject").value.trim();
+        var body = document.getElementById("tpl-dispatch-body").value.trim();
+        var statusSpan = document.getElementById("tpl-send-status");
+
+        if (!recipientEmail) {
+          alert("Please select a target recipient student first.");
+          return;
+        }
+        if (!subject || !body) {
+          alert("Subject and Body cannot be empty.");
+          return;
+        }
+
+        sendBtn.disabled = true;
+        statusSpan.textContent = "⏳ Sending email...";
+
+        fetch("/api/send-template-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            templateId: document.getElementById("tpl-select-template").value,
+            recipientEmail: recipientEmail,
+            customSubject: subject,
+            customBody: body,
+            variables: {
+              student_name: getSelectedStudentData("name"),
+              country: getSelectedStudentData("country"),
+              program_or_job: getSelectedStudentData("program"),
+              counselor_name: (sess && sess.user ? sess.user.fullName : "Czech Bridge Admissions Team"),
+              notes: document.getElementById("tpl-dispatch-notes").value.trim()
+            }
+          })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            sendBtn.disabled = false;
+            if (res.ok) {
+              statusSpan.textContent = "✅ Dispatched successfully!";
+              statusSpan.style.color = "var(--green)";
+              initEmailTab(); // Refresh email log
+              setTimeout(function () { statusSpan.textContent = ""; }, 4000);
+            } else {
+              statusSpan.textContent = "❌ Failed to send";
+              statusSpan.style.color = "var(--red-500)";
+              alert("Error dispatching email: " + (res.error || "SMTP error"));
+            }
+          })
+          .catch(function (err) {
+            sendBtn.disabled = false;
+            statusSpan.textContent = "❌ Network error";
+            statusSpan.style.color = "var(--red-500)";
+            alert("Error sending template email: " + err.message);
+          });
+      };
+    }
+  }
+
+  function getSelectedStudentData(key) {
+    var sel = document.getElementById("tpl-send-student");
+    if (!sel || !sel.selectedIndex || sel.selectedIndex <= 0) return "";
+    var opt = sel.options[sel.selectedIndex];
+    if (key === "name") return opt.dataset.name || "";
+    if (key === "country") return opt.dataset.country || "";
+    if (key === "program") return opt.dataset.program || "";
+    return "";
+  }
+
+  function applyTemplatePreview() {
+    var tplId = document.getElementById("tpl-select-template") ? document.getElementById("tpl-select-template").value : "";
+    var tpl = loadedTemplatesCache.filter(function (x) { return x.id === tplId; })[0];
+
+    var studentName = getSelectedStudentData("name") || "[Student Name]";
+    var country = getSelectedStudentData("country") || "[Target Country]";
+    var program = getSelectedStudentData("program") || "[Program / Job]";
+    var counselorName = (sess && sess.user ? sess.user.fullName : "Czech Bridge Admissions");
+    var notes = document.getElementById("tpl-dispatch-notes") ? document.getElementById("tpl-dispatch-notes").value.trim() : "";
+
+    var subj = tpl ? tpl.subject : (document.getElementById("tpl-dispatch-subject") ? document.getElementById("tpl-dispatch-subject").value : "");
+    var body = tpl ? tpl.body : (document.getElementById("tpl-dispatch-body") ? document.getElementById("tpl-dispatch-body").value : "");
+
+    // Perform live token replacements
+    subj = subj.replace(/\{student_name\}/g, studentName)
+               .replace(/\{country\}/g, country)
+               .replace(/\{program_or_job\}/g, program)
+               .replace(/\{counselor_name\}/g, counselorName)
+               .replace(/\{notes\}/g, notes || "[Notes]");
+
+    body = body.replace(/\{student_name\}/g, studentName)
+               .replace(/\{country\}/g, country)
+               .replace(/\{program_or_job\}/g, program)
+               .replace(/\{counselor_name\}/g, counselorName)
+               .replace(/\{notes\}/g, notes || "(No additional notes provided)");
+
+    if (document.getElementById("tpl-dispatch-subject")) {
+      document.getElementById("tpl-dispatch-subject").value = subj;
+    }
+    if (document.getElementById("tpl-dispatch-body")) {
+      document.getElementById("tpl-dispatch-body").value = body;
+    }
   }
 
   /* ============================================================
@@ -612,55 +951,202 @@
     api("adminListApplications").then(function (res) {
       allApps = res.applications || [];
       statuses = res.statuses || [];
+      
       var sel = document.getElementById("f-status");
-      sel.innerHTML = '<option value="">All statuses</option>' +
-        statuses.map(function (s) { return "<option>" + esc(s) + "</option>"; }).join("");
+      if (sel) {
+        sel.innerHTML = '<option value="">📌 All Statuses</option>' +
+          statuses.map(function (s) { return "<option value='" + esc(s) + "'>" + esc(s) + "</option>"; }).join("");
+      }
+
+      var bulkStatusSel = document.getElementById("bulk-status-select");
+      if (bulkStatusSel) {
+        bulkStatusSel.innerHTML = '<option value="">-- Bulk Set Status --</option>' +
+          statuses.map(function (s) { return "<option value='" + esc(s) + "'>" + esc(s) + "</option>"; }).join("");
+      }
+
+      populateBulkAgentDropdown();
       renderApps();
     }).catch(function (err) {
-      document.getElementById("apps-body").innerHTML =
-        '<tr><td colspan="7" class="muted">Error: ' + esc(err.message) + "</td></tr>";
+      var body = document.getElementById("apps-body");
+      if (body) {
+        body.innerHTML = '<tr><td colspan="8" class="muted">Error: ' + esc(err.message) + "</td></tr>";
+      }
     });
   }
 
+  function populateBulkAgentDropdown() {
+    var bulkAgentSel = document.getElementById("bulk-agent-select");
+    if (!bulkAgentSel) return;
+    var agents = allUsers.filter(function (u) {
+      return u.role === "agent" || u.role === "admin" || u.role === "super_admin";
+    });
+    bulkAgentSel.innerHTML = '<option value="">-- Bulk Assign Counselor --</option>' +
+      agents.map(function (ag) {
+        return '<option value="' + ag.id + '">' + esc(ag.fullName || ag.email) + '</option>';
+      }).join("");
+  }
+
   function renderApps() {
-    var q = document.getElementById("f-search").value.trim().toLowerCase();
-    var st = document.getElementById("f-status").value;
+    var q = document.getElementById("f-search") ? document.getElementById("f-search").value.trim().toLowerCase() : "";
+    var st = document.getElementById("f-status") ? document.getElementById("f-status").value : "";
+    var countryFilter = document.getElementById("f-country") ? document.getElementById("f-country").value : "";
+    var trackFilter = document.getElementById("f-track") ? document.getElementById("f-track").value : "";
     var body = document.getElementById("apps-body");
+
+    if (!body) return;
 
     var rows = allApps.filter(function (a) {
       if (st && a.status !== st) return false;
-      if (q && (String(a.fullName).toLowerCase().indexOf(q) === -1 &&
-                String(a.email).toLowerCase().indexOf(q) === -1)) return false;
+      
+      var targetC = a.targetCountry || a.country || "Czech Republic";
+      if (countryFilter && targetC.toLowerCase() !== countryFilter.toLowerCase()) return false;
+
+      var serviceTr = a.serviceTrack || a.level || "University Degree";
+      if (trackFilter && serviceTr.toLowerCase().indexOf(trackFilter.toLowerCase()) === -1) return false;
+
+      if (q) {
+        var matchName = String(a.fullName || "").toLowerCase().indexOf(q) !== -1;
+        var matchEmail = String(a.email || "").toLowerCase().indexOf(q) !== -1;
+        var matchPhone = String(a.phone || "").toLowerCase().indexOf(q) !== -1;
+        var matchProg = String(a.program || "").toLowerCase().indexOf(q) !== -1;
+        if (!matchName && !matchEmail && !matchPhone && !matchProg) return false;
+      }
       return true;
     });
 
     if (!rows.length) {
-      body.innerHTML = '<tr><td colspan="7" class="muted">No applications found.</td></tr>';
+      body.innerHTML = '<tr><td colspan="8" class="muted center py-4">No matching candidate applications found.</td></tr>';
+      updateBulkBarState();
       return;
     }
 
     body.innerHTML = "";
     rows.forEach(function (a) {
       var tr = document.createElement("tr");
+
+      var phoneStr = a.phone || "";
+      var waUrl = phoneStr ? ("https://wa.me/" + phoneStr.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Hello " + (a.fullName || "Candidate") + ", this is Czech Bridge Admissions regarding your " + (a.targetCountry || "Czechia") + " application.")) : null;
+
       var agentInfo = a.assignedAgentName 
-        ? "<strong>" + esc(a.assignedAgentName) + "</strong>" 
+        ? "<strong style='color:var(--blue-900); font-size:0.85rem;'>" + esc(a.assignedAgentName) + "</strong>" 
         : "<span class='muted' style='font-size:.8rem;'>Unassigned</span>";
 
+      var flagMap = {
+        "Czech Republic": "🇨🇿 Czechia",
+        "Malaysia": "🇲🇾 Malaysia",
+        "Serbia": "🇷🇸 Serbia",
+        "Poland": "🇵🇱 Poland",
+        "Hungary": "🇭🇺 Hungary",
+        "Slovakia": "🇸🇰 Slovakia"
+      };
+      var countryLabel = flagMap[a.targetCountry || a.country] || ("🌍 " + (a.targetCountry || a.country || "Czech Republic"));
+      var trackLabel = a.serviceTrack || a.level || "Degree";
+
       tr.innerHTML =
-        "<td><strong>" + esc(a.fullName) + "</strong><br><span class='muted' style='font-size:.8rem;'>" + esc(a.email) + "</span></td>" +
-        "<td>" + agentInfo + "</td>" +
-        "<td>" + esc(a.program) + "<br><span class='muted' style='font-size:.8rem;'>" + esc(a.level) + "</span></td>" +
-        "<td>" + esc(a.intake) + "</td>" +
-        "<td><span class='badge " + (BADGE_CLASS[a.status] || "st-pending") + "'>" + esc(a.status) + "</span></td>" +
-        "<td>" + fmtDate(a.submittedAt) + "</td>" +
-        "<td></td>";
-      
-      var btn = document.createElement("button");
-      btn.className = "btn btn-dark btn-sm";
-      btn.textContent = "Manage";
-      btn.addEventListener("click", function () { openModal(a.id); });
-      tr.lastElementChild.appendChild(btn);
+        '<td style="text-align:center;"><input type="checkbox" class="chk-app-item" data-id="' + a.id + '" data-user-id="' + a.userId + '"></td>' +
+        '<td>' +
+          '<strong style="font-size:0.92rem; color:var(--blue-900);">' + esc(a.fullName) + '</strong>' +
+          '<div style="font-size:0.78rem;" class="muted">' + esc(a.email) + '</div>' +
+          (phoneStr ? '<div style="font-size:0.75rem; margin-top:2px;"><a href="' + waUrl + '" target="_blank" style="color:#128c7e; text-decoration:none; font-weight:700;">💬 WA: ' + esc(phoneStr) + '</a></div>' : '') +
+        '</td>' +
+        '<td><span class="badge" style="background:#eef2ff; color:#3730a3; font-weight:700;">' + countryLabel + '</span><br><span class="muted" style="font-size:0.75rem;">' + esc(trackLabel) + '</span></td>' +
+        '<td><strong style="font-size:0.85rem;">' + esc(a.program) + '</strong><br><span class="muted" style="font-size:0.75rem;">' + esc(a.level) + '</span></td>' +
+        '<td>' + esc(a.intake) + '</td>' +
+        '<td><span class="badge ' + (BADGE_CLASS[a.status] || "st-pending") + '">' + esc(a.status) + '</span></td>' +
+        '<td>' + agentInfo + '</td>' +
+        '<td style="text-align:right; white-space:nowrap;">' +
+          '<button class="btn btn-dark btn-sm btn-manage-app" data-id="' + a.id + '" style="font-size:0.75rem; padding:0.25rem 0.55rem; margin-right:0.3rem;">⚡ Manage</button>' +
+          '<button class="btn btn-outline btn-sm btn-email-app" data-email="' + a.email + '" style="font-size:0.75rem; padding:0.25rem 0.4rem; border-color:var(--teal-600); color:var(--teal-700);">✉️ Email</button>' +
+        '</td>';
+
       body.appendChild(tr);
+    });
+
+    body.querySelectorAll(".chk-app-item").forEach(function (chk) {
+      chk.addEventListener("change", updateBulkBarState);
+    });
+
+    body.querySelectorAll(".btn-manage-app").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openModal(this.getAttribute("data-id"));
+      });
+    });
+
+    body.querySelectorAll(".btn-email-app").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var email = this.getAttribute("data-email");
+        switchTab("email");
+        var studentSel = document.getElementById("tpl-send-student");
+        if (studentSel) {
+          studentSel.value = email;
+          studentSel.dispatchEvent(new Event("change"));
+        }
+      });
+    });
+
+    updateBulkBarState();
+  }
+
+  function updateBulkBarState() {
+    var checked = document.querySelectorAll(".chk-app-item:checked");
+    var bar = document.getElementById("bulk-actions-bar");
+    var countEl = document.getElementById("bulk-selected-count");
+    if (!bar || !countEl) return;
+
+    if (checked.length > 0) {
+      bar.style.display = "flex";
+      countEl.textContent = checked.length + " Selected";
+    } else {
+      bar.style.display = "none";
+    }
+  }
+
+  function executeBulkAction() {
+    var checked = document.querySelectorAll(".chk-app-item:checked");
+    if (!checked.length) {
+      alert("Please select at least one application.");
+      return;
+    }
+
+    var newStatus = document.getElementById("bulk-status-select").value;
+    var newAgentId = document.getElementById("bulk-agent-select").value;
+    var bulkBtn = document.getElementById("btn-apply-bulk-action");
+
+    if (!newStatus && !newAgentId) {
+      alert("Please choose a Status or Counselor to apply bulk changes.");
+      return;
+    }
+
+    var agentSel = document.getElementById("bulk-agent-select");
+    var newAgentName = (agentSel && agentSel.selectedIndex >= 0 && newAgentId) ? agentSel.options[agentSel.selectedIndex].text : "";
+
+    if (!confirm("Are you sure you want to update " + checked.length + " selected applications?")) return;
+
+    bulkBtn.disabled = true;
+    bulkBtn.textContent = "⏳ Processing...";
+
+    var promises = [];
+    checked.forEach(function (chk) {
+      var appId = chk.getAttribute("data-id");
+      var userId = chk.getAttribute("data-user-id");
+
+      if (newAgentId) {
+        promises.push(api("adminAssignAgent", { studentId: userId, agentId: newAgentId, agentName: newAgentName }));
+      }
+      if (newStatus) {
+        promises.push(api("adminSetStatus", { appId: appId, status: newStatus, adminNotes: "Bulk status update applied by advisor." }));
+      }
+    });
+
+    Promise.all(promises).then(function () {
+      bulkBtn.disabled = false;
+      bulkBtn.textContent = "Execute Bulk Action";
+      alert("✅ Bulk update completed successfully for " + checked.length + " candidates!");
+      loadApps();
+    }).catch(function (err) {
+      bulkBtn.disabled = false;
+      bulkBtn.textContent = "Execute Bulk Action";
+      alert("Bulk operation error: " + err.message);
     });
   }
 
@@ -676,6 +1162,44 @@
     api("adminGetApplication", { appId: appId }).then(function (res) {
       currentApp = res.application;
       document.getElementById("m-title").textContent = currentApp.fullName + " — Application";
+
+      // Setup WhatsApp button in modal
+      var waBtn = document.getElementById("m-wa-btn");
+      if (waBtn) {
+        var p = currentApp.phone || "";
+        if (p) {
+          waBtn.style.display = "inline-flex";
+          waBtn.href = "https://wa.me/" + p.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Hello " + currentApp.fullName + ", this is " + (sess.fullName || "Czech Bridge Admissions") + " regarding your " + (currentApp.targetCountry || "Czechia") + " application.");
+        } else {
+          waBtn.style.display = "none";
+        }
+      }
+
+      var emailBtn = document.getElementById("m-email-btn");
+      if (emailBtn) {
+        emailBtn.onclick = function () {
+          closeModal();
+          switchTab("email");
+          var studentSel = document.getElementById("tpl-send-student");
+          if (studentSel) {
+            studentSel.value = currentApp.email;
+            studentSel.dispatchEvent(new Event("change"));
+          }
+        };
+      }
+
+      var roadmapBtn = document.getElementById("m-roadmap-btn");
+      if (roadmapBtn) {
+        roadmapBtn.onclick = function () {
+          closeModal();
+          switchTab("journey");
+          var jSel = document.getElementById("journey-student-select");
+          if (jSel) {
+            jSel.value = currentApp.id;
+            jSel.dispatchEvent(new Event("change"));
+          }
+        };
+      }
 
       var sel = document.getElementById("m-status");
       sel.innerHTML = (res.statuses || statuses).map(function (s) {

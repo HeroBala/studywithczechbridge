@@ -14,53 +14,91 @@
 
 <section class="page-hero">
   <div class="container">
-    <h1>The Application Process</h1>
-    <p>Seven clear steps from your home in Bangladesh to your university in the Czech Republic.</p>
+    <h1>Application &amp; Work Visa Process</h1>
+    <p>Step-by-step guidance tailored for European University Admissions (Czech Republic, Poland) and International Work Permits (Malaysia, Serbia).</p>
   </div>
 </section>
 
 <section class="section">
   <div class="container">
-    <div class="steps">
-      <div class="step"><div>
-        <h3>Free Consultation</h3>
-        <p>Create your free account or contact us. We review your academic background, English level, budget
-        and goals, then give you an honest picture of your options. <strong>Timeline: 1–3 days.</strong></p>
-      </div></div>
-      <div class="step"><div>
-        <h3>University &amp; Program Selection</h3>
-        <p>We shortlist 2–4 universities and programs that best fit your profile, comparing tuition, city,
-        admission requirements and deadlines together with you. <strong>Timeline: about 1 week.</strong></p>
-      </div></div>
-      <div class="step"><div>
-        <h3>Document Preparation &amp; Upload</h3>
-        <p>You upload your passport, SSC/HSC certificates, transcripts, photos and IELTS results to your
-        online dashboard. We check every file and guide translations and notarization where required.
-        <strong>Timeline: 1–3 weeks.</strong></p>
-      </div></div>
-      <div class="step"><div>
-        <h3>Application Submission</h3>
-        <p>We prepare and submit your applications, pay attention to every deadline and requirement, and set
-        your online status so you always know where things stand. <strong>Timeline: varies by university.</strong></p>
-      </div></div>
-      <div class="step"><div>
-        <h3>Admission &amp; Offer Letter</h3>
-        <p>Once the university accepts you, you receive your official acceptance letter — the key document
-        for your visa application. <strong>Timeline: 2–8 weeks after applying.</strong></p>
-      </div></div>
-      <div class="step"><div>
-        <h3>Visa Processing</h3>
-        <p>We assemble your complete long-term student visa file — accommodation proof, financial documents,
-        insurance — and prepare you for the embassy interview in Dhaka. <strong>Timeline: 60–90 days.</strong></p>
-      </div></div>
-      <div class="step"><div>
-        <h3>Travel to the Czech Republic</h3>
-        <p>Visa in hand, you book your flight with our guidance. We coordinate your arrival, housing check-in
-        and first-week orientation in your new city. <strong>Welcome to Europe! 🎉</strong></p>
-      </div></div>
+    <!-- Country & Track Selector Tabs -->
+    <div style="display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:2.5rem;" id="process-track-tabs">
+      <button class="btn btn-dark track-btn active" data-track="czech" style="border-radius:30px; padding:0.6rem 1.4rem; font-weight:700;">🇨🇿 Study in Czech Republic (20 Steps)</button>
+      <button class="btn btn-outline track-btn" data-track="malaysia" style="border-radius:30px; padding:0.6rem 1.4rem; font-weight:700;">🇲🇾 Malaysia Work Permit (8 Steps)</button>
+      <button class="btn btn-outline track-btn" data-track="serbia" style="border-radius:30px; padding:0.6rem 1.4rem; font-weight:700;">🇷🇸 Serbia Work Permit (8 Steps)</button>
+      <button class="btn btn-outline track-btn" data-track="poland" style="border-radius:30px; padding:0.6rem 1.4rem; font-weight:700;">🇵🇱 Poland &amp; Europe (10 Steps)</button>
     </div>
+
+    <!-- Dynamic Steps Container -->
+    <div id="process-steps-container"></div>
   </div>
 </section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var trackTabs = document.querySelectorAll("#process-track-tabs .track-btn");
+  var container = document.getElementById("process-steps-container");
+
+  function renderTrack(track) {
+    var stepsData = [];
+    var title = "";
+    var desc = "";
+
+    if (track === "czech") {
+      stepsData = typeof ADMISSION_20_STEPS !== "undefined" ? ADMISSION_20_STEPS : [];
+      title = "🇨🇿 Czech Republic — 20-Step University Admission & Study Visa Roadmap";
+      desc = "End-to-end guidance from initial profile evaluation to Brno/Prague university matriculation.";
+    } else if (track === "malaysia") {
+      stepsData = typeof MALAYSIA_WORK_STEPS !== "undefined" ? MALAYSIA_WORK_STEPS : [];
+      title = "🇲🇾 Malaysia — 8-Step Work Permit & Calling Visa (ESD) Roadmap";
+      desc = "Fast-track employment visa, ESD clearance, VDR Calling Visa, KLIA entry & i-Kad endorsement.";
+    } else if (track === "serbia") {
+      stepsData = typeof SERBIA_WORK_STEPS !== "undefined" ? SERBIA_WORK_STEPS : [];
+      title = "🇷🇸 Serbia — 8-Step National Employment Service (NES) Work Visa Roadmap";
+      desc = "Labour market test, NES pre-approval, Type D visa stamping, Belgrade White Card & residence card.";
+    } else if (track === "poland") {
+      stepsData = typeof POLAND_STEPS !== "undefined" ? POLAND_STEPS : [];
+      title = "🇵🇱 Poland & Other European Study & Work Permit Track";
+      desc = "Polish university admission, Voivodeship work permission, e-Konsulat D visa & Karta Pobytu.";
+    }
+
+    var html = '<div style="margin-bottom:2rem; text-align:center;">' +
+      '<h2 style="color:var(--blue-900); font-size:1.4rem; margin-bottom:0.4rem;">' + title + '</h2>' +
+      '<p style="color:var(--muted); font-size:0.95rem;">' + desc + '</p>' +
+      '</div>';
+
+    html += '<div class="grid-2" style="gap:1.2rem;">';
+    stepsData.forEach(function(s) {
+      html += '<div class="card" style="border:1px solid var(--line); border-left:4px solid var(--red-500); padding:1.2rem; background:#fff; border-radius:8px;">' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">' +
+          '<span style="background:var(--blue-900); color:white; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:12px;">Step ' + s.step + '</span>' +
+          '<span style="color:var(--red-500); font-size:0.75rem; font-weight:700; background:#fff0f2; padding:2px 8px; border-radius:12px;">' + s.category + '</span>' +
+        '</div>' +
+        '<h3 style="font-size:1.05rem; color:var(--blue-900); margin-bottom:0.4rem;">' + s.title + '</h3>' +
+        '<p style="font-size:0.88rem; color:var(--ink-soft); line-height:1.45; margin:0;">' + s.desc + '</p>' +
+      '</div>';
+    });
+    html += '</div>';
+
+    container.innerHTML = html;
+  }
+
+  trackTabs.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      trackTabs.forEach(function(b) {
+        b.classList.remove("active", "btn-dark");
+        b.classList.add("btn-outline");
+      });
+      this.classList.add("active", "btn-dark");
+      this.classList.remove("btn-outline");
+      renderTrack(this.getAttribute("data-track"));
+    });
+  });
+
+  // Default render
+  renderTrack("czech");
+});
+</script>
 
 <section class="section alt">
   <div class="container">

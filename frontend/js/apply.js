@@ -8,7 +8,7 @@
   var FIELDS = ["fullName", "dob", "gender", "nationality", "passportNo", "address", "city", "phone",
     "guardianName", "guardianPhone", "sscResult", "sscYear", "hscResult", "hscYear",
     "bachelor", "bachelorCgpa", "englishTest", "englishScore",
-    "program", "level", "intake", "notes"];
+    "targetCountry", "serviceTrack", "program", "level", "intake", "notes"];
 
   function el(f) { return document.getElementById("a-" + f); }
 
