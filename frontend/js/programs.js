@@ -1,4 +1,12 @@
-document.addEventListener("DOMContentLoaded", function () {
+function runOnReady(fn) {
+  if (document.readyState !== "loading") {
+    setTimeout(fn, 0);
+  } else {
+    document.addEventListener("DOMContentLoaded", fn);
+  }
+}
+
+runOnReady(function () {
   // Programs Database Controls
   var progSearchInput = document.getElementById("prog-search");
   var progCountrySelect = document.getElementById("prog-country-filter");

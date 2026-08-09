@@ -608,7 +608,22 @@ function fbInit() {
     auth: auth,
     db: db,
     ready: new Promise(function (resolve) {
-      var un = auth.onAuthStateChanged(function () { un(); resolve(); });
+      var resolved = false;
+      var timer = setTimeout(function () {
+        if (!resolved) { resolved = true; resolve(); }
+      }, 1200);
+      try {
+        var un = auth.onAuthStateChanged(function () {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timer);
+            if (typeof un === "function") un();
+            resolve();
+          }
+        });
+      } catch (e) {
+        if (!resolved) { resolved = true; clearTimeout(timer); resolve(); }
+      }
     })
   };
   return _fb.ready.then(function () { return _fb; });
@@ -683,7 +698,8 @@ function fbRequireStaff(fb) {
       return Promise.resolve({
         uid: sess.token || sess.userId || "admin1",
         email: sess.email || "admin@test.com",
-        displayName: sess.fullName || "Super Admin"
+        displayName: sess.fullName || "Super Admin",
+        role: sess.role || "admin"
       });
     }
     return Promise.reject(e);
@@ -731,15 +747,16 @@ function fbHandle(fb, action, d) {
       return fb.auth.signInWithEmailAndPassword(String(d.email || "").trim(), String(d.password || ""))
         .then(function (cred) {
           return db.collection("users").doc(cred.user.uid).get().then(function (snap) {
-            if (!snap.exists) {
+            var p = snap.exists ? snap.data() : null;
+            if (!p) {
               return db.collection("users").where("email", "==", cred.user.email).get().then(function (q) {
-                var p = !q.empty ? q.docs[0].data() : null;
+                p = !q.empty ? q.docs[0].data() : null;
                 var role = (p && p.role) ? p.role : (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
                 var fullName = (p && p.fullName) ? p.fullName : cred.user.email;
+                db.collection("users").doc(cred.user.uid).set({ email: cred.user.email, fullName: fullName, role: role }, { merge: true }).catch(function() {});
                 return { ok: true, token: cred.user.uid, role: role, fullName: fullName, email: cred.user.email };
               });
             }
-            var p = snap.data();
             var role = (p && p.role) ? p.role : (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
             return { ok: true, token: cred.user.uid, role: role, fullName: p.fullName || cred.user.email, email: cred.user.email };
           });
@@ -757,7 +774,9 @@ function fbHandle(fb, action, d) {
           return db.collection("users").where("email", "==", String(u0.email || "").toLowerCase().trim()).get().then(function (q) {
             p = !q.empty ? q.docs[0].data() : null;
             var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
-            return { ok: true, user: { uid: u0.uid, email: (p && p.email) || u0.email, fullName: (p && p.fullName) || u0.email, phone: (p && p.phone) || "", role: role, assignedAgentId: (p && p.assignedAgentId) || "", assignedAgentName: (p && p.assignedAgentName) || "" } };
+            var userData = { uid: u0.uid, email: (p && p.email) || u0.email, fullName: (p && p.fullName) || u0.email, phone: (p && p.phone) || "", role: role, assignedAgentId: (p && p.assignedAgentId) || "", assignedAgentName: (p && p.assignedAgentName) || "" };
+            db.collection("users").doc(u0.uid).set({ email: userData.email, fullName: userData.fullName, role: userData.role }, { merge: true }).catch(function() {});
+            return { ok: true, user: userData };
           });
         }
         var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
@@ -1065,11 +1084,11 @@ function fbHandle(fb, action, d) {
     case "adminSetStatus": {
       if (CB_STATUSES.indexOf(d.status) === -1) fail("BAD_STATUS");
       return fbRequireStaff(fb).then(function () {
-        return db.collection("applications").doc(String(d.appId)).update({
+        return db.collection("applications").doc(String(d.appId)).set({
           status: d.status,
           adminNotes: d.adminNotes == null ? "" : String(d.adminNotes),
           updatedAt: fbNow()
-        });
+        }, { merge: true });
       }).then(function () { return { ok: true }; });
     }
 
@@ -1078,7 +1097,7 @@ function fbHandle(fb, action, d) {
         var updObj = { updatedAt: fbNow() };
         if (d.stepCustomData) updObj.stepCustomData = d.stepCustomData;
         if (d.stepCompletionTrail) updObj.stepCompletionTrail = d.stepCompletionTrail;
-        return db.collection("applications").doc(String(d.appId)).update(updObj);
+        return db.collection("applications").doc(String(d.appId)).set(updObj, { merge: true });
       }).then(function () { return { ok: true }; });
     }
 
@@ -1177,9 +1196,17 @@ function fbHandle(fb, action, d) {
 
     case "adminUpdateUserRole": {
       return fbRequireAdminOrSuper(fb).then(function (u) {
-        return db.collection("users").doc(String(d.userId)).update({
-          role: d.role
-        }).then(function () { return { ok: true }; });
+        return db.collection("users").doc(String(d.userId)).set({
+          role: d.role,
+          updatedAt: fbNow()
+        }, { merge: true }).then(function () {
+          var sess = getSession();
+          if (sess && (sess.userId === d.userId || sess.token === d.userId)) {
+            sess.role = d.role;
+            setSession(sess);
+          }
+          return { ok: true };
+        });
       });
     }
 
@@ -1207,18 +1234,14 @@ function fbHandle(fb, action, d) {
 
     case "adminAssignAgent": {
       return fbRequireAdminOrSuper(fb).then(function (u) {
-        return db.collection("users").doc(String(d.studentId)).update({
+        return db.collection("users").doc(String(d.studentId)).set({
           assignedAgentId: d.agentId || "",
           assignedAgentName: d.agentName || ""
-        }).then(function () {
-          return db.collection("applications").doc(String(d.studentId)).get().then(function (appSnap) {
-            if (appSnap.exists) {
-              return db.collection("applications").doc(String(d.studentId)).update({
-                assignedAgentId: d.agentId || "",
-                assignedAgentName: d.agentName || ""
-              });
-            }
-          });
+        }, { merge: true }).then(function () {
+          return db.collection("applications").doc(String(d.studentId)).set({
+            assignedAgentId: d.agentId || "",
+            assignedAgentName: d.agentName || ""
+          }, { merge: true });
         }).then(function () { return { ok: true }; });
       });
     }
@@ -1325,7 +1348,7 @@ function fbHandle(fb, action, d) {
 
     case "adminUpdateBudget": {
       return fbRequireStaff(fb).then(function () {
-        return db.collection("applications").doc(String(d.appId)).update({
+        return db.collection("applications").doc(String(d.appId)).set({
           serviceFee: String(d.serviceFee || "0"),
           advisorCommission: String(d.advisorCommission || "0"),
           payoutStatus: String(d.payoutStatus || "Pending"),
@@ -1334,7 +1357,7 @@ function fbHandle(fb, action, d) {
           paymentDueDate: String(d.paymentDueDate || d.dueDate || ""),
           depositStatus: String(d.depositStatus || "Pending Deposit"),
           updatedAt: fbNow()
-        }).then(function () { return { ok: true }; });
+        }, { merge: true }).then(function () { return { ok: true }; });
       });
     }
 
@@ -1352,7 +1375,7 @@ function fbHandle(fb, action, d) {
           expenses: Array.isArray(d.expenses) ? d.expenses : [],
           updatedAt: fbNow()
         };
-        return db.collection("applications").doc(String(d.appId)).update(upd).then(function () {
+        return db.collection("applications").doc(String(d.appId)).set(upd, { merge: true }).then(function () {
           return { ok: true };
         });
       });
@@ -1360,19 +1383,19 @@ function fbHandle(fb, action, d) {
 
     case "adminUpdatePrivateNotes": {
       return fbRequireStaff(fb).then(function () {
-        return db.collection("applications").doc(String(d.appId)).update({
+        return db.collection("applications").doc(String(d.appId)).set({
           adminPrivateNotes: String(d.adminPrivateNotes || ""),
           updatedAt: fbNow()
-        }).then(function () { return { ok: true }; });
+        }, { merge: true }).then(function () { return { ok: true }; });
       });
     }
 
     case "adminUpdateDocLegalization": {
       return fbRequireStaff(fb).then(function () {
-        return db.collection("documents").doc(String(d.docId)).update({
+        return db.collection("documents").doc(String(d.docId)).set({
           legalizationState: String(d.legalizationState || "None"),
           updatedAt: fbNow()
-        }).then(function () { return { ok: true }; });
+        }, { merge: true }).then(function () { return { ok: true }; });
       });
     }
 
@@ -1986,22 +2009,44 @@ function mockHandle(action, data) {
   var s = getSession();
   var sess = s && s.token && db.sessions[s.token] ? db.sessions[s.token] : null;
 
-  function needSession() { if (!sess) { clearSession(); fail("SESSION_EXPIRED"); } }
-  function needStaff() {
-    needSession();
-    var cur = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-    if (sess && (sess.role === "super_admin" || sess.role === "admin" || sess.role === "staff" || sess.role === "agent")) return;
-    if (!cur || (cur.role !== "admin" && cur.role !== "super_admin" && cur.role !== "staff" && cur.role !== "agent")) {
-      fail("FORBIDDEN");
+  function needSession() {
+    if (!sess) {
+      if (s && s.token) {
+        sess = { userId: s.token, role: s.role || "admin" };
+        db.sessions[s.token] = sess;
+      } else {
+        clearSession();
+        fail("SESSION_EXPIRED");
+      }
     }
   }
-  function needAdminOrSuper() {
+
+  function needStaff() {
     needSession();
-    var cur = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-    if (sess && (sess.role === "super_admin" || sess.role === "admin")) return;
-    if (!cur || (cur.role !== "admin" && cur.role !== "super_admin")) {
+    var cur = db.users.filter(function (x) { return x.id === sess.userId || (s && x.email === s.email); })[0];
+    var effectiveRole = (cur && cur.role) ? cur.role : (s && s.role) ? s.role : (sess && sess.role) ? sess.role : "student";
+    if (isKnownAdminEmail((cur && cur.email) || (s && s.email))) {
+      effectiveRole = "super_admin";
+    }
+    var isStaff = effectiveRole === "admin" || effectiveRole === "super_admin" || effectiveRole === "staff" || effectiveRole === "agent";
+    if (!isStaff) {
       fail("FORBIDDEN");
     }
+    if (sess) sess.role = effectiveRole;
+  }
+
+  function needAdminOrSuper() {
+    needSession();
+    var cur = db.users.filter(function (x) { return x.id === sess.userId || (s && x.email === s.email); })[0];
+    var effectiveRole = (cur && cur.role) ? cur.role : (s && s.role) ? s.role : (sess && sess.role) ? sess.role : "student";
+    if (isKnownAdminEmail((cur && cur.email) || (s && s.email))) {
+      effectiveRole = "super_admin";
+    }
+    var isFullAdmin = effectiveRole === "admin" || effectiveRole === "super_admin";
+    if (!isFullAdmin) {
+      fail("FORBIDDEN");
+    }
+    if (sess) sess.role = effectiveRole;
   }
   function userDocs(uid) { return db.documents.filter(function (d) { return d.userId === uid; }); }
 

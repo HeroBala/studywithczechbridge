@@ -71,10 +71,20 @@
     return role ? String(role) : "User";
   }
 
+  function runOnReady(fn) {
+    if (document.readyState !== "loading") {
+      setTimeout(fn, 0);
+    } else {
+      document.addEventListener("DOMContentLoaded", fn);
+    }
+  }
+
   function renderRoleUI(role) {
     var roleDisplayEl = document.getElementById("admin-role-display");
     if (roleDisplayEl) {
-      roleDisplayEl.textContent = getRoleLabel(role);
+      var userLabel = (sess && (sess.email || sess.fullName)) ? (sess.fullName || sess.email) : "";
+      var roleText = getRoleLabel(role);
+      roleDisplayEl.textContent = userLabel ? (userLabel + " (" + roleText + ")") : roleText;
       roleDisplayEl.className = "badge-role " + (role || "student");
     }
 
@@ -85,9 +95,9 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  runOnReady(function () {
     // Render current role in subtitle
-    if (sess && sess.role) {
+    if (sess) {
       renderRoleUI(sess.role);
     }
 
@@ -119,6 +129,15 @@
         switchTab(targetTab);
       });
     });
+
+    // Check URL parameters or hash for target tab (e.g. ?tab=counselor or #consultant)
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      var initialTab = urlParams.get("tab") || window.location.hash.replace("#", "");
+      if (initialTab) {
+        switchTab(initialTab);
+      }
+    } catch(e) {}
 
     loadAll();
     initAlerts();
@@ -272,14 +291,20 @@
   });
 
   function switchTab(tabName) {
-    activeTab = tabName;
+    if (!tabName) return;
+    var rawName = String(tabName).toLowerCase().trim();
+    if (rawName === "consultant" || rawName === "consultants" || rawName === "counselors") rawName = "counselor";
+    if (rawName === "programs" || rawName === "program" || rawName === "universities") rawName = "unidb";
+    if (rawName === "finance" || rawName === "financial" || rawName === "billing") rawName = "ops";
+
+    activeTab = rawName;
     
     // Deactivate all tab headers
     var tabs = document.querySelectorAll(".admin-tab");
     tabs.forEach(function (t) { t.classList.remove("active"); });
 
     // Activate selected tab header
-    var activeBtn = document.querySelector('.admin-tab[data-tab="' + tabName + '"]');
+    var activeBtn = document.querySelector('.admin-tab[data-tab="' + rawName + '"]');
     if (activeBtn) activeBtn.classList.add("active");
 
     // Hide all panel sections
@@ -287,31 +312,31 @@
     panels.forEach(function (p) { p.classList.add("hidden"); });
 
     // Show active panel
-    var activePanel = document.getElementById("panel-" + tabName);
+    var activePanel = document.getElementById("panel-" + rawName);
     if (activePanel) activePanel.classList.remove("hidden");
 
     // Context-specific loads
-    if (tabName === "taskboard") {
+    if (rawName === "taskboard") {
       loadTasks();
-    } else if (tabName === "users") {
+    } else if (rawName === "users") {
       loadUsers();
-    } else if (tabName === "ops") {
+    } else if (rawName === "ops") {
       loadOpsPanel();
-    } else if (tabName === "journey") {
+    } else if (rawName === "journey") {
       initJourneyTab();
-    } else if (tabName === "email") {
+    } else if (rawName === "email") {
       initEmailTab();
-    } else if (tabName === "extract") {
+    } else if (rawName === "extract") {
       initExtractTab();
-    } else if (tabName === "counselor") {
+    } else if (rawName === "counselor") {
       initCounselorTab();
-    } else if (tabName === "packages") {
+    } else if (rawName === "packages") {
       initPackagesTab();
-    } else if (tabName === "superdocs") {
+    } else if (rawName === "superdocs") {
       initSuperDocsTab();
-    } else if (tabName === "unidb") {
+    } else if (rawName === "unidb") {
       initUniDbTab();
-    } else if (tabName === "testimonials") {
+    } else if (rawName === "testimonials") {
       initTestimonialsTab();
     }
   }

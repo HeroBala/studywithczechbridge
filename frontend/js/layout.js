@@ -140,7 +140,15 @@
     );
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  function runOnReady(fn) {
+    if (document.readyState !== "loading") {
+      setTimeout(fn, 0);
+    } else {
+      document.addEventListener("DOMContentLoaded", fn);
+    }
+  }
+
+  runOnReady(function () {
     var header = document.querySelector(".site-header");
     var footer = document.querySelector(".site-footer");
     if (header) header.innerHTML = buildHeader();
