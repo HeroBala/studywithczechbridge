@@ -13,7 +13,7 @@ function requireLogin() {
 function requireAdmin() {
   var s = requireLogin();
   if (s) {
-    var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email));
+    var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent";
     if (!isStaff) {
       location.href = "dashboard.html";
       return null;
@@ -31,7 +31,7 @@ function showNotice(id, type, msg) {
 
 function afterAuth(res) {
   setSession({ token: res.token, role: res.role, fullName: res.fullName, email: res.email });
-  var isStaff = res.role === "admin" || res.role === "super_admin" || res.role === "agent";
+  var isStaff = res.role === "admin" || res.role === "super_admin" || res.role === "staff" || res.role === "agent";
   location.href = isStaff ? "admin.html" : "dashboard.html";
 }
 

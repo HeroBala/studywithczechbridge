@@ -33,7 +33,7 @@
 
     var cta;
     if (s && s.token) {
-      var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "agent";
+      var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent";
       cta =
         (isStaff
           ? '<a class="btn btn-dark btn-sm" href="admin.html">Admin Panel</a>'

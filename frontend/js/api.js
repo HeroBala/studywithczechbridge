@@ -476,34 +476,47 @@ function fbTriggerAlert(db, userId, type, details) {
 }
 
 function isKnownAdminEmail(email) {
-  var e = String(email || "").toLowerCase().trim();
-  if (!e) return true;
-  return true; // Staff/Admin operations are allowed for authenticated session
+  return false;
 }
 
 function fbRequireStaff(fb) {
-  try {
-    var u = fbUser(fb);
-    return Promise.resolve(u);
-  } catch (e) {
-    var sess = getSession();
-    if (sess) {
-      return Promise.resolve({
-        uid: sess.token || sess.userId || "admin1",
-        email: sess.email || "admin@test.com",
-        displayName: sess.fullName || "Super Admin"
-      });
+  var u = fbUser(fb);
+  if (!u) return Promise.reject(new Error(ERROR_TEXT.SESSION_EXPIRED || "SESSION_EXPIRED"));
+  return fb.db.collection("users").doc(u.uid).get().then(function (snap) {
+    if (!snap.exists) {
+      throw new Error("FORBIDDEN");
     }
-    return Promise.reject(e);
-  }
+    var userData = snap.data();
+    var role = userData ? userData.role : null;
+    var isStaff = role === "admin" || role === "super_admin" || role === "staff" || role === "agent";
+    if (!isStaff) {
+      fail("FORBIDDEN");
+    }
+    u.role = role;
+    return u;
+  });
 }
 
 function fbRequireAdminOrSuper(fb) {
-  return fbRequireStaff(fb);
+  var u = fbUser(fb);
+  if (!u) return Promise.reject(new Error(ERROR_TEXT.SESSION_EXPIRED || "SESSION_EXPIRED"));
+  return fb.db.collection("users").doc(u.uid).get().then(function (snap) {
+    if (!snap.exists) {
+      throw new Error("FORBIDDEN");
+    }
+    var userData = snap.data();
+    var role = userData ? userData.role : null;
+    var isAdmin = role === "admin" || role === "super_admin";
+    if (!isAdmin) {
+      fail("FORBIDDEN");
+    }
+    u.role = role;
+    return u;
+  });
 }
 
 function fbRequireAdmin(fb) {
-  return fbRequireStaff(fb);
+  return fbRequireAdminOrSuper(fb);
 }
 
 function fbHandle(fb, action, d) {
@@ -542,15 +555,13 @@ function fbHandle(fb, action, d) {
             if (!snap.exists) {
               return db.collection("users").where("email", "==", cred.user.email).get().then(function (q) {
                 var p = !q.empty ? q.docs[0].data() : null;
-                var role = (p && p.role) ? p.role : (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
-                if (isKnownAdminEmail(cred.user.email)) role = "super_admin";
+                var role = p ? p.role : null;
                 var fullName = (p && p.fullName) ? p.fullName : cred.user.email;
                 return { ok: true, token: cred.user.uid, role: role, fullName: fullName, email: cred.user.email };
               });
             }
             var p = snap.data();
-            var role = p.role || (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
-            if (isKnownAdminEmail(cred.user.email)) role = "super_admin";
+            var role = p ? p.role : null;
             return { ok: true, token: cred.user.uid, role: role, fullName: p.fullName || cred.user.email, email: cred.user.email };
           });
         });
@@ -565,15 +576,14 @@ function fbHandle(fb, action, d) {
         var p = snap.exists ? snap.data() : null;
         if (!p) {
           return db.collection("users").where("email", "==", String(u0.email || "").toLowerCase().trim()).get().then(function (q) {
-            p = !q.empty ? q.docs[0].data() : { email: u0.email, fullName: u0.displayName || u0.email, role: isKnownAdminEmail(u0.email) ? "super_admin" : "student" };
-            var role = p.role || (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
-            if (isKnownAdminEmail(u0.email)) role = "super_admin";
-            return { ok: true, user: { email: p.email || u0.email, fullName: p.fullName || u0.email, phone: p.phone || "", role: role, assignedAgentId: p.assignedAgentId || "", assignedAgentName: p.assignedAgentName || "" } };
+            p = !q.empty ? q.docs[0].data() : null;
+            if (!p) fail("NOT_FOUND");
+            var role = p.role;
+            return { ok: true, user: { uid: u0.uid, email: p.email || u0.email, fullName: p.fullName || u0.email, phone: p.phone || "", role: role, assignedAgentId: p.assignedAgentId || "", assignedAgentName: p.assignedAgentName || "" } };
           });
         }
-        var role = p.role || (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
-        if (isKnownAdminEmail(u0.email)) role = "super_admin";
-        return { ok: true, user: { email: p.email || u0.email, fullName: p.fullName || u0.email, phone: p.phone || "", role: role, assignedAgentId: p.assignedAgentId || "", assignedAgentName: p.assignedAgentName || "" } };
+        var role = p.role;
+        return { ok: true, user: { uid: u0.uid, email: p.email || u0.email, fullName: p.fullName || u0.email, phone: p.phone || "", role: role, assignedAgentId: p.assignedAgentId || "", assignedAgentName: p.assignedAgentName || "" } };
       });
     }
 
@@ -972,9 +982,9 @@ function fbHandle(fb, action, d) {
             if (u && u.uid && !userMap[u.uid]) {
               userMap[u.uid] = {
                 id: u.uid,
-                fullName: u.displayName || u.email || "Super Admin",
+                fullName: u.displayName || u.email || "Admin User",
                 email: u.email || "",
-                role: isKnownAdminEmail(u.email) ? "super_admin" : "admin",
+                role: u.role || "admin",
                 assignedAgentId: "",
                 assignedAgentName: ""
               };
@@ -988,19 +998,10 @@ function fbHandle(fb, action, d) {
     }
 
     case "adminUpdateUserRole": {
-      return fbRequireStaff(fb).then(function (u) {
-        if (isKnownAdminEmail(u.email)) {
-          return db.collection("users").doc(String(d.userId)).update({ role: d.role }).then(function () { return { ok: true }; });
-        }
-        return db.collection("users").doc(u.uid).get().then(function (callerSnap) {
-          var callerData = callerSnap.exists ? callerSnap.data() : null;
-          var callerRole = (callerData && callerData.role) ? callerData.role : (isKnownAdminEmail(u.email) ? "super_admin" : "student");
-          if (isKnownAdminEmail(u.email)) callerRole = "super_admin";
-          if (callerRole !== "super_admin" && callerRole !== "admin") fail("FORBIDDEN");
-          return db.collection("users").doc(String(d.userId)).update({
-            role: d.role
-          }).then(function () { return { ok: true }; });
-        });
+      return fbRequireAdminOrSuper(fb).then(function (u) {
+        return db.collection("users").doc(String(d.userId)).update({
+          role: d.role
+        }).then(function () { return { ok: true }; });
       });
     }
 
@@ -1027,53 +1028,29 @@ function fbHandle(fb, action, d) {
     }
 
     case "adminAssignAgent": {
-      return fbRequireStaff(fb).then(function (u) {
-        if (isKnownAdminEmail(u.email)) {
-          return db.collection("users").doc(String(d.studentId)).update({
-            assignedAgentId: d.agentId || "",
-            assignedAgentName: d.agentName || ""
-          }).then(function () {
-            return db.collection("applications").doc(String(d.studentId)).get().then(function (appSnap) {
-              if (appSnap.exists) {
-                return db.collection("applications").doc(String(d.studentId)).update({
-                  assignedAgentId: d.agentId || "",
-                  assignedAgentName: d.agentName || ""
-                });
-              }
-            });
-          }).then(function () { return { ok: true }; });
-        }
-        return db.collection("users").doc(u.uid).get().then(function (callerSnap) {
-          var callerData = callerSnap.exists ? callerSnap.data() : null;
-          var callerRole = (callerData && callerData.role) ? callerData.role : (isKnownAdminEmail(u.email) ? "super_admin" : "student");
-          if (isKnownAdminEmail(u.email)) callerRole = "super_admin";
-          if (callerRole !== "super_admin" && callerRole !== "admin") fail("FORBIDDEN");
-          return db.collection("users").doc(String(d.studentId)).update({
-            assignedAgentId: d.agentId || "",
-            assignedAgentName: d.agentName || ""
-          }).then(function () {
-            return db.collection("applications").doc(String(d.studentId)).get().then(function (appSnap) {
-              if (appSnap.exists) {
-                return db.collection("applications").doc(String(d.studentId)).update({
-                  assignedAgentId: d.agentId || "",
-                  assignedAgentName: d.agentName || ""
-                });
-              }
-            });
-          }).then(function () { return { ok: true }; });
-        });
+      return fbRequireAdminOrSuper(fb).then(function (u) {
+        return db.collection("users").doc(String(d.studentId)).update({
+          assignedAgentId: d.agentId || "",
+          assignedAgentName: d.agentName || ""
+        }).then(function () {
+          return db.collection("applications").doc(String(d.studentId)).get().then(function (appSnap) {
+            if (appSnap.exists) {
+              return db.collection("applications").doc(String(d.studentId)).update({
+                assignedAgentId: d.agentId || "",
+                assignedAgentName: d.agentName || ""
+              });
+            }
+          });
+        }).then(function () { return { ok: true }; });
       });
     }
 
     case "adminListTasks": {
-      var uTask = fbUser(fb);
-      return db.collection("users").doc(uTask.uid).get().then(function (uSnap) {
-        var uData = uSnap.exists ? uSnap.data() : null;
-        var r = (uData && uData.role) ? uData.role : (isKnownAdminEmail(uTask.email) ? "super_admin" : "student");
-        if (isKnownAdminEmail(uTask.email)) r = "super_admin";
+      return fbRequireStaff(fb).then(function (u) {
+        var r = u.role;
         var query = db.collection("tasks");
         if (r === "student") {
-          return query.where("assignedTo", "==", uTask.uid).get().then(function (q) {
+          return query.where("assignedTo", "==", u.uid).get().then(function (q) {
             return { ok: true, tasks: q.docs.map(function (s) { var x = s.data(); x.id = s.id; return x; }) };
           });
         } else {
@@ -1088,7 +1065,7 @@ function fbHandle(fb, action, d) {
     case "adminCreateTask": {
       return fbRequireStaff(fb).then(function (u) {
         return db.collection("users").doc(u.uid).get().then(function (callerSnap) {
-          var callerData = callerSnap.exists ? callerSnap.data() : { fullName: u.displayName || u.email || "Super Admin" };
+          var callerData = callerSnap.exists ? callerSnap.data() : { fullName: u.displayName || u.email || "Admin" };
           var task = {
             title: String(d.title || "Task"),
             description: String(d.description || ""),
@@ -1096,7 +1073,7 @@ function fbHandle(fb, action, d) {
             assignedToName: String(d.assignedToName || ""),
             assignedToEmail: String(d.assignedToEmail || ""),
             assignedBy: u.uid,
-            assignedByName: (callerData && callerData.fullName) ? callerData.fullName : (u.displayName || u.email || "Super Admin"),
+            assignedByName: (callerData && callerData.fullName) ? callerData.fullName : (u.displayName || u.email || "Admin"),
             status: String(d.status || "todo"),
             stage: String(d.stage || "admission"),
             priority: String(d.priority || "normal"),
@@ -1106,7 +1083,7 @@ function fbHandle(fb, action, d) {
           return db.collection("tasks").add(task).then(function (ref) {
             task.id = ref.id;
             if (d.assignedTo) {
-              fbTriggerAlert(db, String(d.assignedTo), "task_assigned", "Super Admin assigned task: " + task.title + (d.dueDate ? " (Due: " + d.dueDate + ")" : ""));
+              fbTriggerAlert(db, String(d.assignedTo), "task_assigned", "Assigned task: " + task.title + (d.dueDate ? " (Due: " + d.dueDate + ")" : ""));
             }
             if (d.assignedToEmail) {
               fetch('/api/notify-task-assigned', {
@@ -1138,9 +1115,8 @@ function fbHandle(fb, action, d) {
         
         return db.collection("users").doc(uUpd.uid).get().then(function (uSnap) {
           var uData = uSnap.exists ? uSnap.data() : null;
-          var role = (uData && uData.role) ? uData.role : (isKnownAdminEmail(uUpd.email) ? "super_admin" : "student");
-          if (isKnownAdminEmail(uUpd.email)) role = "super_admin";
-          var isStaff = role === "super_admin" || role === "admin" || role === "agent";
+          var role = uData ? uData.role : null;
+          var isStaff = role === "super_admin" || role === "admin" || role === "staff" || role === "agent";
           if (!isStaff && taskData.assignedTo !== uUpd.uid) fail("FORBIDDEN");
           
           var upd = {};
@@ -1579,9 +1555,8 @@ function mockHandle(action, data) {
   function needStaff() {
     needSession();
     var cur = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-    if (sess && (sess.role === "super_admin" || sess.role === "admin" || sess.role === "agent")) return;
-    if (cur && isKnownAdminEmail(cur.email)) return;
-    if (!cur || (cur.role !== "admin" && cur.role !== "super_admin" && cur.role !== "agent")) {
+    if (sess && (sess.role === "super_admin" || sess.role === "admin" || sess.role === "staff" || sess.role === "agent")) return;
+    if (!cur || (cur.role !== "admin" && cur.role !== "super_admin" && cur.role !== "staff" && cur.role !== "agent")) {
       fail("FORBIDDEN");
     }
   }
@@ -1589,7 +1564,6 @@ function mockHandle(action, data) {
     needSession();
     var cur = db.users.filter(function (x) { return x.id === sess.userId; })[0];
     if (sess && (sess.role === "super_admin" || sess.role === "admin")) return;
-    if (cur && isKnownAdminEmail(cur.email)) return;
     if (!cur || (cur.role !== "admin" && cur.role !== "super_admin")) {
       fail("FORBIDDEN");
     }

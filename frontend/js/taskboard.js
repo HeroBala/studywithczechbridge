@@ -283,7 +283,7 @@ var TaskBoardComponent = (function () {
 
   function loadUsers() {
     // Only staff can list users
-    var isStaff = _session.role === "admin" || _session.role === "super_admin" || _session.role === "agent";
+    var isStaff = _session.role === "admin" || _session.role === "super_admin" || _session.role === "staff" || _session.role === "agent";
     if (!isStaff) return Promise.resolve();
 
     return api("adminListUsers").then(function (res) {

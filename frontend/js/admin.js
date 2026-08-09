@@ -63,22 +63,53 @@
     return isNaN(d) ? String(iso) : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    // Render current role in subtitle
-    var roleLabel = sess.role === "super_admin" ? "Super Admin" : (sess.role === "agent" ? "Brno Agent" : "Admin");
+  function getRoleLabel(role) {
+    if (role === "admin") return "Admin";
+    if (role === "staff") return "Staff";
+    if (role === "super_admin") return "Super Admin";
+    if (role === "agent") return "Brno Agent";
+    return role ? String(role) : "User";
+  }
+
+  function renderRoleUI(role) {
     var roleDisplayEl = document.getElementById("admin-role-display");
     if (roleDisplayEl) {
-      roleDisplayEl.textContent = roleLabel;
-      // Style appropriately
-      roleDisplayEl.className = "badge-role " + sess.role;
+      roleDisplayEl.textContent = getRoleLabel(role);
+      roleDisplayEl.className = "badge-role " + (role || "student");
     }
 
-    // Enforce role-based access to the Users tab
-    var isFullAdmin = sess.role === "super_admin" || sess.role === "admin";
+    var isFullAdmin = role === "super_admin" || role === "admin";
     var tabUsersBtn = document.getElementById("tab-users-btn");
-    if (tabUsersBtn && !isFullAdmin) {
-      tabUsersBtn.style.display = "none";
+    if (tabUsersBtn) {
+      tabUsersBtn.style.display = isFullAdmin ? "inline-block" : "none";
     }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Render current role in subtitle
+    if (sess && sess.role) {
+      renderRoleUI(sess.role);
+    }
+
+    // Fetch fresh profile from Firestore
+    api("getMe").then(function (meRes) {
+      if (meRes && meRes.user) {
+        var freshRole = meRes.user.role;
+        var isStaffRole = freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent";
+        if (!isStaffRole) {
+          location.href = "dashboard.html";
+          return;
+        }
+        sess.role = freshRole;
+        if (meRes.user.fullName) sess.fullName = meRes.user.fullName;
+        if (meRes.user.email) sess.email = meRes.user.email;
+        setSession(sess);
+
+        renderRoleUI(freshRole);
+      }
+    }).catch(function (err) {
+      console.warn("Could not refresh user role from Firestore:", err);
+    });
 
     // Set up click handlers on Tab buttons
     var tabs = document.querySelectorAll(".admin-tab");
