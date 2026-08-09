@@ -103,57 +103,205 @@
 <section class="section alt">
   <div class="container">
     <div style="text-align: center; max-width: 800px; margin: 0 auto 2.5rem auto;">
-      <h2 style="color: var(--blue-900); font-size: 1.8rem; font-weight: 800;">Supported Destination Tracks</h2>
-      <p class="muted" style="font-size: 1rem;">When you register, select your target country and expertise level to view your exact customized step-by-step roadmap.</p>
+      <div class="kicker" style="color:var(--red-500);font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;margin-bottom:0.4rem;">Global Opportunities</div>
+      <h2 style="color: var(--blue-900); font-size: 2rem; font-weight: 800; margin-bottom: 0.6rem;">Supported Destination Tracks</h2>
+      <p class="muted" style="font-size: 1.05rem; line-height: 1.6;">When you register, select your target country and expertise level to view your exact customized step-by-step roadmap.</p>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇨🇿 Czech Republic</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">20-Step Admission Roadmap</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nostrification, Czech/English university enrolment, Brno/Prague student orientation, and long-term D visa.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+      <!-- Czech Republic -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇨🇿 Czech Republic</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">20 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">20-Step Admission Roadmap</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Nostrification, Czech/English university enrolment, Brno/Prague student orientation, and long-term D visa.</p>
+        </div>
+        <a href="register.html?track=czech" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Czech Track &rarr;</a>
       </div>
 
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇩🇪 Germany</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">10-Step Uni-Assist &amp; Blocked Account</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Anabin qualification check, Uni-Assist VPD evaluation, Zulassungsbescheid &amp; €11,904 Blocked Account guidance.</p>
+      <!-- Germany -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--blue-800); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇩🇪 Germany</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">10 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">10-Step Uni-Assist &amp; Blocked Account</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Anabin qualification check, Uni-Assist VPD evaluation, Zulassungsbescheid &amp; €11,904 Blocked Account guidance.</p>
+        </div>
+        <a href="register.html?track=germany" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Germany Track &rarr;</a>
       </div>
 
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇦🇹 Austria</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">9-Step Zulassungsbescheid Track</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Pre-enrolment, admission letter, OeAD dormitory reservation, and MA35 residence permit application.</p>
+      <!-- Austria -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇦🇹 Austria</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">9 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">9-Step Zulassungsbescheid Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Pre-enrolment, admission letter, OeAD dormitory reservation, and MA35 residence permit application.</p>
+        </div>
+        <a href="register.html?track=austria" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Austria Track &rarr;</a>
       </div>
 
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇮🇹 Italy</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">8-Step Universitaly &amp; CIMEA Track</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">CIMEA comparability statements, Universitaly portal pre-enrolment, Codice Fiscale &amp; Type D Study Visa.</p>
+      <!-- Italy -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--blue-800); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇮🇹 Italy</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">8 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">8-Step Universitaly &amp; CIMEA Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">CIMEA comparability statements, Universitaly portal pre-enrolment, Codice Fiscale &amp; Type D Study Visa.</p>
+        </div>
+        <a href="register.html?track=italy" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Italy Track &rarr;</a>
       </div>
 
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇬🇧 United Kingdom</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">10-Step CAS &amp; Student Visa Track</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">UCAS/direct applications, CAS issuance, IHS surcharge payment, and VFS biometrics guidance.</p>
+      <!-- United Kingdom -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇬🇧 United Kingdom</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">10 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">10-Step CAS &amp; Student Visa Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">UCAS/direct applications, CAS issuance, IHS surcharge payment, and VFS biometrics guidance.</p>
+        </div>
+        <a href="register.html?track=uk" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start UK Track &rarr;</a>
       </div>
 
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇮🇪 Ireland</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">8-Step CAO &amp; Stamp 2 Visa Track</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Irish university offers, fee receipt, €10,000 proof of funds, AVATS visa portal &amp; IRP card registration.</p>
+      <!-- Ireland -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--blue-800); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇮🇪 Ireland</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">8 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">8-Step CAO &amp; Stamp 2 Visa Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Irish university offers, fee receipt, €10,000 proof of funds, AVATS visa portal &amp; IRP card registration.</p>
+        </div>
+        <a href="register.html?track=ireland" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Ireland Track &rarr;</a>
       </div>
 
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇨🇦 Canada</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">8-Step DLI &amp; PAL Study Track</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">DLI acceptance letter, Provincial Attestation Letter (PAL), $20,635 GIC account &amp; IRCC study permit.</p>
+      <!-- Canada -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇨🇦 Canada</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">8 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">8-Step DLI &amp; PAL Study Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">DLI acceptance letter, Provincial Attestation Letter (PAL), $20,635 GIC account &amp; IRCC study permit.</p>
+        </div>
+        <a href="register.html?track=canada" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Canada Track &rarr;</a>
       </div>
 
-      <div style="background: #ffffff; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--line);">
-        <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🇦🇺 Australia</div>
-        <h4 style="margin: 0 0 0.4rem 0; color: var(--blue-900);">8-Step CRICOS &amp; Subclass 500 Track</h4>
-        <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">CRICOS course enrolment, eCoE confirmation, OSHC health cover, Genuine Student test &amp; visa.</p>
+      <!-- Australia -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--blue-800); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇦🇺 Australia</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">8 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">8-Step CRICOS &amp; Subclass 500 Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">CRICOS course enrolment, eCoE confirmation, OSHC health cover, Genuine Student test &amp; visa.</p>
+        </div>
+        <a href="register.html?track=australia" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Australia Track &rarr;</a>
+      </div>
+
+      <!-- Poland -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇵🇱 Poland</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">10 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">10-Step Polish University &amp; National D Visa Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Zaświadczenie admission, Polish sworn translation, Voivodeship work permission, e-Konsulat D visa &amp; Karta Pobytu.</p>
+        </div>
+        <a href="register.html?track=poland" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Poland Track &rarr;</a>
+      </div>
+
+      <!-- France -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--blue-800); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇫🇷 France</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">7 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">7-Step Campus France &amp; Long-Stay VLS-TS Visa Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Etudes en France (EEF) portal, mandatory interview, France-Visas portal, VLS-TS visa &amp; ANEF online validation.</p>
+        </div>
+        <a href="register.html?track=france" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start France Track &rarr;</a>
+      </div>
+
+      <!-- Spain -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇪🇸 Spain</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">7 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">7-Step UNEDasiss &amp; Estancia por Estudios TIE Card Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">UNEDasiss homologation, Carta de Admisión, Consular Visado de Estancia, Empadronamiento address registration &amp; TIE Card.</p>
+        </div>
+        <a href="register.html?track=spain" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Spain Track &rarr;</a>
+      </div>
+
+      <!-- Sweden -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--blue-800); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇸🇪 Sweden</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">9 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">9-Step UniversityAdmissions.se &amp; Migrationsverket Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Central admissions portal, SEK 900 fee, selection results, Swedish Migration Agency residence permit &amp; Skatteverket Personnummer.</p>
+        </div>
+        <a href="register.html?track=sweden" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Sweden Track &rarr;</a>
+      </div>
+
+      <!-- Netherlands -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇳🇱 Netherlands</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">8 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">8-Step Studielink &amp; Recognized Sponsor IND Track</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Studielink registration, Research (WO) / Applied (HBO) universities, IND fast-track visa sponsor &amp; BSN citizen number.</p>
+        </div>
+        <a href="register.html?track=netherlands" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Netherlands Track &rarr;</a>
+      </div>
+
+      <!-- Serbia -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--blue-800); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇷🇸 Serbia Work Visa</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">8 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">8-Step National Employment Service (NES) Work Visa Roadmap</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Labour market test, NES pre-approval, Type D visa stamping, Belgrade White Card &amp; residence card.</p>
+        </div>
+        <a href="register.html?track=serbia" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Serbia Track &rarr;</a>
+      </div>
+
+      <!-- Malaysia -->
+      <div class="card" style="background: #ffffff; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--line); border-top: 4px solid var(--red-500); box-shadow: 0 4px 14px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--blue-900);">🇲🇾 Malaysia Work &amp; Study</span>
+            <span style="background: var(--blue-900); color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">8 Steps</span>
+          </div>
+          <h4 style="margin: 0 0 0.5rem 0; color: var(--blue-900); font-size: 1.1rem; font-weight: 700;">8-Step Work Permit &amp; Calling Visa (ESD) Roadmap</h4>
+          <p style="font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 1.25rem 0;">Fast-track employment visa, ESD clearance, VDR Calling Visa, KLIA entry &amp; i-Kad endorsement.</p>
+        </div>
+        <a href="register.html?track=malaysia" class="btn btn-outline" style="width: 100%; text-align: center; font-size: 0.85rem; padding: 0.5rem; font-weight: 700; border-radius: 6px;">Start Malaysia Track &rarr;</a>
       </div>
     </div>
   </div>

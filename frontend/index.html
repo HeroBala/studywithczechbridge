@@ -37,18 +37,21 @@
       </div>
     </div>
 
-    <!-- European Countries + Serbia & Malaysia Track Selector Tabs -->
+    <!-- European & International Track Selector Tabs -->
     <div style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:2.5rem;" id="home-process-track-tabs">
       <button class="btn btn-dark home-track-btn active" data-track="czech" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇨🇿 Czech Republic (20 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="germany" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇩🇪 Germany (10 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="poland" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇵🇱 Poland (10 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="austria" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇦🇹 Austria (9 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="italy" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇮🇹 Italy (8 Steps)</button>
+      <button class="btn btn-outline home-track-btn" data-track="uk" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇬🇧 United Kingdom (10 Steps)</button>
+      <button class="btn btn-outline home-track-btn" data-track="ireland" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇮🇪 Ireland (8 Steps)</button>
+      <button class="btn btn-outline home-track-btn" data-track="canada" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇨🇦 Canada (8 Steps)</button>
+      <button class="btn btn-outline home-track-btn" data-track="australia" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇦🇺 Australia (8 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="france" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇫🇷 France (7 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="spain" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇪🇸 Spain (7 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="sweden" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇸🇪 Sweden (9 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="netherlands" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇳🇱 Netherlands (8 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="ireland" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇮🇪 Ireland (8 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="serbia" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇷🇸 Serbia Work Visa (8 Steps)</button>
       <button class="btn btn-outline home-track-btn" data-track="malaysia" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇲🇾 Malaysia Work &amp; Study (8 Steps)</button>
     </div>
@@ -162,10 +165,22 @@ document.addEventListener("DOMContentLoaded", function() {
       stepsData = typeof ITALY_STEPS !== "undefined" ? ITALY_STEPS : [];
       title = "🇮🇹 Italy — 8-Step Universitaly Portal & CIMEA Study Visa D Track";
       desc = "CIMEA comparability statement, Universitaly pre-enrolment, Type D visa, Codice Fiscale & Permesso di Soggiorno.";
+    } else if (track === "uk") {
+      stepsData = typeof UK_STEPS !== "undefined" ? UK_STEPS : [];
+      title = "🇬🇧 United Kingdom — 10-Step CAS & Student Visa Track";
+      desc = "UCAS/direct applications, CAS issuance, IHS surcharge payment, and VFS biometrics guidance.";
     } else if (track === "ireland") {
       stepsData = typeof IRELAND_STEPS !== "undefined" ? IRELAND_STEPS : [];
       title = "🇮🇪 Ireland — 8-Step CAO & Stamp 2 Student Visa Track";
       desc = "Irish higher education offer, fee receipt, €10,000 proof of funds, AVATS visa, Dublin landing & IRP Card.";
+    } else if (track === "canada") {
+      stepsData = typeof CANADA_STEPS !== "undefined" ? CANADA_STEPS : [];
+      title = "🇨🇦 Canada — 8-Step DLI & PAL Study Track";
+      desc = "DLI acceptance letter, Provincial Attestation Letter (PAL), $20,635 GIC account & IRCC study permit.";
+    } else if (track === "australia") {
+      stepsData = typeof AUSTRALIA_STEPS !== "undefined" ? AUSTRALIA_STEPS : [];
+      title = "🇦🇺 Australia — 8-Step CRICOS & Subclass 500 Track";
+      desc = "CRICOS course enrolment, eCoE confirmation, OSHC health cover, Genuine Student test & visa.";
     } else if (track === "sweden") {
       stepsData = typeof SWEDEN_STEPS !== "undefined" ? SWEDEN_STEPS : [];
       title = "🇸🇪 Sweden — 9-Step UniversityAdmissions.se & Migrationsverket Track";
