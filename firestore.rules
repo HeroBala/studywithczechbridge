@@ -11,14 +11,30 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Allow full read and write access for all authenticated users (Super Admins, Admins, Agents, Students)
-    match /{document=**} {
-      allow read, write: if signedIn();
+    // Publicly accessible collections for homepage and directory listings
+    match /universities/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /testimonials/{id} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /packages/{id} {
+      allow read: if true;
+      allow write: if true;
     }
 
     // Public contact form message submission
     match /messages/{id} {
       allow create: if true;
+      allow read, write: if signedIn();
+    }
+
+    // Default catch-all for authenticated users (Applications, Documents, Users, Tasks, Alerts, Config)
+    match /{document=**} {
       allow read, write: if signedIn();
     }
   }

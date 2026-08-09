@@ -16,14 +16,14 @@ app.use(express.json({ limit: '10mb' }));
 const CONFIG_FILE = path.join(__dirname, 'email-config.json');
 
 let emailConfig = {
-  host: process.env.EMAIL_SMTP_HOST || '',
-  port: parseInt(process.env.EMAIL_SMTP_PORT || '587', 10),
-  secure: process.env.EMAIL_SMTP_SECURE === 'true',
-  user: process.env.EMAIL_SMTP_USER || '',
+  host: process.env.EMAIL_SMTP_HOST || 'mail.privateemail.com',
+  port: parseInt(process.env.EMAIL_SMTP_PORT || '465', 10),
+  secure: process.env.EMAIL_SMTP_SECURE ? process.env.EMAIL_SMTP_SECURE === 'true' : true,
+  user: process.env.EMAIL_SMTP_USER || 'info@studywithczechbridge.com',
   pass: process.env.EMAIL_SMTP_PASS || '',
   fromEmail: process.env.EMAIL_FROM || 'info@studywithczechbridge.com',
-  fromName: process.env.EMAIL_FROM_NAME || 'StudyCzechBridge Admissions',
-  adminEmail: process.env.EMAIL_ADMIN_NOTIFY || 'info@studywithczechbridge.com',
+  fromName: process.env.EMAIL_FROM_NAME || 'Study With Czech Bridge',
+  adminEmail: process.env.EMAIL_ADMIN_NOTIFY || '1997herobala@gmail.com',
   notifyOnLogin: true,
   notifyOnAdmissionUpdate: true,
   notifyOnDocumentUpload: true

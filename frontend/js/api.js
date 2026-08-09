@@ -1343,6 +1343,9 @@ function fbHandle(fb, action, d) {
           return { ok: true, packages: DEFAULT_PACKAGES };
         }
         return { ok: true, packages: pkgs };
+      }).catch(function (err) {
+        console.warn("getPackages Firestore error, using defaults:", err);
+        return { ok: true, packages: DEFAULT_PACKAGES };
       });
     }
 
@@ -1425,9 +1428,14 @@ function fbHandle(fb, action, d) {
           return batch.commit().then(function () {
             list = DEFAULT_UNIVERSITIES.slice();
             return filterUniversitiesResult(list, d);
+          }).catch(function() {
+            return filterUniversitiesResult(DEFAULT_UNIVERSITIES.slice(), d);
           });
         }
         return filterUniversitiesResult(list, d);
+      }).catch(function (err) {
+        console.warn("getUniversities Firestore error, using defaults:", err);
+        return filterUniversitiesResult(DEFAULT_UNIVERSITIES.slice(), d);
       });
     }
 
@@ -1483,9 +1491,14 @@ function fbHandle(fb, action, d) {
           });
           return batch.commit().then(function () {
             return { ok: true, testimonials: DEFAULT_TESTIMONIALS.slice() };
+          }).catch(function() {
+            return { ok: true, testimonials: DEFAULT_TESTIMONIALS.slice() };
           });
         }
         return { ok: true, testimonials: list };
+      }).catch(function (err) {
+        console.warn("getTestimonials Firestore error, using defaults:", err);
+        return { ok: true, testimonials: DEFAULT_TESTIMONIALS.slice() };
       });
     }
 
