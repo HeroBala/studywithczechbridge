@@ -68,6 +68,60 @@
   </div>
 </section>
 
+<section class="section alt" id="university-database-section">
+  <div class="container">
+    <div class="section-head" style="text-align: left; margin-bottom: 1.5rem;">
+      <div class="kicker">Comprehensive Directory</div>
+      <h2>🏛️ Global Universities &amp; Country Database</h2>
+      <p class="muted">Explore accredited public and private universities across destination countries. View official website links, department subject counts, and tuition fee ranges.</p>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card" style="margin-bottom: 1.5rem; background: #ffffff; border: 1px solid var(--line); padding: 1rem 1.25rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; flex: 1; min-width: 280px;">
+          <input type="text" id="uni-search" placeholder="🔍 Search university name, country, website, tuition fees..." style="flex: 1; min-width: 220px; padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem;">
+          
+          <select id="uni-country-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 170px;">
+            <option value="">🌍 All Countries</option>
+          </select>
+
+          <select id="uni-type-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 140px;">
+            <option value="">🏛️ All Types</option>
+            <option value="Public">Public University</option>
+            <option value="Private">Private University</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <span class="badge" id="uni-count-badge" style="background: var(--blue-900); color: white; font-size: 0.85rem; padding: 0.45rem 0.85rem; border-radius: 20px;">Loading Database...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8-Column Data Table Container -->
+    <div style="overflow-x: auto; background: white; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+      <table class="table" style="width: 100%; border-collapse: collapse; min-width: 1000px; font-size: 0.88rem;">
+        <thead>
+          <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid var(--line);">
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 12%;">1. Country</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 22%;">2. University &amp; Website</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">3. Total Univ.</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">4. Type</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 8%; text-align: center;">5. Science</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">6. Commerce</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">7. Arts / Eng</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 20%; background: #eef2ff;">8. Tuition Fees Range</th>
+          </tr>
+        </thead>
+        <tbody id="uni-table-body">
+          <tr><td colspan="8" style="text-align: center; padding: 2.5rem;" class="muted">Loading global university database...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 <section class="section alt">
   <div class="container">
     <div class="section-head">
@@ -100,5 +154,6 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/layout.js"></script>
+<script src="js/programs.js"></script>
 </body>
 </html>

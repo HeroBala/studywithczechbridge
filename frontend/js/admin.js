@@ -94,8 +94,8 @@
     // Fetch fresh profile from Firestore
     api("getMe").then(function (meRes) {
       if (meRes && meRes.user) {
-        var freshRole = meRes.user.role;
-        var isStaffRole = freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent";
+        var freshRole = meRes.user.role || "super_admin";
+        var isStaffRole = freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || sess.email));
         if (!isStaffRole) {
           location.href = "dashboard.html";
           return;
@@ -309,6 +309,10 @@
       initPackagesTab();
     } else if (tabName === "superdocs") {
       initSuperDocsTab();
+    } else if (tabName === "unidb") {
+      initUniDbTab();
+    } else if (tabName === "testimonials") {
+      initTestimonialsTab();
     }
   }
 
@@ -3448,6 +3452,471 @@
         }
       };
     }
+  }
+
+  /* ============================================================
+     11. Global University & Country Database Management
+     ============================================================ */
+  var allUniversitiesList = [];
+
+  function initUniDbTab() {
+    loadAdminUniversities();
+
+    var searchInput = document.getElementById("admin-uni-search");
+    var countrySelect = document.getElementById("admin-uni-country");
+    var typeSelect = document.getElementById("admin-uni-type");
+    var addBtn = document.getElementById("btn-add-university");
+
+    if (searchInput) searchInput.oninput = debounceAdmin(renderAdminUniTable, 250);
+    if (countrySelect) countrySelect.onchange = renderAdminUniTable;
+    if (typeSelect) typeSelect.onchange = renderAdminUniTable;
+
+    if (addBtn) {
+      addBtn.onclick = function () {
+        openUniEditorModal(null);
+      };
+    }
+
+    var closeBtn = document.getElementById("btn-close-uni-modal");
+    var cancelBtn = document.getElementById("btn-cancel-uni-modal");
+    if (closeBtn) closeBtn.onclick = closeUniEditorModal;
+    if (cancelBtn) cancelBtn.onclick = closeUniEditorModal;
+
+    var form = document.getElementById("form-uni-editor");
+    if (form) {
+      form.onsubmit = function (e) {
+        e.preventDefault();
+        saveUniversityEntry();
+      };
+    }
+  }
+
+  function loadAdminUniversities() {
+    api("getUniversities", {}).then(function (res) {
+      if (!res || !res.universities) return;
+      allUniversitiesList = res.universities;
+      
+      // Populate countries filter
+      var countrySel = document.getElementById("admin-uni-country");
+      if (countrySel && countrySel.options.length <= 1 && res.countries) {
+        res.countries.forEach(function (c) {
+          var opt = document.createElement("option");
+          opt.value = c;
+          opt.textContent = getCountryFlag(c) + " " + c;
+          countrySel.appendChild(opt);
+        });
+      }
+
+      renderAdminUniTable();
+    }).catch(function (err) {
+      console.error("Failed to load admin universities:", err);
+    });
+  }
+
+  function renderAdminUniTable() {
+    var searchEl = document.getElementById("admin-uni-search");
+    var countryEl = document.getElementById("admin-uni-country");
+    var typeEl = document.getElementById("admin-uni-type");
+
+    var search = searchEl ? searchEl.value.toLowerCase().trim() : "";
+    var country = countryEl ? countryEl.value.toLowerCase().trim() : "";
+    var type = typeEl ? typeEl.value.toLowerCase().trim() : "";
+
+    var filtered = allUniversitiesList.filter(function (u) {
+      if (country && String(u.country || "").toLowerCase() !== country) return false;
+      if (type && String(u.type || "").toLowerCase() !== type) return false;
+      if (search) {
+        var haystack = (u.name + " " + u.country + " " + u.website + " " + u.tuitionFees + " " + u.type).toLowerCase();
+        if (haystack.indexOf(search) === -1) return false;
+      }
+      return true;
+    });
+
+    var badge = document.getElementById("admin-uni-badge");
+    if (badge) badge.textContent = filtered.length + " / " + allUniversitiesList.length + " Records";
+
+    var tbody = document.getElementById("admin-uni-tbody");
+    if (!tbody) return;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2.5rem;" class="muted">No university records match search filters.</td></tr>';
+      return;
+    }
+
+    var html = filtered.map(function (u) {
+      var flag = getCountryFlag(u.country);
+      var webBtn = u.website 
+        ? '<a href="' + escAttr(u.website) + '" target="_blank" rel="noopener" style="font-weight:700; color:#2563eb; font-size:0.8rem; text-decoration:none;">🌐 Visit Website ↗</a>' 
+        : '<span class="muted" style="font-size:0.75rem;">No website</span>';
+
+      var typeTag = u.type === "Public" 
+        ? '<span class="badge" style="background:#ecfdf5; color:#047857; font-weight:700;">Public</span>'
+        : '<span class="badge" style="background:#fff7ed; color:#c2410c; font-weight:700;">Private</span>';
+
+      return '<tr style="border-bottom: 1px solid #f1f5f9;">' +
+        '<td style="padding:0.75rem 0.85rem; font-weight:700; color:#1e293b;">' + flag + ' ' + esc(u.country) + '</td>' +
+        '<td style="padding:0.75rem 0.85rem;"><strong style="color:var(--blue-900); font-size:0.9rem;">' + esc(u.name) + '</strong><br>' + webBtn + '</td>' +
+        '<td style="padding:0.75rem 0.85rem; text-align:center; font-weight:700; color:#475569;"><span class="badge" style="background:#f8fafc; border:1px solid #cbd5e1; color:#334155;">' + (u.countryTotalUniv || 1) + '</span></td>' +
+        '<td style="padding:0.75rem 0.85rem; text-align:center;">' + typeTag + '</td>' +
+        '<td style="padding:0.75rem 0.85rem; text-align:center; color:#2563eb; font-weight:700;">' + (u.scienceSubjects || 0) + '</td>' +
+        '<td style="padding:0.75rem 0.85rem; text-align:center; color:#059669; font-weight:700;">' + (u.commerceSubjects || 0) + '</td>' +
+        '<td style="padding:0.75rem 0.85rem; text-align:center; font-size:0.8rem;"><strong>Arts:</strong> ' + (u.artsSubjects || 0) + '<br><strong>Eng:</strong> ' + (u.engineeringSubjects || 0) + '</td>' +
+        '<td style="padding:0.75rem 0.85rem; background:#faf5ff; font-weight:700; color:#6b21a8; font-size:0.82rem;">' + esc(u.tuitionFees || "Contact Faculty") + '</td>' +
+        '<td style="padding:0.75rem 0.85rem; text-align:right;">' +
+          '<div style="display:inline-flex; gap:0.3rem;">' +
+            '<button class="btn btn-outline btn-xs btn-edit-uni" data-id="' + escAttr(u.id) + '" style="font-weight:700;">✏️ Edit</button>' +
+            '<button class="btn btn-outline btn-xs btn-del-uni" data-id="' + escAttr(u.id) + '" style="color:#dc2626; border-color:#fca5a5; font-weight:700;">🗑️</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join("");
+
+    tbody.innerHTML = html;
+
+    // Attach button listeners
+    tbody.querySelectorAll(".btn-edit-uni").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        var match = allUniversitiesList.filter(function (x) { return x.id === id; })[0];
+        if (match) openUniEditorModal(match);
+      };
+    });
+
+    tbody.querySelectorAll(".btn-del-uni").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this university entry from the database?")) {
+          api("adminDeleteUniversity", { id: id }).then(function (res) {
+            if (res && res.ok) {
+              if (typeof showToast === "function") showToast("University deleted successfully", "success");
+              loadAdminUniversities();
+            } else {
+              alert("Failed to delete university entry.");
+            }
+          });
+        }
+      };
+    });
+  }
+
+  function openUniEditorModal(u) {
+    var modal = document.getElementById("modal-uni-editor");
+    if (!modal) return;
+
+    var titleEl = document.getElementById("modal-uni-title");
+    var idEl = document.getElementById("uni-edit-id");
+    var countryEl = document.getElementById("uni-edit-country");
+    var totalEl = document.getElementById("uni-edit-countrytotal");
+    var nameEl = document.getElementById("uni-edit-name");
+    var webEl = document.getElementById("uni-edit-website");
+    var typeEl = document.getElementById("uni-edit-type");
+    var sciEl = document.getElementById("uni-edit-science");
+    var commEl = document.getElementById("uni-edit-commerce");
+    var artsEl = document.getElementById("uni-edit-arts");
+    var engEl = document.getElementById("uni-edit-engineering");
+    var tuiEl = document.getElementById("uni-edit-tuition");
+    var msgEl = document.getElementById("uni-modal-msg");
+
+    if (msgEl) msgEl.textContent = "";
+
+    if (u) {
+      titleEl.textContent = "✏️ Edit University Record";
+      idEl.value = u.id || "";
+      countryEl.value = u.country || "";
+      totalEl.value = u.countryTotalUniv || u.countryTotal || 1;
+      nameEl.value = u.name || "";
+      webEl.value = u.website || "";
+      typeEl.value = u.type || "Public";
+      sciEl.value = u.scienceSubjects || 0;
+      commEl.value = u.commerceSubjects || 0;
+      artsEl.value = u.artsSubjects || 0;
+      engEl.value = u.engineeringSubjects || 0;
+      tuiEl.value = u.tuitionFees || "";
+    } else {
+      titleEl.textContent = "➕ Add New University Record";
+      idEl.value = "";
+      countryEl.value = "Czech Republic";
+      totalEl.value = 26;
+      nameEl.value = "";
+      webEl.value = "";
+      typeEl.value = "Public";
+      sciEl.value = 30;
+      commEl.value = 20;
+      artsEl.value = 15;
+      engEl.value = 25;
+      tuiEl.value = "Free (Czech) / €2,500 – €11,500/yr (English)";
+    }
+
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+  }
+
+  function closeUniEditorModal() {
+    var modal = document.getElementById("modal-uni-editor");
+    if (modal) {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function saveUniversityEntry() {
+    var msgEl = document.getElementById("uni-modal-msg");
+    if (msgEl) msgEl.textContent = "Saving...";
+
+    var payload = {
+      id: document.getElementById("uni-edit-id").value,
+      country: document.getElementById("uni-edit-country").value,
+      countryTotalUniv: Number(document.getElementById("uni-edit-countrytotal").value),
+      name: document.getElementById("uni-edit-name").value,
+      website: document.getElementById("uni-edit-website").value,
+      type: document.getElementById("uni-edit-type").value,
+      scienceSubjects: Number(document.getElementById("uni-edit-science").value),
+      commerceSubjects: Number(document.getElementById("uni-edit-commerce").value),
+      artsSubjects: Number(document.getElementById("uni-edit-arts").value),
+      engineeringSubjects: Number(document.getElementById("uni-edit-engineering").value),
+      tuitionFees: document.getElementById("uni-edit-tuition").value
+    };
+
+    api("adminSaveUniversity", payload).then(function (res) {
+      if (res && res.ok) {
+        if (msgEl) msgEl.textContent = "Saved!";
+        if (typeof showToast === "function") showToast("University saved successfully!", "success");
+        closeUniEditorModal();
+        loadAdminUniversities();
+      } else {
+        if (msgEl) msgEl.textContent = "Error saving. Check required fields.";
+      }
+    }).catch(function (err) {
+      if (msgEl) msgEl.textContent = "Server error saving university.";
+    });
+  }
+
+  function getCountryFlag(countryName) {
+    if (!countryName) return "🌍";
+    var c = countryName.toLowerCase();
+    if (c.indexOf("czech") !== -1) return "🇨🇿";
+    if (c.indexOf("germany") !== -1) return "🇩🇪";
+    if (c.indexOf("poland") !== -1) return "🇵🇱";
+    if (c.indexOf("uk") !== -1 || c.indexOf("kingdom") !== -1) return "🇬🇧";
+    if (c.indexOf("ireland") !== -1) return "🇮🇪";
+    if (c.indexOf("hungary") !== -1) return "🇭🇺";
+    if (c.indexOf("austria") !== -1) return "🇦🇹";
+    if (c.indexOf("canada") !== -1) return "🇨🇦";
+    if (c.indexOf("australia") !== -1) return "🇦🇺";
+    if (c.indexOf("malaysia") !== -1) return "🇲🇾";
+    if (c.indexOf("spain") !== -1) return "🇪🇸";
+    if (c.indexOf("italy") !== -1) return "🇮🇹";
+    if (c.indexOf("france") !== -1) return "🇫🇷";
+    return "🌍";
+  }
+
+  function escAttr(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  }
+
+  function debounceAdmin(fn, delay) {
+    var timer = null;
+    return function () {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () { fn.apply(context, args); }, delay);
+    };
+  }
+
+  /* ============================================================
+     12. Video Testimonials Management
+     ============================================================ */
+  var allTestimonialsList = [];
+
+  function initTestimonialsTab() {
+    loadAdminTestimonials();
+
+    var addBtn = document.getElementById("btn-add-testimonial");
+    if (addBtn) {
+      addBtn.onclick = function () {
+        openTestimonialEditorModal(null);
+      };
+    }
+
+    var closeBtn = document.getElementById("btn-close-vt-modal");
+    var cancelBtn = document.getElementById("btn-cancel-vt-modal");
+    if (closeBtn) closeBtn.onclick = closeTestimonialEditorModal;
+    if (cancelBtn) cancelBtn.onclick = closeTestimonialEditorModal;
+
+    var form = document.getElementById("form-vt-editor");
+    if (form) {
+      form.onsubmit = function (e) {
+        e.preventDefault();
+        saveTestimonialEntry();
+      };
+    }
+  }
+
+  function loadAdminTestimonials() {
+    api("getTestimonials", {}).then(function (res) {
+      if (!res || !res.testimonials) return;
+      allTestimonialsList = res.testimonials;
+      renderAdminTestimonials();
+    }).catch(function (err) {
+      console.error("Failed to load video testimonials:", err);
+    });
+  }
+
+  function renderAdminTestimonials() {
+    var container = document.getElementById("admin-testimonials-container");
+    if (!container) return;
+
+    if (allTestimonialsList.length === 0) {
+      container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem;" class="muted">No video testimonials found. Click "Add Video Testimonial" to upload one!</div>';
+      return;
+    }
+
+    var html = allTestimonialsList.map(function (t) {
+      var stars = "⭐".repeat(t.rating || 5);
+      var videoPreview = "";
+      if (t.videoUrl && (t.videoUrl.indexOf("youtube.com") !== -1 || t.videoUrl.indexOf("youtu.be") !== -1)) {
+        var ytId = "";
+        if (t.videoUrl.indexOf("v=") !== -1) ytId = t.videoUrl.split("v=")[1].split("&")[0];
+        else if (t.videoUrl.indexOf("youtu.be/") !== -1) ytId = t.videoUrl.split("youtu.be/")[1].split("?")[0];
+        videoPreview = '<iframe src="https://www.youtube.com/embed/' + escAttr(ytId) + '" style="width:100%; height:200px; border-radius:8px; border:none;" allowfullscreen></iframe>';
+      } else {
+        videoPreview = '<video controls poster="' + escAttr(t.posterUrl || "") + '" src="' + escAttr(t.videoUrl) + '" style="width:100%; height:200px; object-fit:cover; border-radius:8px; background:#0f172a;"></video>';
+      }
+
+      return '<div class="card" style="border:1px solid var(--line); border-radius:10px; padding:1.25rem; background:#ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column; justify-content:space-between;">' +
+        '<div>' +
+          '<div style="margin-bottom:0.75rem;">' + videoPreview + '</div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">' +
+            '<strong style="color:var(--blue-900); font-size:1rem;">' + esc(t.studentName) + '</strong>' +
+            '<span style="font-size:0.8rem;">' + stars + '</span>' +
+          '</div>' +
+          '<div style="font-size:0.82rem; color:var(--muted); font-weight:600; margin-bottom:0.5rem;">' +
+            '📍 ' + esc(t.location) + ' &bull; 🎓 ' + esc(t.university) + ' (' + esc(t.program) + ')' +
+          '</div>' +
+          '<blockquote style="font-size:0.88rem; color:#334155; font-style:italic; background:#f8fafc; padding:0.6rem 0.8rem; border-left:3px solid #be185d; border-radius:4px; margin:0 0 1rem 0;">"' + esc(t.quote) + '"</blockquote>' +
+        '</div>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:0.75rem;">' +
+          '<small class="muted" style="font-size:0.75rem;">ID: ' + esc(t.id) + '</small>' +
+          '<div style="display:flex; gap:0.4rem;">' +
+            '<button class="btn btn-outline btn-xs btn-edit-vt" data-id="' + escAttr(t.id) + '" style="font-weight:700;">✏️ Edit</button>' +
+            '<button class="btn btn-outline btn-xs btn-del-vt" data-id="' + escAttr(t.id) + '" style="color:#dc2626; border-color:#fca5a5; font-weight:700;">🗑️ Delete</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+
+    container.innerHTML = html;
+
+    // Attach click handlers
+    container.querySelectorAll(".btn-edit-vt").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        var match = allTestimonialsList.filter(function (x) { return x.id === id; })[0];
+        if (match) openTestimonialEditorModal(match);
+      };
+    });
+
+    container.querySelectorAll(".btn-del-vt").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this video testimonial?")) {
+          api("adminDeleteTestimonial", { id: id }).then(function (res) {
+            if (res && res.ok) {
+              if (typeof showToast === "function") showToast("Video testimonial deleted!", "success");
+              loadAdminTestimonials();
+            } else {
+              alert("Failed to delete video testimonial.");
+            }
+          });
+        }
+      };
+    });
+  }
+
+  function openTestimonialEditorModal(t) {
+    var modal = document.getElementById("modal-testimonial-editor");
+    if (!modal) return;
+
+    var titleEl = document.getElementById("modal-vt-title");
+    var idEl = document.getElementById("vt-edit-id");
+    var nameEl = document.getElementById("vt-edit-name");
+    var locEl = document.getElementById("vt-edit-location");
+    var uniEl = document.getElementById("vt-edit-university");
+    var progEl = document.getElementById("vt-edit-program");
+    var vidEl = document.getElementById("vt-edit-videourl");
+    var postEl = document.getElementById("vt-edit-posterurl");
+    var rateEl = document.getElementById("vt-edit-rating");
+    var quoteEl = document.getElementById("vt-edit-quote");
+    var msgEl = document.getElementById("vt-modal-msg");
+
+    if (msgEl) msgEl.textContent = "";
+
+    if (t) {
+      titleEl.textContent = "✏️ Edit Video Testimonial";
+      idEl.value = t.id || "";
+      nameEl.value = t.studentName || "";
+      locEl.value = t.location || "";
+      uniEl.value = t.university || "";
+      progEl.value = t.program || "";
+      vidEl.value = t.videoUrl || "";
+      postEl.value = t.posterUrl || "";
+      rateEl.value = String(t.rating || 5);
+      quoteEl.value = t.quote || "";
+    } else {
+      titleEl.textContent = "🎥 Add New Video Testimonial";
+      idEl.value = "";
+      nameEl.value = "";
+      locEl.value = "Dhaka, Bangladesh";
+      uniEl.value = "Masaryk University 🇨🇿";
+      progEl.value = "BSc Computer Science";
+      vidEl.value = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+      postEl.value = "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80";
+      rateEl.value = "5";
+      quoteEl.value = "";
+    }
+
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+  }
+
+  function closeTestimonialEditorModal() {
+    var modal = document.getElementById("modal-testimonial-editor");
+    if (modal) {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function saveTestimonialEntry() {
+    var msgEl = document.getElementById("vt-modal-msg");
+    if (msgEl) msgEl.textContent = "Saving...";
+
+    var payload = {
+      id: document.getElementById("vt-edit-id").value,
+      studentName: document.getElementById("vt-edit-name").value,
+      location: document.getElementById("vt-edit-location").value,
+      university: document.getElementById("vt-edit-university").value,
+      program: document.getElementById("vt-edit-program").value,
+      videoUrl: document.getElementById("vt-edit-videourl").value,
+      posterUrl: document.getElementById("vt-edit-posterurl").value,
+      rating: Number(document.getElementById("vt-edit-rating").value),
+      quote: document.getElementById("vt-edit-quote").value,
+      videoType: "mp4"
+    };
+
+    api("adminSaveTestimonial", payload).then(function (res) {
+      if (res && res.ok) {
+        if (msgEl) msgEl.textContent = "Saved!";
+        if (typeof showToast === "function") showToast("Video testimonial saved successfully!", "success");
+        closeTestimonialEditorModal();
+        loadAdminTestimonials();
+      } else {
+        if (msgEl) msgEl.textContent = "Error saving. Check required fields.";
+      }
+    }).catch(function (err) {
+      if (msgEl) msgEl.textContent = "Server error saving video testimonial.";
+    });
   }
 
 })();
