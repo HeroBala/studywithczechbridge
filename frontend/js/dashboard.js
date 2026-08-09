@@ -69,6 +69,32 @@
 
   /* ---------- Checklist & Steps ---------- */
 
+  function setupCountrySelector(a) {
+    var sel = document.getElementById("dash-country-select");
+    var label = document.getElementById("dash-active-country-label");
+    if (!sel) return;
+
+    var curCountry = a ? (a.targetCountry || a.country || "Czech Republic") : "Czech Republic";
+    sel.value = curCountry;
+    if (label) label.textContent = curCountry;
+
+    sel.onchange = function () {
+      var newCountry = sel.value;
+      if (label) label.textContent = newCountry;
+      if (a) {
+        a.targetCountry = newCountry;
+      } else {
+        a = { targetCountry: newCountry, status: "Pending Review" };
+      }
+      render20StepsGrid(a.status || "Pending Review", a);
+      renderStudentFinancialLedger(a);
+
+      api("updateMyApplication", { targetCountry: newCountry }).catch(function (err) {
+        console.warn("Update country error:", err);
+      });
+    };
+  }
+
   function loadTasks() {
     TaskBoardComponent.init("role-taskboard-container", sess);
   }
@@ -95,9 +121,11 @@
       badge.textContent = a.status;
       badge.className = "badge " + (BADGE_CLASS[a.status] || "st-pending");
 
+      setupCountrySelector(a);
       renderTracker(a.status);
       render20StepsGrid(a.status, a);
       renderCounselorCard(a);
+      renderStudentFinancialLedger(a);
 
       if (a.adminNotes) {
         var note = document.getElementById("admin-note-box");
@@ -157,62 +185,122 @@
     if (!steps.length) return;
 
     var totalSteps = steps.length;
-
-    // Map current overall application status to approximate step index
-    var statusStepMap = {
-      "Pending Review": 1,
-      "Under Review": 2,
-      "Document Requested": 3,
-      "Document Received": 4,
-      "Document Evaluated": Math.min(7, totalSteps),
-      "Legalization": Math.min(5, totalSteps),
-      "Super Legalization": Math.min(6, totalSteps),
-      "Nostrification": Math.min(9, totalSteps),
-      "University Selected": 2,
-      "Program Selected": 2,
-      "Applied to Universities": Math.min(8, totalSteps),
-      "Waiting for Entrance Exam": Math.min(11, totalSteps),
-      "Conditional Admission Letter Received": Math.min(13, totalSteps),
-      "Tuition Fees Paid": Math.min(14, totalSteps),
-      "Main Offer Letter Received": Math.min(15, totalSteps),
-      "Prepared Documents for Visa": Math.min(16, totalSteps),
-      "Appointment Scheduled": Math.min(17, totalSteps),
-      "Interview Preparation": Math.min(18, totalSteps),
-      "Visa Processing": Math.min(18, totalSteps),
-      "Accepted": totalSteps
-    };
-
-    var currentStepNum = statusStepMap[currentStatus] || 1;
     var customStepData = appObj && appObj.stepCustomData ? appObj.stepCustomData : {};
+    var completionTrail = appObj && Array.isArray(appObj.stepCompletionTrail) ? appObj.stepCompletionTrail : [];
+
+    // Render the Sequential Tracing Trail Box
+    renderStepTracingTrail(steps, completionTrail, customStepData);
 
     grid.innerHTML = "";
     steps.forEach(function (sObj) {
-      var sNum = sObj.step;
-      var custom = customStepData[sNum] || {};
+      var sNum = Number(sObj.step);
+      var custom = customStepData[sNum] || customStepData[String(sNum)] || {};
       
-      var isCompleted = sNum < currentStepNum || custom.status === "Done";
-      var isCurrent = sNum === currentStepNum || custom.status === "In Progress";
-      var isActionReq = custom.status === "Action Required";
-      
-      var badgeText = custom.status ? custom.status : (isCompleted ? "Completed" : (isCurrent ? "In Progress" : "Pending"));
+      var curStatus = custom.status || "Pending";
+      var isCompleted = curStatus === "Done";
+      var isCurrent = curStatus === "In Progress";
+      var isActionReq = curStatus === "Action Required";
+
+      var trailIndex = completionTrail.indexOf(sNum);
+      var orderBadgeHtml = (isCompleted && trailIndex !== -1)
+        ? '<span style="font-size:0.72rem; font-weight:800; background:#0284c7; color:#ffffff; padding:2px 8px; border-radius:12px; margin-left:4px;">Rank #' + (trailIndex + 1) + ' Completed</span>'
+        : '';
+
       var badgeBg = isCompleted ? "#1e8e5a" : (isActionReq ? "#dc2626" : (isCurrent ? "#14315e" : "#e2e8f0"));
       var badgeColor = isCompleted || isCurrent || isActionReq ? "#ffffff" : "#475569";
 
       var card = document.createElement("div");
-      card.style.cssText = "background:#ffffff; border:1px solid " + (isCurrent ? "var(--blue-700)" : "var(--line)") +
+      card.style.cssText = "background:#ffffff; border:1px solid " + (isCompleted ? "#22c55e" : (isCurrent ? "var(--blue-700)" : "var(--line)")) +
         "; border-radius:8px; padding:0.85rem; display:flex; flex-direction:column; justify-content:space-between;" +
         (isCurrent ? "box-shadow: 0 4px 12px rgba(20,49,94,0.12);" : "");
 
       card.innerHTML =
-        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem;">' +
-          '<span style="font-size:0.75rem; font-weight:800; color:var(--blue-800); background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + sNum + '/' + totalSteps + '</span>' +
-          '<span style="font-size:0.75rem; font-weight:700; background:' + badgeBg + '; color:' + badgeColor + '; padding:2px 8px; border-radius:12px;">' + badgeText + '</span>' +
+        '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem; flex-wrap:wrap; gap:0.2rem;">' +
+          '<div>' +
+            '<span style="font-size:0.75rem; font-weight:800; color:var(--blue-800); background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + sNum + '/' + totalSteps + '</span>' +
+            orderBadgeHtml +
+          '</div>' +
+          '<span style="font-size:0.75rem; font-weight:700; background:' + badgeBg + '; color:' + badgeColor + '; padding:2px 8px; border-radius:12px;">' + escapeHtml(curStatus) + '</span>' +
         '</div>' +
         '<div style="font-weight:700; font-size:0.92rem; color:var(--blue-900); margin-bottom:0.25rem;">' + escapeHtml(sObj.title) + '</div>' +
         '<div style="font-size:0.8rem; color:var(--muted); line-height:1.35; margin-bottom:0.5rem;">' + escapeHtml(sObj.desc) + '</div>' +
-        (custom.notes ? '<div style="margin-top:auto; background:#fffbeb; border-left:3px solid #f59e0b; padding:0.4rem; border-radius:4px; font-size:0.78rem; color:#92400e;"><strong>Brno Advisor Note:</strong> ' + escapeHtml(custom.notes) + '</div>' : '');
+        (custom.notes ? '<div style="margin-top:auto; margin-bottom:0.5rem; background:#fffbeb; border-left:3px solid #f59e0b; padding:0.4rem; border-radius:4px; font-size:0.78rem; color:#92400e;"><strong>Brno Advisor Note:</strong> ' + escapeHtml(custom.notes) + '</div>' : '') +
+        '<div style="margin-top:auto; padding-top:0.4rem; border-top:1px dashed #e2e8f0; display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">' +
+          '<span style="font-size:0.72rem; font-weight:700; color:var(--muted);">Update Status:</span>' +
+          '<select class="student-step-status-select" data-step="' + sNum + '" style="font-size:0.78rem; padding:0.2rem 0.4rem; border-radius:4px; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer;">' +
+            '<option value="Pending" ' + (curStatus === "Pending" ? "selected" : "") + '>⏳ Pending</option>' +
+            '<option value="In Progress" ' + (curStatus === "In Progress" ? "selected" : "") + '>🔄 In Progress</option>' +
+            '<option value="Done" ' + (curStatus === "Done" ? "selected" : "") + '>✅ Mark Done</option>' +
+          '</select>' +
+        '</div>';
 
       grid.appendChild(card);
+    });
+
+    grid.querySelectorAll(".student-step-status-select").forEach(function (select) {
+      select.addEventListener("change", function () {
+        var stepNum = Number(this.getAttribute("data-step"));
+        var newStatus = this.value;
+        updateStudentStepStatus(appObj, steps, stepNum, newStatus);
+      });
+    });
+  }
+
+  function renderStepTracingTrail(steps, completionTrail, customStepData) {
+    var trailEl = document.getElementById("student-step-tracing-trail");
+    if (!trailEl) return;
+
+    if (!completionTrail || !completionTrail.length) {
+      trailEl.innerHTML = '<span style="color:#94a3b8; font-size:0.85rem; font-style:italic;">No milestones completed yet. Change any step status to "Mark Done" below to generate your real-time execution trace!</span>';
+      return;
+    }
+
+    var html = "";
+    completionTrail.forEach(function (sNum, index) {
+      var sObj = steps.filter(function (x) { return Number(x.step) === Number(sNum); })[0];
+      var title = sObj ? sObj.title : ("Step " + sNum);
+      
+      html += '<div style="display:inline-flex; align-items:center; background:#0284c7; color:#ffffff; padding:0.35rem 0.75rem; border-radius:20px; font-size:0.8rem; font-weight:700; box-shadow:0 2px 6px rgba(0,0,0,0.2); margin:2px;">' +
+                '<span style="background:rgba(255,255,255,0.25); border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.7rem; margin-right:6px;">' + (index + 1) + '</span>' +
+                'Step ' + sNum + ': ' + escapeHtml(title) +
+              '</div>';
+
+      if (index < completionTrail.length - 1) {
+        html += '<span style="color:#38bdf8; font-weight:800; font-size:1.1rem; margin:0 2px;">➔</span>';
+      }
+    });
+
+    trailEl.innerHTML = html;
+  }
+
+  function updateStudentStepStatus(appObj, steps, stepNum, newStatus) {
+    if (!appObj) return;
+    appObj.stepCustomData = appObj.stepCustomData || {};
+    appObj.stepCustomData[stepNum] = appObj.stepCustomData[stepNum] || {};
+    appObj.stepCustomData[stepNum].status = newStatus;
+
+    var trail = Array.isArray(appObj.stepCompletionTrail) ? appObj.stepCompletionTrail.slice() : [];
+
+    if (newStatus === "Done") {
+      if (trail.indexOf(stepNum) === -1) {
+        trail.push(stepNum);
+      }
+    } else {
+      var idx = trail.indexOf(stepNum);
+      if (idx !== -1) {
+        trail.splice(idx, 1);
+      }
+    }
+
+    appObj.stepCompletionTrail = trail;
+
+    api("updateMyApplication", {
+      stepCustomData: appObj.stepCustomData,
+      stepCompletionTrail: appObj.stepCompletionTrail
+    }).then(function () {
+      render20StepsGrid(appObj.status, appObj);
+    }).catch(function (err) {
+      alert("Status update error: " + err.message);
     });
   }
 
@@ -361,6 +449,146 @@
       };
       reader.readAsDataURL(f);
     });
+  }
+
+  function renderStudentFinancialLedger(appObj) {
+    if (!appObj) return;
+
+    var fee = parseFloat(appObj.serviceFee || "1200");
+    if (isNaN(fee)) fee = 1200;
+
+    var reqDep = parseFloat(appObj.requiredDepositAmount || appObj.requiredDeposit || "500");
+    if (isNaN(reqDep)) reqDep = 500;
+
+    var deposits = Array.isArray(appObj.deposits) ? appObj.deposits : [];
+    var expenses = Array.isArray(appObj.expenses) ? appObj.expenses : [];
+
+    var totalDeposits = deposits.reduce(function (sum, d) { return sum + (parseFloat(d.amount) || 0); }, 0);
+    var totalExpenses = expenses.reduce(function (sum, e) { return sum + (parseFloat(e.amount) || 0); }, 0);
+    
+    var balanceDue = appObj.customDueAmount ? parseFloat(appObj.customDueAmount) : ((fee + totalExpenses) - totalDeposits);
+    if (isNaN(balanceDue) || balanceDue < 0) balanceDue = 0;
+
+    var feeEl = document.getElementById("st-fin-service-fee");
+    var reqDepEl = document.getElementById("st-fin-req-deposit");
+    var depEl = document.getElementById("st-fin-deposits-paid");
+    var expEl = document.getElementById("st-fin-total-expenses");
+    var balEl = document.getElementById("st-fin-balance-due");
+    var dueDateEl = document.getElementById("st-fin-due-date");
+
+    if (feeEl) feeEl.textContent = "€" + fee.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (reqDepEl) reqDepEl.textContent = "€" + reqDep.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (depEl) depEl.textContent = "€" + totalDeposits.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (expEl) expEl.textContent = "€" + totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (balEl) balEl.textContent = "€" + balanceDue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (dueDateEl) dueDateEl.textContent = appObj.paymentDueDate || appObj.dueDate || "As per schedule";
+
+    // Dynamic Payment Notice Banner
+    var bannerTxt = document.getElementById("st-payment-banner-text");
+    if (bannerTxt) {
+      if (totalDeposits >= reqDep && balanceDue === 0) {
+        bannerTxt.innerHTML = "🟢 <strong>Payment Complete</strong>: Your required deposit of <strong>€" + reqDep.toFixed(2) + "</strong> and contract fee have been fully received and verified. Thank you!";
+      } else if (totalDeposits >= reqDep) {
+        bannerTxt.innerHTML = "✅ <strong>Deposit Received</strong>: Your required deposit of <strong>€" + reqDep.toFixed(2) + "</strong> has been verified. Remaining balance due: <strong>€" + balanceDue.toFixed(2) + "</strong>" + (appObj.paymentDueDate ? " (Due by: " + appObj.paymentDueDate + ")" : "") + ".";
+      } else {
+        var remDep = reqDep - totalDeposits;
+        bannerTxt.innerHTML = "⚠️ <strong>Required Deposit Due</strong>: Please transfer the initial deposit of <strong>€" + remDep.toFixed(2) + "</strong>" + (appObj.paymentDueDate ? " before <strong>" + appObj.paymentDueDate + "</strong>" : "") + " to initiate university application filing and document legalization.";
+      }
+    }
+
+    // Render Deposits Table
+    var depTbody = document.getElementById("st-deposits-tbody");
+    if (depTbody) {
+      if (!deposits.length) {
+        depTbody.innerHTML = '<tr><td colspan="5" class="muted center py-2">No deposit payment records found.</td></tr>';
+      } else {
+        depTbody.innerHTML = deposits.map(function (d) {
+          var amt = parseFloat(d.amount) || 0;
+          var statusBadge = d.status === "Verified" 
+            ? '<span class="badge st-approved" style="font-size:0.75rem;">Verified</span>'
+            : '<span class="badge st-pending" style="font-size:0.75rem;">Pending</span>';
+
+          return '<tr>' +
+            '<td><strong>' + escapeHtml(d.date || "—") + '</strong></td>' +
+            '<td>' + escapeHtml(d.description || "Deposit Payment") + '</td>' +
+            '<td><span class="muted" style="font-size:0.8rem;">' + escapeHtml(d.method || "Transfer") + (d.ref ? ' (' + escapeHtml(d.ref) + ')' : '') + '</span></td>' +
+            '<td style="text-align:right; font-weight:700; color:var(--green);">+€' + amt.toFixed(2) + '</td>' +
+            '<td>' + statusBadge + '</td>' +
+          '</tr>';
+        }).join("");
+      }
+    }
+
+    // Render Expenses Table
+    var expTbody = document.getElementById("st-expenses-tbody");
+    if (expTbody) {
+      if (!expenses.length) {
+        expTbody.innerHTML = '<tr><td colspan="4" class="muted center py-2">No managed expense records found.</td></tr>';
+      } else {
+        expTbody.innerHTML = expenses.map(function (e) {
+          var amt = parseFloat(e.amount) || 0;
+          return '<tr>' +
+            '<td><strong>' + escapeHtml(e.date || "—") + '</strong></td>' +
+            '<td><strong>' + escapeHtml(e.category || "Expense") + '</strong>' + (e.notes ? '<br><span class="muted" style="font-size:0.75rem;">' + escapeHtml(e.notes) + '</span>' : '') + '</td>' +
+            '<td><span class="badge" style="font-size:0.75rem; background:var(--blue-50); color:var(--blue-800);">' + escapeHtml(e.paidBy || "Agency") + '</span></td>' +
+            '<td style="text-align:right; font-weight:700; color:#c2410c;">€' + amt.toFixed(2) + '</td>' +
+          '</tr>';
+        }).join("");
+      }
+    }
+
+    // Download Financial Statement Handler
+    var dlBtn = document.getElementById("download-student-statement-btn");
+    if (dlBtn) {
+      dlBtn.onclick = function () {
+        var txt = "CZECHBRIDGE OFFICIAL FINANCIAL STATEMENT & LEDGER\n";
+        txt += "====================================================\n";
+        txt += "Candidate Name: " + (appObj.fullName || sess.fullName) + "\n";
+        txt += "Candidate Email: " + (appObj.email || sess.email) + "\n";
+        txt += "Target Country: " + (appObj.targetCountry || "Czech Republic") + "\n";
+        txt += "Program / Track: " + (appObj.program || "Higher Education Degree") + "\n";
+        txt += "Statement Date: " + new Date().toLocaleDateString("en-GB") + "\n";
+        txt += "----------------------------------------------------\n\n";
+
+        txt += "FINANCIAL SUMMARY:\n";
+        txt += "Contracted Service Fee: €" + fee.toFixed(2) + "\n";
+        txt += "Total Deposits Received: €" + totalDeposits.toFixed(2) + "\n";
+        txt += "Total Managed Expenses: €" + totalExpenses.toFixed(2) + "\n";
+        txt += "Remaining Balance Due:  €" + balanceDue.toFixed(2) + "\n\n";
+
+        txt += "DEPOSIT PAYMENTS RECEIVED:\n";
+        if (!deposits.length) {
+          txt += "  (No deposit payments recorded)\n";
+        } else {
+          deposits.forEach(function (d, i) {
+            txt += "  " + (i + 1) + ". " + (d.date || "N/A") + " | " + (d.description || "Deposit") + " | €" + (parseFloat(d.amount) || 0).toFixed(2) + " (" + (d.method || "N/A") + " - " + (d.status || "Verified") + ")\n";
+          });
+        }
+        txt += "\n";
+
+        txt += "MANAGED OFFICIAL EXPENSES:\n";
+        if (!expenses.length) {
+          txt += "  (No managed expenses recorded)\n";
+        } else {
+          expenses.forEach(function (e, i) {
+            txt += "  " + (i + 1) + ". " + (e.date || "N/A") + " | " + (e.category || "Expense") + " | €" + (parseFloat(e.amount) || 0).toFixed(2) + " [Paid By: " + (e.paidBy || "Agency") + "]\n";
+            if (e.notes) txt += "     Note: " + e.notes + "\n";
+          });
+        }
+        txt += "\n----------------------------------------------------\n";
+        txt += "Issued by CzechBridge Admissions & Financial Operations desk, Brno, Czech Republic.\n";
+
+        var blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "CzechBridge_Financial_Statement_" + (appObj.fullName || "Candidate").replace(/\s+/g, "_") + ".txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+    }
   }
 
   function escapeHtml(s) {

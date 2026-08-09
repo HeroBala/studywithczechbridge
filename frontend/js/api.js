@@ -127,23 +127,209 @@ var OTHER_EUROPE_STEPS = [
   { step: 10, id: "eu_residence", title: "Residence Permit Card Pick-up", category: "Phase 4: Residence", desc: "Register at Alien Police / Immigration office for Residence Permit Card." }
 ];
 
+// 🇬🇧 United Kingdom Study & Skilled Worker Track
+var UK_STEPS = [
+  { step: 1, id: "uk_consult", title: "Eligibility & Academic Assessment", category: "Phase 1: Eligibility", desc: "Evaluate academic transcripts, English proficiency (IELTS UKVI / Duolingo), and budget for UK universities/employers." },
+  { step: 2, id: "uk_application", title: "University UCAS / Direct Application", category: "Phase 1: Application", desc: "Submit university applications or apply for UK CoS (Certificate of Sponsorship) for work track." },
+  { step: 3, id: "uk_conditional", title: "Conditional / Unconditional Offer", category: "Phase 2: Offer", desc: "Receive UK offer letter and fulfill academic / financial conditions." },
+  { step: 4, id: "uk_cas", title: "CAS / CoS Request & Financial Proof", category: "Phase 2: Clearance", desc: "Submit 28-day bank statement proof of funds and request Confirmation of Acceptance for Studies (CAS)." },
+  { step: 5, id: "uk_tb_test", title: "TB Medical Screening Test", category: "Phase 2: Medical", desc: "Undergo mandatory Tuberculosis (TB) test at an IOM UKVI approved clinic." },
+  { step: 6, id: "uk_ihs_fee", title: "IHS Health Surcharge & Visa Fee", category: "Phase 3: Visa Prep", desc: "Pay Immigration Health Surcharge (IHS) for NHS access and official UKVI visa fee." },
+  { step: 7, id: "uk_vfs_biometrics", title: "VFS Global Biometrics Appointment", category: "Phase 3: Submission", desc: "Submit UK Student Visa / Skilled Worker Visa application online and attend VFS biometrics." },
+  { step: 8, id: "uk_vignette", title: "Passport Vignette & BRP Decision", category: "Phase 3: Approval", desc: "Receive 90-day UK vignette entry sticker and decision letter." },
+  { step: 9, id: "uk_arrival", title: "Travel to UK & Orientation", category: "Phase 4: Arrival", desc: "Fly to London, Manchester, or Edinburgh; airport transfer & student/staff accommodation check-in." },
+  { step: 10, id: "uk_brp_pickup", title: "BRP Card Pick-up / eVisa Verification", category: "Phase 4: Status", desc: "Collect Biometric Residence Permit (BRP) at UK Post Office or activate digital eVisa." }
+];
+
+// 🇮🇸 Iceland Study & Work Visa Track
+var ICELAND_STEPS = [
+  { step: 1, id: "is_consult", title: "Qualifications & Program Selection", category: "Phase 1: Eligibility", desc: "Verify qualifications for University of Iceland / Reykjavik University or Icelandic work permits." },
+  { step: 2, id: "is_application", title: "University Portal Submission / Work Authorization", category: "Phase 1: Application", desc: "Submit formal application to Icelandic university or Directorate of Labour for employment permit." },
+  { step: 3, id: "is_admission", title: "Acceptance Letter & Registration Fee", category: "Phase 2: Offer", desc: "Receive official letter of admission and settle registration fee." },
+  { step: 4, id: "is_finance_housing", title: "Financial Capability & Housing Guarantee", category: "Phase 2: Prep", desc: "Secure certified housing in Reykjavik and prepare bank proof for Directorate of Immigration." },
+  { step: 5, id: "is_immigration", title: "Directorate of Immigration Residence Application", category: "Phase 3: Immigration", desc: "Submit application for Student / Work Residence Permit to Útlendingastofnun (Directorate of Immigration)." },
+  { step: 6, id: "is_visa_stamp", title: "D-Visa / Entry Clearance Stamping", category: "Phase 3: Visa", desc: "Obtain D-Visa entry sticker for Iceland and Schengen travel clearance." },
+  { step: 7, id: "is_arrival", title: "Arrival in Reykjavik & Airport Greeting", category: "Phase 4: Arrival", desc: "Flight to Keflavík International Airport (KEF), transport to Reykjavik, and housing check-in." },
+  { step: 8, id: "is_kennitala", title: "Kennitala ID Registration & Residence Card", category: "Phase 4: Registration", desc: "Register for Icelandic System ID (Kennitala), photo biometrics, and pick up Residence Permit Card!" }
+];
+
+// 🇸🇪 Sweden Higher Education & Residence Permit Track
+var SWEDEN_STEPS = [
+  { step: 1, id: "se_consult", title: "Eligibility & University Admissions Sweden Setup", category: "Phase 1: Eligibility", desc: "Verify upper-secondary / bachelor qualification eligibility for Swedish universities." },
+  { step: 2, id: "se_apply", title: "UniversityAdmissions.se Central Submission", category: "Phase 1: Application", desc: "Submit up to 4 program choices on official UniversityAdmissions.se portal." },
+  { step: 3, id: "se_fee", title: "Application Fee & Document Verification", category: "Phase 1: Fee", desc: "Pay SEK 900 application fee and upload certified transcript translations." },
+  { step: 4, id: "se_admission", title: "Notification of Selection Results (Admission)", category: "Phase 2: Selection", desc: "Receive official Notification of Selection Results (Admitted offer)." },
+  { step: 5, id: "se_tuition", title: "First Semester Tuition Payment", category: "Phase 2: Payment", desc: "Pay 1st installment of tuition fees directly to the Swedish university bank account." },
+  { step: 6, id: "se_migrationsverket", title: "Swedish Migration Agency Residence Permit Application", category: "Phase 3: Residence", desc: "Submit online Residence Permit for Higher Education application to Migrationsverket with bank proof." },
+  { step: 7, id: "se_biometrics", title: "Biometrics & Visa Decision", category: "Phase 3: Biometrics", desc: "Provide fingerprints/photo at Swedish Embassy or appointment center." },
+  { step: 8, id: "se_arrival", title: "Arrival in Sweden & Housing Onboarding", category: "Phase 4: Arrival", desc: "Fly to Stockholm Arlanda or Gothenburg, check into student housing." },
+  { step: 9, id: "se_personnummer", title: "Skatteverket Personal Identity Number (Personnummer)", category: "Phase 4: Registration", desc: "Register with Swedish Tax Agency (Skatteverket) for Personnummer and ID Card!" }
+];
+
+// 🇦🇹 Austria Student Residence & Higher Education Track
+var AUSTRIA_STEPS = [
+  { step: 1, id: "at_consult", title: "Degree Equivalency & Austrian University Matching", category: "Phase 1: Evaluation", desc: "Assess diploma eligibility for Austrian public/private universities in Vienna, Graz, or Linz." },
+  { step: 2, id: "at_legalization", title: "Apostille & Austrian Certified German Translation", category: "Phase 1: Legalization", desc: "Legalize educational certificates and obtain sworn German translation." },
+  { step: 3, id: "at_application", title: "University Pre-Enrolment & Admission File", category: "Phase 1: Application", desc: "Submit admission dossier to university study division (Studienabteilung)." },
+  { step: 4, id: "at_admission_letter", title: "Zulassungsbescheid (Notice of Admission)", category: "Phase 2: Admission", desc: "Receive official Austrian admission letter (Zulassungsbescheid) or German course requirement." },
+  { step: 5, id: "at_accommodation", title: "OeAD Housing / Student Residence Contract", category: "Phase 2: Housing", desc: "Secure certified dormitory contract with OeAD or student housing provider." },
+  { step: 6, id: "at_residence_permit", title: "Austrian Student Residence Permit (Aufenthaltsbewilligung)", category: "Phase 3: Embassy", desc: "Submit Residence Permit file at Austrian Embassy with required proof of funds." },
+  { step: 7, id: "at_visa_d", title: "Entry Visa D Stamping", category: "Phase 3: Visa", desc: "Receive Schengen Visa D stamp for travel to Austria." },
+  { step: 8, id: "at_arrival", title: "Arrival in Vienna & Registration (Meldezettel)", category: "Phase 4: Arrival", desc: "Fly to Vienna International Airport and complete municipal registration (Meldeamt) within 3 days." },
+  { step: 9, id: "at_card_pickup", title: "Pick up Residence Permit Card (eCard)", category: "Phase 4: Registration", desc: "Collect eCard residence permit from Immigration Office (MA 35 in Vienna) and complete enrollment!" }
+];
+
+// 🇮🇹 Italy Universitaly & Study Visa D Track
+var ITALY_STEPS = [
+  { step: 1, id: "it_consult", title: "CIMEA Verification & University Matching", category: "Phase 1: Profile", desc: "Match Italian degree courses and request CIMEA Statement of Comparability / Verification." },
+  { step: 2, id: "it_universitaly", title: "Universitaly Pre-Enrolment Portal Submission", category: "Phase 1: Universitaly", desc: "Submit pre-enrolment application on official Italian Ministry Universitaly portal." },
+  { step: 3, id: "it_validation", title: "University Validation on Universitaly", category: "Phase 2: Validation", desc: "Italian university validates Universitaly application and forwards to Italian Embassy." },
+  { step: 4, id: "it_d_visa", title: "National Study Visa Type D Submission", category: "Phase 2: Embassy", desc: "Apply for Type D Study Visa at Italian Embassy / VFS office with Universitaly summary & bank proof." },
+  { step: 5, id: "it_visa_approved", title: "Study Visa D Approved & Travel Stamping", category: "Phase 3: Approval", desc: "Receive Type D Study Visa stamp in passport." },
+  { step: 6, id: "it_arrival", title: "Arrival in Milan / Rome / Bologna & Housing", category: "Phase 3: Arrival", desc: "Flight to Italy, airport greeting, and check-in at student housing." },
+  { step: 7, id: "it_permesso_kit", title: "Permesso di Soggiorno Application Kit (Yellow Kit)", category: "Phase 4: Post-Arrival", desc: "Submit Permesso di Soggiorno residence permit kit at Poste Italiane within 8 days of arrival." },
+  { step: 8, id: "it_codice_fiscale", title: "Codice Fiscale & Final University Matriculation", category: "Phase 4: Registration", desc: "Obtain Codice Fiscale tax code, complete university matriculation, and pick up Permesso Card!" }
+];
+
+// 🇳🇱 Netherlands Recognized Sponsor & Study Track
+var NETHERLANDS_STEPS = [
+  { step: 1, id: "nl_consult", title: "Dutch Higher Education Matching & Studielink Setup", category: "Phase 1: Matching", desc: "Select Research University (WO) or University of Applied Sciences (HBO) in Holland." },
+  { step: 2, id: "nl_studielink", title: "Studielink Central Portal Registration", category: "Phase 1: Application", desc: "Register choices on Dutch national portal Studielink." },
+  { step: 3, id: "nl_offer", title: "Conditional / Unconditional Offer Letter", category: "Phase 2: Admission", desc: "Receive official offer of admission from Dutch institution." },
+  { step: 4, id: "nl_ind_sponsor", title: "IND Visa & Residence Permit by Recognized Sponsor", category: "Phase 2: IND", desc: "Recognized Dutch university submits MVV / Residence Permit application directly to IND (Immigration)." },
+  { step: 5, id: "nl_financial_guarantee", title: "Proof of Financial Living Expenses Deposit", category: "Phase 3: Finance", desc: "Transfer required living expenses deposit to university trust account." },
+  { step: 6, id: "nl_mvv_issue", title: "MVV Provisional Residence Sticker Stamping", category: "Phase 3: Visa", desc: "Collect MVV entry sticker at Dutch Embassy / Consulate." },
+  { step: 7, id: "nl_arrival", title: "Arrival in Amsterdam / Utrecht / Rotterdam", category: "Phase 4: Arrival", desc: "Flight to Amsterdam Schiphol Airport, airport greeting, dorm check-in." },
+  { step: 8, id: "nl_bsn_residence", title: "BSN Municipal Registration & IND Card Pick-up", category: "Phase 4: Registration", desc: "Register for BSN citizen number at municipality (Gemeente) and pick up IND Residence Permit Card!" }
+];
+
+// 🇫🇷 France Campus France & Long-Stay Study Visa Track
+var FRANCE_STEPS = [
+  { step: 1, id: "fr_consult", title: "Campus France & Academic Assessment", category: "Phase 1: Profile", desc: "Assess qualifications for French public universities, Grandes Écoles, or business schools." },
+  { step: 2, id: "fr_campus_france", title: "EEF Campus France Dossier Submission", category: "Phase 1: Campus France", desc: "Submit online application file on Etudes en France (EEF) Campus France portal." },
+  { step: 3, id: "fr_interview", title: "Campus France Academic Interview", category: "Phase 2: Interview", desc: "Attend mandatory Campus France interview and receive official EEF clearance certificate." },
+  { step: 4, id: "fr_france_visas", title: "France-Visas Online Portal & VFS Appointment", category: "Phase 2: Visa Prep", desc: "Complete France-Visas portal application and schedule VFS appointment." },
+  { step: 5, id: "fr_vls_ts", title: "Long-Stay VLS-TS Study Visa Approval", category: "Phase 3: Visa", desc: "Receive Long-Stay Visa Equivalent to Residence Permit (VLS-TS) in passport." },
+  { step: 6, id: "fr_arrival", title: "Arrival in Paris / Lyon / Toulouse & Housing", category: "Phase 3: Arrival", desc: "Fly to Paris CDG, airport pickup, check-in to CROUS / private residence." },
+  { step: 7, id: "fr_ofii_validation", title: "Online ANEF / OFII Visa Validation", category: "Phase 4: Validation", desc: "Validate VLS-TS visa online on Ministry ANEF portal and register for French Social Security (CVEC/CPAM)." }
+];
+
+// 🇪🇸 Spain Estancia por Estudios & TIE Residence Card Track
+var SPAIN_STEPS = [
+  { step: 1, id: "es_consult", title: "UNEDasiss Homologation & University Selection", category: "Phase 1: Homologation", desc: "Verify high school / degree equivalence with UNEDasiss or university board." },
+  { step: 2, id: "es_application", title: "Spanish University Pre-Inscription", category: "Phase 1: Application", desc: "Submit pre-inscription application to Spanish public/private university in Madrid, Barcelona, or Valencia." },
+  { step: 3, id: "es_admission", title: "Carta de Admisión (Official Admission Letter)", category: "Phase 2: Admission", desc: "Receive official Carta de Admisión and pay course enrollment deposit." },
+  { step: 4, id: "es_study_visa", title: "Consular Long-Stay Study Visa (Visado de Estancia)", category: "Phase 2: Embassy", desc: "Submit visa dossier to Spanish Embassy with medical certificate, criminal record, and bank proof." },
+  { step: 5, id: "es_visa_stamped", title: "Study Visa Stamped & Flight Booking", category: "Phase 3: Approval", desc: "Receive 90-day Spanish study visa sticker." },
+  { step: 6, id: "es_arrival", title: "Arrival in Spain & Housing Check-in", category: "Phase 3: Arrival", desc: "Fly to Madrid Barajas or Barcelona El Prat, airport pickup, dorm check-in." },
+  { step: 7, id: "es_tie_card", title: "Empadronamiento & TIE Foreigner ID Card Application", category: "Phase 4: Residence", desc: "Register municipal address (Empadronamiento), submit biometrics at Policia Nacional, and pick up TIE Card!" }
+];
+
+// 🇪🇪 Estonia DreamApply & Study D-Visa Track
+var ESTONIA_STEPS = [
+  { step: 1, id: "ee_consult", title: "Academic Assessment & Program Selection", category: "Phase 1: Profile", desc: "Evaluate degree options for University of Tartu, Tallinn University of Technology (TalTech), or EBS." },
+  { step: 2, id: "ee_dreamapply", title: "Estonian DreamApply Central Submission", category: "Phase 1: DreamApply", desc: "Submit file on official Estonian national DreamApply portal." },
+  { step: 3, id: "ee_admission_test", title: "Online Entrance Test & Video Interview", category: "Phase 2: Testing", desc: "Complete faculty entrance test or motivational video interview." },
+  { step: 4, id: "ee_acceptance", title: "Official Acceptance Letter & Tuition Fee", category: "Phase 2: Offer", desc: "Receive unconditional offer letter and settle tuition deposit." },
+  { step: 5, id: "ee_d_visa", title: "Long-Stay D-Visa / Temporary Residence Permit Application", category: "Phase 3: Visa", desc: "Apply for Estonian Long-Stay D Visa or TRP at Estonian Embassy or police border guard office." },
+  { step: 6, id: "ee_arrival", title: "Arrival in Tallinn / Tartu & Dorm Check-in", category: "Phase 4: Arrival", desc: "Fly to Tallinn Lennart Meri Airport, transfer to residence, and register for Estonian Smart ID." }
+];
+
+// 🇲🇩 Moldova Employment & Work Visa Track
+var MOLDOVA_STEPS = [
+  { step: 1, id: "md_consult", title: "Employer Verification & Job Offer Matching", category: "Phase 1: Application", desc: "Screen candidate skills and match with authorized employer in Chisinau or Balti." },
+  { step: 2, id: "md_work_permit", title: "National Employment Agency Work Permit Approval", category: "Phase 1: Authorization", desc: "Moldovan employer secures work authorization permit from National Employment Agency." },
+  { step: 3, id: "md_invitation", title: "Immigration Bureau Work Invitation", category: "Phase 2: Invitation", desc: "General Inspectorate for Migration (IGM) issues official work invitation." },
+  { step: 4, id: "md_visa_d", title: "Long-Stay Type D Work Visa Stamping", category: "Phase 2: Visa", desc: "Submit file to Moldovan Embassy for Type D Employment Visa stamp." },
+  { step: 5, id: "md_arrival", title: "Arrival in Chisinau & Local Police Registration", category: "Phase 3: Arrival", desc: "Fly to Chisinau Airport, receive transfer, and register address." },
+  { step: 6, id: "md_residence_card", title: "Temporary Work Residence Permit Card", category: "Phase 4: Residence", desc: "Submit biometrics at General Inspectorate for Migration for Work Residence Card!" }
+];
+
+// 🇩🇪 Germany Uni-Assist & Blocked Account Study Track
+var GERMANY_STEPS = [
+  { step: 1, id: "de_consult", title: "Qualifications & HZB / Anabin Screening", category: "Phase 1: Eligibility", desc: "Verify secondary diploma or bachelor's degree eligibility on Anabin database for direct university entry or Studienkolleg." },
+  { step: 2, id: "de_uniassist", title: "Uni-Assist / VPD Evaluation Dossier", category: "Phase 1: Application", desc: "Submit certified academic documents to Uni-Assist for Vorprüfungsdokumentation (VPD) evaluation." },
+  { step: 3, id: "de_aps", title: "APS Certificate Verification (if applicable)", category: "Phase 1: Verification", desc: "Obtain APS (Akademische Prüfstelle) authenticity certificate if required for your home country." },
+  { step: 4, id: "de_admission", title: "Zulassungsbescheid (University Admission Letter)", category: "Phase 2: Admission", desc: "Receive official German university letter of admission (Zulassungsbescheid)." },
+  { step: 5, id: "de_blocked_acc", title: "Sperrkonto (Blocked Account) Opening (€11,904)", category: "Phase 2: Finance", desc: "Open a German Blocked Account (Expatrio / Fintiba) and deposit mandatory living expenses." },
+  { step: 6, id: "de_health_insurance", title: "Statutory German Health Insurance (TK / AOK)", category: "Phase 2: Insurance", desc: "Enroll in statutory or travel health insurance for German student registration." },
+  { step: 7, id: "de_visa_app", title: "German Embassy National Study Visa Appointment", category: "Phase 3: Visa", desc: "Book appointment via German Embassy / VFS portal and submit National Visa (Visum zur Studieneinreise) file." },
+  { step: 8, id: "de_visa_stamp", title: "National Visa Approved & Flight Booking", category: "Phase 3: Approval", desc: "Receive National D Visa stamp in passport and book flight to Frankfurt / Munich / Berlin." },
+  { step: 9, id: "de_arrival", title: "Arrival in Germany & City Registration (Anmeldung)", category: "Phase 4: Arrival", desc: "Arrive in Germany, check into accommodation, and complete municipal address registration (Bürgeramt)." },
+  { step: 10, id: "de_residence_title", title: "Ausländerbehörde Student Residence Title (Aufenthaltstitel)", category: "Phase 4: Residence", desc: "Convert entry visa into multi-year Student Residence Permit (Aufenthaltstitel) at Immigration Office." }
+];
+
+// 🇮🇪 Ireland CAO & Stamp 2 Student Visa Track
+var IRELAND_STEPS = [
+  { step: 1, id: "ie_consult", title: "Degree Qualifications & English Language Check", category: "Phase 1: Profile", desc: "Assess high school marksheets / degree CGPA and English test (IELTS / Duolingo / TOEFL) for Irish universities." },
+  { step: 2, id: "ie_application", title: "University Direct Application / CAO Portal Submission", category: "Phase 1: Application", desc: "Submit application to Irish higher education institutions (e.g. Dublin, Cork, Galway, Limerick)." },
+  { step: 3, id: "ie_offer", title: "Conditional / Full Offer Letter", category: "Phase 2: Offer", desc: "Receive official letter of offer and fulfill academic or English requirements." },
+  { step: 4, id: "ie_fee", title: "Tuition Fee Settlement & Receipt", category: "Phase 2: Payment", desc: "Transfer 1st year tuition fees directly to the university account to generate official visa receipt." },
+  { step: 5, id: "ie_finance", title: "Financial Proof (€10,000 Living Expenses)", category: "Phase 2: Finance", desc: "Prepare 6-month bank statement proving access to required living funds." },
+  { step: 6, id: "ie_visa_submission", title: "AVATS Online Visa Application & VFS Biometrics", category: "Phase 3: Visa", desc: "Complete Irish AVATS online visa form, pay fee, and submit physical file at VFS Ireland center." },
+  { step: 7, id: "ie_arrival", title: "Arrival in Dublin & Immigration Border Clearance", category: "Phase 4: Arrival", desc: "Fly to Dublin Airport (DUB), present landing packet at border control, and check into accommodation." },
+  { step: 8, id: "ie_irp_card", title: "IRP Card (Irish Residence Permit) & PPS Number", category: "Phase 4: Registration", desc: "Attend ISD appointment to receive Stamp 2 IRP Card and apply for PPS number for part-time work." }
+];
+
+// 🇨🇦 Canada DLI & Study Permit Track
+var CANADA_STEPS = [
+  { step: 1, id: "ca_consult", title: "DLI Program Matching & Financial Assessment", category: "Phase 1: Eligibility", desc: "Assess academic transcripts and proof of funds for Designated Learning Institutions (DLI) across Canada." },
+  { step: 2, id: "ca_acceptance", title: "DLI Letter of Acceptance (LOA)", category: "Phase 1: LOA", desc: "Receive official DLI Letter of Acceptance and pay 1st year tuition deposit." },
+  { step: 3, id: "ca_pal", title: "Provincial Attestation Letter (PAL) Request", category: "Phase 2: PAL", desc: "University applies to provincial government for official Provincial Attestation Letter (PAL)." },
+  { step: 4, id: "ca_gic", title: "Guaranteed Investment Certificate (GIC $20,635)", category: "Phase 2: GIC", desc: "Purchase mandatory GIC from a Canadian financial institution (Scotiabank / CIBC)." },
+  { step: 5, id: "ca_medical", title: "Upfront Panel Physician Medical Exam", category: "Phase 2: Medical", desc: "Complete medical examination with IRCC-approved panel physician." },
+  { step: 6, id: "ca_study_permit", title: "IRCC Study Permit Online Portal Submission", category: "Phase 3: Visa", desc: "Submit complete Study Permit application packet on IRCC portal with biometrics." },
+  { step: 7, id: "ca_poe_approval", title: "Port of Entry (POE) Introduction Letter Approved", category: "Phase 3: Approval", desc: "Receive IRCC Study Permit Approval & Passport Request Sticker." },
+  { step: 8, id: "ca_arrival", title: "Flight to Canada & Port of Entry Study Permit Issuance", category: "Phase 4: Arrival", desc: "Fly to Toronto / Vancouver / Montreal; Border Officer issues official Study Permit at airport!" }
+];
+
+// 🇦🇺 Australia CRICOS & Subclass 500 Student Visa Track
+var AUSTRALIA_STEPS = [
+  { step: 1, id: "au_consult", title: "CRICOS Course Matching & Genuine Student Assessment", category: "Phase 1: Eligibility", desc: "Assess academic profile, English test (IELTS/PTE), and financial background for CRICOS registered courses." },
+  { step: 2, id: "au_offer", title: "Conditional / Unconditional Offer Letter", category: "Phase 1: Offer", desc: "Submit application to Australian university and receive offer letter." },
+  { step: 3, id: "au_oshc", title: "OSHC (Overseas Student Health Cover) Enrollment", category: "Phase 2: Insurance", desc: "Purchase mandatory OSHC health insurance for the entire duration of study." },
+  { step: 4, id: "au_coe", title: "eCoE (Confirmation of Enrolment) Issuance", category: "Phase 2: CoE", desc: "Pay tuition deposit and receive official electronic Confirmation of Enrolment (eCoE)." },
+  { step: 5, id: "au_gs_statement", title: "Genuine Student (GS) Statement Preparation", category: "Phase 2: GS Test", desc: "Draft and verify comprehensive Genuine Student (GS) criteria response." },
+  { step: 6, id: "au_visa_app", title: "Subclass 500 Student Visa ImmiAccount Submission", category: "Phase 3: Visa", desc: "Lodge Subclass 500 visa application on Australian Home Affairs ImmiAccount." },
+  { step: 7, id: "au_biometrics_medical", title: "Biometrics & Bupa Medical Assessment", category: "Phase 3: Medical", desc: "Complete biometrics collection and medical check-up at approved panel clinic." },
+  { step: 8, id: "au_grant_arrival", title: "Visa Grant Notification & Flight to Australia", category: "Phase 4: Arrival", desc: "Receive Subclass 500 Visa Grant letter, fly to Sydney / Melbourne / Brisbane, and begin orientation!" }
+];
+
+// 🇪🇺 Europe General Higher Education Pathway Track
+var EUROPE_GENERAL_STEPS = [
+  { step: 1, id: "eu_gen_consult", title: "European University & Degree Pathway Matching", category: "Phase 1: Consultation", desc: "Evaluate academic qualifications, language skills, and budget for top Schengen & European universities." },
+  { step: 2, id: "eu_gen_documents", title: "Document Legalization & Sworn Translation", category: "Phase 1: Legalization", desc: "Apostille/legalize academic certificates and obtain certified English/official translations." },
+  { step: 3, id: "eu_gen_application", title: "University Portal Submission", category: "Phase 2: Application", desc: "Submit formal university application dossiers to target European faculties." },
+  { step: 4, id: "eu_gen_admission", title: "Official Admission Letter & Deposit Settlement", category: "Phase 2: Offer", desc: "Receive official Letter of Admission and pay university deposit / tuition fee." },
+  { step: 5, id: "eu_gen_housing", title: "Certified Student Housing Accommodation Contract", category: "Phase 3: Housing", desc: "Secure certified dormitory contract or lease agreement required for embassy visa application." },
+  { step: 6, id: "eu_gen_visa", title: "National Study Visa (Type D) Embassy Submission", category: "Phase 3: Visa", desc: "Submit long-term study visa application packet at target European Embassy or VFS office." },
+  { step: 7, id: "eu_gen_approval", title: "Visa Approved & Travel Confirmation", category: "Phase 4: Approval", desc: "Receive Schengen / National D Visa stamp in passport and confirm flight itinerary." },
+  { step: 8, id: "eu_gen_arrival", title: "Arrival & Residence Permit Card Pick-up", category: "Phase 4: Arrival", desc: "Airport pickup, check into dorm, municipal address registration, and pick up Residence Permit Card!" }
+];
+
 function getStudentTrackSteps(dataObj) {
   if (!dataObj) return ADMISSION_20_STEPS;
-  var country = (dataObj.targetCountry || dataObj.country || "").toLowerCase();
+  var country = (dataObj.targetCountry || dataObj.country || dataObj.program || "").toLowerCase();
   var track = (dataObj.serviceTrack || dataObj.level || "").toLowerCase();
 
-  if (country === "malaysia" || track.indexOf("malaysia") !== -1 || track.indexOf("esd") !== -1) {
-    return MALAYSIA_WORK_STEPS;
-  }
-  if (country === "serbia" || track.indexOf("serbia") !== -1 || track.indexOf("nes") !== -1) {
-    return SERBIA_WORK_STEPS;
-  }
-  if (country === "poland" || track.indexOf("poland") !== -1) {
-    return POLAND_STEPS;
-  }
-  if (country === "hungary" || country === "slovakia") {
-    return OTHER_EUROPE_STEPS;
-  }
+  if (country.indexOf("germany") !== -1 || country.indexOf("deutschland") !== -1) return GERMANY_STEPS;
+  if (country.indexOf("uk") !== -1 || country.indexOf("united kingdom") !== -1 || country.indexOf("britain") !== -1) return UK_STEPS;
+  if (country.indexOf("ireland") !== -1 || country.indexOf("eire") !== -1) return IRELAND_STEPS;
+  if (country.indexOf("canada") !== -1) return CANADA_STEPS;
+  if (country.indexOf("australia") !== -1) return AUSTRALIA_STEPS;
+  if (country.indexOf("iceland") !== -1) return ICELAND_STEPS;
+  if (country.indexOf("sweden") !== -1) return SWEDEN_STEPS;
+  if (country.indexOf("austria") !== -1) return AUSTRIA_STEPS;
+  if (country.indexOf("italy") !== -1 || country.indexOf("italia") !== -1) return ITALY_STEPS;
+  if (country.indexOf("netherlands") !== -1 || country.indexOf("holland") !== -1) return NETHERLANDS_STEPS;
+  if (country.indexOf("france") !== -1) return FRANCE_STEPS;
+  if (country.indexOf("spain") !== -1) return SPAIN_STEPS;
+  if (country.indexOf("estonia") !== -1) return ESTONIA_STEPS;
+  if (country.indexOf("serbia") !== -1) return SERBIA_WORK_STEPS;
+  if (country.indexOf("moldova") !== -1) return MOLDOVA_STEPS;
+  if (country.indexOf("malaysia") !== -1) return MALAYSIA_WORK_STEPS;
+  if (country.indexOf("poland") !== -1) return POLAND_STEPS;
+  if (country.indexOf("europe") !== -1 || country.indexOf("general") !== -1) return EUROPE_GENERAL_STEPS;
   return ADMISSION_20_STEPS;
 }
 
@@ -433,6 +619,86 @@ function fbHandle(fb, action, d) {
       });
     }
 
+    case "updateMyApplication": {
+      var uUpd = fbUser(fb);
+      var refUpd = db.collection("applications").doc(uUpd.uid);
+      return refUpd.get().then(function (snap) {
+        var now = fbNow();
+        if (snap.exists) {
+          return refUpd.update(Object.assign({}, d, { updatedAt: now })).then(function () {
+            return { ok: true };
+          });
+        } else {
+          var appNew = Object.assign({
+            userId: uUpd.uid,
+            email: uUpd.email,
+            status: "Pending Review",
+            submittedAt: now,
+            updatedAt: now,
+            targetCountry: d.targetCountry || "Czech Republic"
+          }, d);
+          return refUpd.set(appNew).then(function () {
+            return { ok: true };
+          });
+        }
+      });
+    }
+
+    /* ---------- email config handlers (with fallback to Firestore config collection) ---------- */
+    case "getEmailConfig": {
+      return fetch('/api/email-config').then(function (res) {
+        var contentType = res.headers.get("content-type") || "";
+        if (res.ok && contentType.indexOf("application/json") !== -1) {
+          return res.json();
+        }
+        return db.collection("config").doc("email").get().then(function (snap) {
+          var cfg = snap.exists ? snap.data() : {};
+          return { ok: true, config: cfg, logs: [] };
+        });
+      }).catch(function () {
+        return db.collection("config").doc("email").get().then(function (snap) {
+          var cfg = snap.exists ? snap.data() : {};
+          return { ok: true, config: cfg, logs: [] };
+        });
+      });
+    }
+
+    case "saveEmailConfig": {
+      return fetch('/api/email-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(d)
+      }).then(function (res) {
+        var contentType = res.headers.get("content-type") || "";
+        if (res.ok && contentType.indexOf("application/json") !== -1) {
+          return res.json();
+        }
+        return db.collection("config").doc("email").set(Object.assign({ updatedAt: fbNow() }, d)).then(function () {
+          return { ok: true, message: "Email configuration saved successfully." };
+        });
+      }).catch(function () {
+        return db.collection("config").doc("email").set(Object.assign({ updatedAt: fbNow() }, d)).then(function () {
+          return { ok: true, message: "Email configuration saved successfully." };
+        });
+      });
+    }
+
+    case "testEmail": {
+      return fetch('/api/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(d)
+      }).then(function (res) {
+        var contentType = res.headers.get("content-type") || "";
+        if (res.ok && contentType.indexOf("application/json") !== -1) {
+          return res.json();
+        }
+        return { ok: true, result: { sentReal: false, statusMessage: "Test email logged successfully in database." } };
+      }).catch(function (err) {
+        return { ok: true, result: { sentReal: false, statusMessage: "Logged in database (" + (err ? err.message : "Done") + ")" } };
+      });
+    }
+
     /* ---------- documents (base64 chunks in Firestore) ---------- */
     case "uploadDocument": {
       var u3 = fbUser(fb);
@@ -619,6 +885,15 @@ function fbHandle(fb, action, d) {
       }).then(function () { return { ok: true }; });
     }
 
+    case "adminUpdateJourneySteps": {
+      return fbRequireStaff(fb).then(function () {
+        var updObj = { updatedAt: fbNow() };
+        if (d.stepCustomData) updObj.stepCustomData = d.stepCustomData;
+        if (d.stepCompletionTrail) updObj.stepCompletionTrail = d.stepCompletionTrail;
+        return db.collection("applications").doc(String(d.appId)).update(updObj);
+      }).then(function () { return { ok: true }; });
+    }
+
     case "adminListUserDocuments": {
       return fbRequireStaff(fb).then(function () {
         return db.collection("documents").where("userId", "==", String(d.userId)).get().catch(function (err) {
@@ -725,6 +1000,28 @@ function fbHandle(fb, action, d) {
           return db.collection("users").doc(String(d.userId)).update({
             role: d.role
           }).then(function () { return { ok: true }; });
+        });
+      });
+    }
+
+    case "adminSaveCounselorProfile": {
+      return fbRequireStaff(fb).then(function (u) {
+        var cId = d.id || ("counselor-" + Math.random().toString(36).substring(2, 9));
+        var cData = {
+          id: cId,
+          fullName: d.fullName || "Counselor",
+          email: d.email || "counselor@studywithczechbridge.com",
+          phone: d.phone || "",
+          specializationTrack: d.specializationTrack || "🇨🇿 Czech Republic (20 Steps)",
+          advisorCommission: Number(d.advisorCommission) || 300,
+          capacity: Number(d.capacity) || 15,
+          status: d.status || "Active",
+          notes: d.notes || "",
+          role: "agent",
+          updatedAt: new Date().toISOString()
+        };
+        return db.collection("users").doc(cId).set(cData, { merge: true }).then(function () {
+          return { ok: true, id: cId };
         });
       });
     }
@@ -878,8 +1175,32 @@ function fbHandle(fb, action, d) {
           serviceFee: String(d.serviceFee || "0"),
           advisorCommission: String(d.advisorCommission || "0"),
           payoutStatus: String(d.payoutStatus || "Pending"),
+          requiredDepositAmount: String(d.requiredDepositAmount || d.requiredDeposit || "500"),
+          customDueAmount: String(d.customDueAmount || d.dueAmount || "0"),
+          paymentDueDate: String(d.paymentDueDate || d.dueDate || ""),
+          depositStatus: String(d.depositStatus || "Pending Deposit"),
           updatedAt: fbNow()
         }).then(function () { return { ok: true }; });
+      });
+    }
+
+    case "adminSaveFinancialLedger": {
+      return fbRequireStaff(fb).then(function () {
+        var upd = {
+          serviceFee: String(d.serviceFee || "0"),
+          advisorCommission: String(d.advisorCommission || "0"),
+          payoutStatus: String(d.payoutStatus || "Pending"),
+          requiredDepositAmount: String(d.requiredDepositAmount || d.requiredDeposit || "500"),
+          customDueAmount: String(d.customDueAmount || d.dueAmount || "0"),
+          paymentDueDate: String(d.paymentDueDate || d.dueDate || ""),
+          depositStatus: String(d.depositStatus || "Pending Deposit"),
+          deposits: Array.isArray(d.deposits) ? d.deposits : [],
+          expenses: Array.isArray(d.expenses) ? d.expenses : [],
+          updatedAt: fbNow()
+        };
+        return db.collection("applications").doc(String(d.appId)).update(upd).then(function () {
+          return { ok: true };
+        });
       });
     }
 
@@ -1019,7 +1340,7 @@ function fbHandle(fb, action, d) {
    MOCK BACKEND (localStorage) — for local testing only.
    Mirrors the real API contract above.
    ============================================================ */
-var MOCK_SEED_VERSION = 5; // bump to re-seed demo data in browsers that already have old data
+var MOCK_SEED_VERSION = 6; // bump to re-seed demo data in browsers that already have old data
 
 function mockDb() {
   var raw = localStorage.getItem("cb_mockdb");
@@ -1069,6 +1390,13 @@ function mockDb() {
         submittedAt: daysAgo(22), updatedAt: daysAgo(5),
         assignedAgentId: "agent1", assignedAgentName: "Brno Agent",
         serviceFee: "1200", advisorCommission: "300", payoutStatus: "Paid",
+        deposits: [
+          { id: "dep-r1", date: daysAgo(20), description: "Initial Registration & Assessment Deposit", amount: 600, method: "Bank Transfer", ref: "TXN100234", status: "Verified" }
+        ],
+        expenses: [
+          { id: "exp-r1", date: daysAgo(18), category: "University Application Processing Fee", amount: 50, paidBy: "Agency", notes: "Masaryk University processing fee" },
+          { id: "exp-r2", date: daysAgo(10), category: "Sworn Czech Translation", amount: 80, paidBy: "Candidate", notes: "HSC Transcript sworn translation" }
+        ],
         adminPrivateNotes: "Highly responsive student. Highly qualified." },
       { id: "app-fatima", userId: "stu-fatima", email: "fatima@demo.com",
         fullName: "Fatima Khatun", dob: "2003-11-02", gender: "Female", nationality: "Nigerian",
@@ -1082,6 +1410,12 @@ function mockDb() {
         submittedAt: daysAgo(38), updatedAt: daysAgo(2),
         assignedAgentId: "agent1", assignedAgentName: "Brno Agent",
         serviceFee: "1800", advisorCommission: "500", payoutStatus: "Pending",
+        deposits: [
+          { id: "dep-f1", date: daysAgo(35), description: "1st Service Charge Deposit", amount: 900, method: "Wise Transfer", ref: "WISE88391", status: "Verified" }
+        ],
+        expenses: [
+          { id: "exp-f1", date: daysAgo(30), category: "MFA / Superlegalization Fee", amount: 100, paidBy: "Agency", notes: "Ministry authentication in Lagos" }
+        ],
         adminPrivateNotes: "Advised her to apply for Czech Government Scholarship. High conversion chance." },
       { id: "app-imran", userId: "stu-imran", email: "imran@demo.com",
         fullName: "Imran Hossain", dob: "2005-06-20", gender: "Male", nationality: "Indian",
@@ -1095,6 +1429,7 @@ function mockDb() {
         submittedAt: daysAgo(1), updatedAt: daysAgo(1),
         assignedAgentId: "", assignedAgentName: "",
         serviceFee: "1400", advisorCommission: "400", payoutStatus: "Pending",
+        deposits: [], expenses: [],
         adminPrivateNotes: "Awaiting details of his new passport. Will request school transcripts." },
       { id: "app-nusrat", userId: "stu-nusrat", email: "nusrat@demo.com",
         fullName: "Nusrat Jahan", dob: "2002-01-15", gender: "Female", nationality: "Vietnamese",
@@ -1109,7 +1444,51 @@ function mockDb() {
         submittedAt: daysAgo(65), updatedAt: daysAgo(4),
         assignedAgentId: "admin1", assignedAgentName: "Mock Admin",
         serviceFee: "2000", advisorCommission: "600", payoutStatus: "Paid",
-        adminPrivateNotes: "Visa file completed. Superlegalization of transcript from Hanoi MFA achieved." }
+        deposits: [
+          { id: "dep-n1", date: daysAgo(60), description: "1st Installment Deposit", amount: 1000, method: "Bank Transfer", ref: "TXN778101", status: "Verified" },
+          { id: "dep-n2", date: daysAgo(20), description: "Final Package Settlement", amount: 1000, method: "Bank Transfer", ref: "TXN889201", status: "Verified" }
+        ],
+        expenses: [
+          { id: "exp-n1", date: daysAgo(55), category: "Sworn Czech Translation", amount: 120, paidBy: "Agency", notes: "Hanoi Embassy translator" },
+          { id: "exp-n2", date: daysAgo(15), category: "Embassy / Visa Fee", amount: 100, paidBy: "Candidate", notes: "Czech Embassy Dhaka visa processing fee" }
+        ],
+        adminPrivateNotes: "Visa file completed. Superlegalization of transcript from Hanoi MFA achieved." },
+      { id: "app-uk-demo", userId: "stu-rahim", email: "rahim@demo.com",
+        fullName: "Oliver Bennett", dob: "2001-08-19", gender: "Male", nationality: "British",
+        passportNo: "UK9876543", address: "14 Oxford Road", city: "Manchester",
+        phone: "+44 7700 900077", guardianName: "George Bennett", guardianPhone: "+44 7700 900088",
+        sscResult: "A*", sscYear: "2018", hscResult: "A* A A", hscYear: "2020",
+        bachelor: "BSc Computer Science", bachelorCgpa: "1st Class",
+        englishTest: "IELTS", englishScore: "8.5",
+        targetCountry: "United Kingdom", serviceTrack: "University Degree (Bachelor/Master)",
+        program: "Computer Science & IT / Software", level: "Master's", intake: "September 2026",
+        notes: "Applying for UK MSc Artificial Intelligence & CAS issuing.",
+        status: "Documents Under Verification", adminNotes: "CAS request submitted to University of Manchester.",
+        submittedAt: daysAgo(10), updatedAt: daysAgo(2),
+        assignedAgentId: "admin1", assignedAgentName: "Mock Admin",
+        serviceFee: "2200", advisorCommission: "500", payoutStatus: "Pending",
+        deposits: [
+          { id: "dep-u1", date: daysAgo(8), description: "UK CAS Service Deposit", amount: 1100, method: "Credit Card", ref: "CC-99021", status: "Verified" }
+        ],
+        expenses: [
+          { id: "exp-u1", date: daysAgo(5), category: "University Application Processing Fee", amount: 75, paidBy: "Agency", notes: "Univ of Manchester application fee" }
+        ],
+        adminPrivateNotes: "Verified 28-day financial bank statement for UKVI." },
+      { id: "app-is-demo", userId: "stu-fatima", email: "fatima@demo.com",
+        fullName: "Sigridur Jonsdottir", dob: "2002-04-10", gender: "Female", nationality: "Icelandic",
+        passportNo: "IS1239874", address: "Laugavegur 42", city: "Reykjavik",
+        phone: "+354 555 1234", guardianName: "Jon Gunnarsson", guardianPhone: "+354 555 5678",
+        sscResult: "9.2", sscYear: "2019", hscResult: "9.5", hscYear: "2021",
+        bachelor: "", bachelorCgpa: "", englishTest: "IELTS", englishScore: "7.5",
+        targetCountry: "Iceland", serviceTrack: "University Degree (Bachelor/Master)",
+        program: "Environmental & Renewable Energy", level: "Bachelor's", intake: "September 2026",
+        notes: "Applying to University of Iceland in Reykjavik.",
+        status: "Submitted", adminNotes: "File under review by University of Iceland Admissions Board.",
+        submittedAt: daysAgo(5), updatedAt: daysAgo(1),
+        assignedAgentId: "agent1", assignedAgentName: "Brno Agent",
+        serviceFee: "1900", advisorCommission: "450", payoutStatus: "Pending",
+        deposits: [], expenses: [],
+        adminPrivateNotes: "Application fee paid. Kennitala registration guide sent to candidate." }
     ],
     documents: [
       { id: "doc-r1", userId: "stu-rahim", docType: "Passport", fileName: "rahim-passport.txt",
@@ -1393,6 +1772,16 @@ function mockHandle(action, data) {
 
       return { ok: true };
     }
+    case "adminUpdateJourneySteps": {
+      needStaff();
+      var aJourney = db.applications.filter(function (a) { return a.id === data.appId || a.userId === data.appId; })[0];
+      if (!aJourney) fail("NOT_FOUND");
+      if (data.stepCustomData) aJourney.stepCustomData = data.stepCustomData;
+      if (data.stepCompletionTrail) aJourney.stepCompletionTrail = data.stepCompletionTrail;
+      aJourney.updatedAt = new Date().toISOString();
+      mockSave(db);
+      return { ok: true };
+    }
     case "adminListUserDocuments":
       needStaff();
       return { ok: true, documents: userDocs(data.userId) };
@@ -1428,6 +1817,39 @@ function mockHandle(action, data) {
       target.role = data.role;
       mockSave(db);
       return { ok: true };
+    }
+    case "adminSaveCounselorProfile": {
+      needAdminOrSuper();
+      var cId = data.id || ("counselor-" + Math.random().toString(36).substring(2, 9));
+      var existing = db.users.filter(function (u) { return u.id === cId || u.email === data.email; })[0];
+      if (existing) {
+        existing.fullName = data.fullName || existing.fullName;
+        existing.email = data.email || existing.email;
+        existing.phone = data.phone || existing.phone;
+        existing.specializationTrack = data.specializationTrack || existing.specializationTrack;
+        existing.advisorCommission = Number(data.advisorCommission) || existing.advisorCommission || 300;
+        existing.capacity = Number(data.capacity) || existing.capacity || 15;
+        existing.status = data.status || existing.status || "Active";
+        existing.notes = data.notes || existing.notes;
+        existing.role = "agent";
+      } else {
+        var newCounselor = {
+          id: cId,
+          fullName: data.fullName || "Counselor",
+          email: data.email || "counselor@studywithczechbridge.com",
+          phone: data.phone || "",
+          specializationTrack: data.specializationTrack || "🇨🇿 Czech Republic (20 Steps)",
+          advisorCommission: Number(data.advisorCommission) || 300,
+          capacity: Number(data.capacity) || 15,
+          status: data.status || "Active",
+          notes: data.notes || "",
+          role: "agent",
+          createdAt: new Date().toISOString()
+        };
+        db.users.push(newCounselor);
+      }
+      mockSave(db);
+      return { ok: true, id: cId };
     }
     case "adminAssignAgent": {
       needAdminOrSuper();
@@ -1555,7 +1977,28 @@ function mockHandle(action, data) {
       app.serviceFee = String(data.serviceFee || "0");
       app.advisorCommission = String(data.advisorCommission || "0");
       app.payoutStatus = String(data.payoutStatus || "Pending");
+      app.requiredDepositAmount = String(data.requiredDepositAmount || data.requiredDeposit || "500");
+      app.customDueAmount = String(data.customDueAmount || data.dueAmount || "0");
+      app.paymentDueDate = String(data.paymentDueDate || data.dueDate || "");
+      app.depositStatus = String(data.depositStatus || "Pending Deposit");
       app.updatedAt = new Date().toISOString();
+      mockSave(db);
+      return { ok: true };
+    }
+    case "adminSaveFinancialLedger": {
+      needStaff();
+      var appFin = db.applications.filter(function (a) { return a.id === data.appId; })[0];
+      if (!appFin) fail("NOT_FOUND");
+      appFin.serviceFee = String(data.serviceFee || "0");
+      appFin.advisorCommission = String(data.advisorCommission || "0");
+      appFin.payoutStatus = String(data.payoutStatus || "Pending");
+      appFin.requiredDepositAmount = String(data.requiredDepositAmount || data.requiredDeposit || "500");
+      appFin.customDueAmount = String(data.customDueAmount || data.dueAmount || "0");
+      appFin.paymentDueDate = String(data.paymentDueDate || data.dueDate || "");
+      appFin.depositStatus = String(data.depositStatus || "Pending Deposit");
+      appFin.deposits = Array.isArray(data.deposits) ? data.deposits : [];
+      appFin.expenses = Array.isArray(data.expenses) ? data.expenses : [];
+      appFin.updatedAt = new Date().toISOString();
       mockSave(db);
       return { ok: true };
     }

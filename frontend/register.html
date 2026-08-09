@@ -15,7 +15,7 @@
   <div class="container">
     <div class="form-card">
       <h2>Create Your Free Account</h2>
-      <p class="sub">Register to submit your application online and upload your documents.</p>
+      <p class="sub">Free consultation, university admission support, visa guidance, and student relocation assistance — guided remotely by our team in Brno, Czech Republic. Welcoming international students worldwide from diverse academic and professional backgrounds!</p>
       <div class="notice" id="reg-notice"></div>
       <form id="reg-form">
         <div class="field">
@@ -28,7 +28,44 @@
         </div>
         <div class="field">
           <label for="r-phone">Phone / WhatsApp</label>
-          <input type="tel" id="r-phone" maxlength="30" placeholder="+880 1XXXXXXXXX">
+          <input type="tel" id="r-phone" maxlength="30" placeholder="+1 / +44 / +880 / +91 ...">
+        </div>
+        <div class="field">
+          <label for="r-country">Target Destination Country *</label>
+          <select id="r-country" style="width:100%; padding:0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.9rem; background:var(--surface); color:var(--text);" required>
+            <option value="Czech Republic">🇨🇿 Czech Republic (Higher Education, Nostrification & Degree)</option>
+            <option value="Germany">🇩🇪 Germany (Uni-Assist / VPD / Blocked Account €11,904)</option>
+            <option value="Austria">🇦🇹 Austria (Study Permit / OeAD Dormitories / Vienna)</option>
+            <option value="Italy">🇮🇹 Italy (Universitaly / CIMEA / Permesso di Soggiorno)</option>
+            <option value="United Kingdom">🇬🇧 United Kingdom (Study Visa / CAS / BRP / eVisa)</option>
+            <option value="Sweden">🇸🇪 Sweden (University Admissions Sweden / Skatteverket)</option>
+            <option value="Netherlands">🇳🇱 Netherlands (Studielink / IND Recognized Sponsor / BSN)</option>
+            <option value="France">🇫🇷 France (Campus France / France-Visas / VLS-TS)</option>
+            <option value="Spain">🇪🇸 Spain (Estancia por Estudios / UNEDasiss / TIE Card)</option>
+            <option value="Ireland">🇮🇪 Ireland (Stamp 2 Student Visa / CAO / IRP Card)</option>
+            <option value="Canada">🇨🇦 Canada (DLI LOA / PAL / GIC $20,635 / Study Permit)</option>
+            <option value="Australia">🇦🇺 Australia (CRICOS Offer / OSHC / Genuine Student / Subclass 500)</option>
+            <option value="Poland">🇵🇱 Poland (University Admissions & Polish Sworn Translation)</option>
+            <option value="Estonia">🇪🇪 Estonia (DreamApply Estonia / Study D-Visa)</option>
+            <option value="Hungary">🇭🇺 Hungary (Higher Education & Study Visa D)</option>
+            <option value="Slovakia">🇸🇰 Slovakia (Higher Education & Study Visa D)</option>
+            <option value="Iceland">🇮🇸 Iceland (Higher Education / Útlendingastofnun)</option>
+            <option value="Serbia">🇷🇸 Serbia (NES Labour Test / Type D Work Visa / Single Permit)</option>
+            <option value="Malaysia">🇲🇾 Malaysia (ESD Work Permit / VDR Calling Visa / i-Kad)</option>
+            <option value="Moldova">🇲🇩 Moldova (Employment Authorization / Long-Stay Work Visa)</option>
+            <option value="Europe General">🇪🇺 Europe General (Schengen Higher Education Pathway)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="r-expertise">Your Academic / Professional Background & Expertise *</label>
+          <select id="r-expertise" style="width:100%; padding:0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.9rem; background:var(--surface); color:var(--text);" required>
+            <option value="High School Graduate">🎓 High School / Secondary Graduate (Applying for Bachelor's)</option>
+            <option value="Bachelor Degree Holder">📜 Bachelor's Degree Holder (Applying for Master's)</option>
+            <option value="Postgraduate / PhD Candidate">🏛️ Postgraduate / Master's Degree Holder (Doctorate / Research)</option>
+            <option value="Technical & Vocational Diploma">⚙️ Technical / Vocational Diploma / Skilled Trade</option>
+            <option value="Experienced Professional">💼 Experienced Professional / Corporate / Management</option>
+            <option value="Career Transition & Language Student">🌐 Career Switcher / Language Foundation Applicant</option>
+          </select>
         </div>
         <div class="field">
           <label for="r-pass">Password *</label>
@@ -76,6 +113,8 @@ document.getElementById("reg-form").addEventListener("submit", function (ev) {
     fullName: document.getElementById("r-name").value.trim(),
     email: document.getElementById("r-email").value.trim(),
     phone: document.getElementById("r-phone").value.trim(),
+    targetCountry: document.getElementById("r-country").value,
+    expertiseLevel: document.getElementById("r-expertise").value,
     password: p1
   }).then(afterAuth).catch(function (err) {
     showNotice("reg-notice", "error", err.message);

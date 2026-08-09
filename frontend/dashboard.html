@@ -24,6 +24,42 @@
 
     <div class="notice" id="dash-notice"></div>
 
+    <!-- Country & Regional Preference Bar -->
+    <div class="panel" style="background: linear-gradient(135deg, #0d2344 0%, #1a3a68 100%); color: #ffffff; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(13,35,68,0.25);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">🌍 Target Destination & Track Roadmap</div>
+          <h2 style="margin: 0.2rem 0; color: #ffffff; font-size: 1.35rem;">Destination: <span id="dash-active-country-label" style="color:#60a5fa;">Czech Republic</span></h2>
+          <p style="margin: 0; color: #cbd5e1; font-size: 0.85rem;">Select your target destination country to automatically view the exact step-by-step roadmap, required documents, and embassy milestones for that specific country.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <select id="dash-country-select" style="padding: 0.65rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.92rem; border: 1px solid rgba(255,255,255,0.3); background: #1e293b; color: #ffffff; cursor: pointer; min-width: 260px;">
+            <option value="Czech Republic">🇨🇿 Czech Republic (Higher Education, Nostrification & Degree)</option>
+            <option value="Germany">🇩🇪 Germany (Uni-Assist / VPD / Blocked Account €11,904)</option>
+            <option value="Austria">🇦🇹 Austria (Study Permit / OeAD Dormitories / Vienna)</option>
+            <option value="Italy">🇮🇹 Italy (Universitaly / CIMEA / Permesso di Soggiorno)</option>
+            <option value="United Kingdom">🇬🇧 United Kingdom (Study Visa / CAS / BRP / eVisa)</option>
+            <option value="Sweden">🇸🇪 Sweden (University Admissions Sweden / Skatteverket)</option>
+            <option value="Netherlands">🇳🇱 Netherlands (Studielink / IND Recognized Sponsor / BSN)</option>
+            <option value="France">🇫🇷 France (Campus France / France-Visas / VLS-TS)</option>
+            <option value="Spain">🇪🇸 Spain (Estancia por Estudios / UNEDasiss / TIE Card)</option>
+            <option value="Ireland">🇮🇪 Ireland (Stamp 2 Student Visa / CAO / IRP Card)</option>
+            <option value="Canada">🇨🇦 Canada (DLI LOA / PAL / GIC $20,635 / Study Permit)</option>
+            <option value="Australia">🇦🇺 Australia (CRICOS Offer / OSHC / Genuine Student / Subclass 500)</option>
+            <option value="Poland">🇵🇱 Poland (University Admissions & Polish Sworn Translation)</option>
+            <option value="Estonia">🇪🇪 Estonia (DreamApply Estonia / Study D-Visa)</option>
+            <option value="Hungary">🇭🇺 Hungary (Higher Education & Study Visa D)</option>
+            <option value="Slovakia">🇸🇰 Slovakia (Higher Education & Study Visa D)</option>
+            <option value="Iceland">🇮🇸 Iceland (Higher Education / Útlendingastofnun)</option>
+            <option value="Serbia">🇷🇸 Serbia (NES Labour Test / Type D Work Visa / Single Permit)</option>
+            <option value="Malaysia">🇲🇾 Malaysia (ESD Work Permit / VDR Calling Visa / i-Kad)</option>
+            <option value="Moldova">🇲🇩 Moldova (Employment Authorization / Long-Stay Work Visa)</option>
+            <option value="Europe General">🇪🇺 Europe General (Schengen Higher Education Pathway)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <!-- Application status -->
     <div class="panel">
       <h2>📋 My Application & Status</h2>
@@ -67,23 +103,154 @@
       </div>
     </div>
 
-    <!-- 20-Step European Admission Roadmap -->
+    <!-- Step-by-Step European & Global Admission Roadmap -->
     <div class="panel">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1rem;">
         <div>
-          <h2 style="margin:0; color: var(--blue-900);">🎓 20-Step European Admission &amp; Visa Roadmap</h2>
-          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.88rem;">Track every single milestone of your journey from initial document verification &amp; legalization to entrance exams, visa, and Brno airport arrival.</p>
+          <h2 style="margin:0; color: var(--blue-900);">🎓 Destination Admission &amp; Visa Roadmap</h2>
+          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.88rem;">Track every single milestone of your journey from initial qualifications &amp; document legalization to university offers, visa, and arrival.</p>
+        </div>
+      </div>
+
+      <!-- Real-time Step Sequence Tracing Trail Box -->
+      <div id="student-step-tracing-box" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: 10px; padding: 1.1rem; margin-bottom: 1.25rem; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 14px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <div>
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">⚡ Real-time Execution Tracing</div>
+            <h3 style="margin: 0.1rem 0 0 0; color: #ffffff; font-size: 1.1rem; font-weight: 800;">🔗 Milestone Completion Sequence Trail</h3>
+          </div>
+          <div style="font-size: 0.78rem; background: rgba(56,189,248,0.15); color: #38bdf8; padding: 3px 10px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(56,189,248,0.3);">
+            Flexi-Order Tracking Active
+          </div>
+        </div>
+        <p style="margin: 0 0 0.75rem 0; font-size: 0.82rem; color: #cbd5e1; line-height: 1.4;">
+          Steps can be completed in any flexible order based on your university deadlines and document readiness. Below is your exact completion trail (e.g., Step 1 ➔ Step 3 ➔ Step 2):
+        </p>
+        <div id="student-step-tracing-trail" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; background: rgba(0,0,0,0.35); padding: 0.75rem; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.2); min-height: 48px;">
+          <span style="color:#94a3b8; font-size:0.85rem; font-style:italic;">No milestones completed yet. Update any step below to begin your sequence tracing trail!</span>
         </div>
       </div>
 
       <div id="student-20-steps-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.85rem;">
-        <div class="muted center py-2">Loading your 20-step admission timeline...</div>
+        <div class="muted center py-2">Loading your admission timeline...</div>
       </div>
     </div>
 
     <!-- My Tasks/Steps Checklist -->
     <div class="panel">
       <div id="role-taskboard-container"></div>
+    </div>
+
+    <!-- Student Financial Ledger & Expense Statement -->
+    <div class="panel" id="student-financial-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h2 style="margin:0; color: var(--blue-900);">💳 Financial Statement &amp; Managed Expenses</h2>
+          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.88rem;">Track your package charges, deposit payments received by CzechBridge, and official managed expenses (university fees, legalizations, visa).</p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="download-student-statement-btn" style="border-color: var(--blue-700); color: var(--blue-700); font-weight: 700;">
+          📄 Download Official Statement
+        </button>
+      </div>
+
+      <!-- Financial Metric Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--blue-800); margin-bottom: 0.3rem;">Contract Fee</div>
+          <div id="st-fin-service-fee" style="font-size: 1.3rem; font-weight: 800; color: var(--blue-900);">€0.00</div>
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #166534; margin-bottom: 0.3rem;">Required Deposit</div>
+          <div id="st-fin-req-deposit" style="font-size: 1.3rem; font-weight: 800; color: #15803d;">€500.00</div>
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #166534; margin-bottom: 0.3rem;">Deposits Paid</div>
+          <div id="st-fin-deposits-paid" style="font-size: 1.3rem; font-weight: 800; color: #15803d;">€0.00</div>
+        </div>
+        <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #9a3412; margin-bottom: 0.3rem;">Managed Expenses</div>
+          <div id="st-fin-total-expenses" style="font-size: 1.3rem; font-weight: 800; color: #c2410c;">€0.00</div>
+        </div>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #991b1b; margin-bottom: 0.3rem;">Outstanding Due</div>
+          <div id="st-fin-balance-due" style="font-size: 1.3rem; font-weight: 800; color: #dc2626;">€0.00</div>
+        </div>
+        <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #9a3412; margin-bottom: 0.3rem;">Payment Due Date</div>
+          <div id="st-fin-due-date" style="font-size: 1rem; font-weight: 800; color: #c2410c;">As per schedule</div>
+        </div>
+      </div>
+
+      <!-- Deposit & Wire Transfer Action Banner -->
+      <div id="st-payment-action-banner" style="background: #fffbebf5; border: 1px solid #fde68a; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 style="margin: 0; color: #92400e; font-size: 0.95rem;">⚠️ Assigned Deposit &amp; Due Payment Notice</h3>
+            <p id="st-payment-banner-text" style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #78350f;">
+              Your initial deposit payment of <strong>€500.00</strong> is required to proceed with your university application and document translation.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="#vault" class="btn btn-primary btn-sm" style="font-size: 0.8rem; background: #d97706; border-color: #d97706;">📤 Upload Payment Proof</a>
+            <a href="mailto:info@studywithczechbridge.com" class="btn btn-outline btn-sm" style="font-size: 0.8rem; color: #78350f; border-color: #f59e0b;">✉️ Request Invoice</a>
+          </div>
+        </div>
+        <!-- Wire Transfer Bank Account Box -->
+        <div style="margin-top: 0.75rem; background: #ffffff; border: 1px solid #fef3c7; padding: 0.75rem; border-radius: 6px; font-size: 0.82rem; color: #451a03; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
+          <div><strong>Beneficiary:</strong> StudyCzechBridge s.r.o.</div>
+          <div><strong>Bank:</strong> Fio banka a.s. (Brno, Czech Republic)</div>
+          <div><strong>IBAN (EUR):</strong> CZ23 2010 0000 0029 0188 3912</div>
+          <div><strong>BIC / SWIFT:</strong> FIOBCZPPXXX</div>
+        </div>
+      </div>
+
+      <!-- Tables Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+        <!-- Deposits Received Table -->
+        <div style="border: 1px solid var(--line); border-radius: 8px; padding: 1rem; background: var(--white);">
+          <h3 style="margin-top: 0; margin-bottom: 0.75rem; font-size: 1rem; color: var(--blue-900); border-bottom: 1px solid var(--line); padding-bottom: 0.5rem;">
+            📥 Deposit Payments Received
+          </h3>
+          <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Method</th>
+                  <th style="text-align: right;">Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="st-deposits-tbody">
+                <tr><td colspan="5" class="muted center py-2">No deposit payment records found.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Managed Expenses Table -->
+        <div style="border: 1px solid var(--line); border-radius: 8px; padding: 1rem; background: var(--white);">
+          <h3 style="margin-top: 0; margin-bottom: 0.75rem; font-size: 1rem; color: var(--blue-900); border-bottom: 1px solid var(--line); padding-bottom: 0.5rem;">
+            📤 Managed Expenses &amp; Legalization Fees
+          </h3>
+          <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Category / Note</th>
+                  <th>Paid By</th>
+                  <th style="text-align: right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="st-expenses-tbody">
+                <tr><td colspan="4" class="muted center py-2">No managed expenses recorded.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Documents -->

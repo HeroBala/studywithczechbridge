@@ -87,7 +87,7 @@
           '<div>' +
             '<img src="assets/logo-mark.svg" alt="CzechBridge logo" class="footer-logo">' +
             '<h4>StudyCzechBridge</h4>' +
-            '<p>Based in Brno, Czech Republic — providing remote guidance and support to students in Bangladesh planning to study in Europe.</p>' +
+            '<p>Free consultation, university admission support, visa guidance, and student relocation assistance — guided remotely by our team in Brno, Czech Republic for international students worldwide from diverse backgrounds and expertise.</p>' +
           '</div>' +
           '<div>' +
             '<h4>Quick Links</h4>' +

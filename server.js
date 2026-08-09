@@ -260,7 +260,7 @@ app.post('/api/email-config', (req, res) => {
 // Route to test sending email
 app.post('/api/test-email', async (req, res) => {
   const { recipient } = req.body;
-  const targetEmail = recipient || emailConfig.adminEmail || '1997herobala@gmail.com';
+  const targetEmail = recipient || emailConfig.adminEmail || 'info@studywithczechbridge.com';
 
   const result = await sendEmail({
     to: targetEmail,
@@ -389,7 +389,7 @@ app.post('/api/notify-admission-update', async (req, res) => {
     }
 
     // 2. Notify Admin & Counselor via Email
-    const notifyAdminTarget = counselorEmail || emailConfig.adminEmail || '1997herobala@gmail.com';
+    const notifyAdminTarget = counselorEmail || emailConfig.adminEmail || 'info@studywithczechbridge.com';
     if (notifyAdminTarget) {
       const adminSubject = `🔔 Status Update Notification: ${studentName || 'Student'} (${newStatus})`;
       const adminText = `Admin & Counselor Notification:\n\nStudent: ${studentName || 'Student'} (${studentEmail})\nStatus Updated To: ${newStatus}\nStep: ${stepTitle || 'General Status'}\nCounselor Notes: ${adminNotes || 'None'}\nUpdated At: ${timeStr}`;

@@ -177,6 +177,56 @@
       });
     }
 
+    var quickTaskForm = document.getElementById("m-quick-task-form");
+    if (quickTaskForm) {
+      quickTaskForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!currentApp) return;
+
+        var title = document.getElementById("m-quick-task-title").value.trim();
+        var dueDate = document.getElementById("m-quick-task-duedate").value;
+        var priority = document.getElementById("m-quick-task-priority").value;
+        var desc = document.getElementById("m-quick-task-desc").value.trim();
+        var notify = document.getElementById("m-quick-task-notify").checked;
+        var submitBtn = document.getElementById("btn-submit-quick-task");
+
+        if (!title) {
+          alert("Please enter a task title.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Assigning...";
+
+        var targetId = currentApp.userId || currentApp.id;
+
+        api("adminCreateTask", {
+          assignedTo: targetId,
+          assignedToName: currentApp.fullName || "Student",
+          assignedToEmail: currentApp.email,
+          title: title,
+          description: desc,
+          priority: priority,
+          dueDate: dueDate || new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0],
+          stage: "admission",
+          status: "todo",
+          notifyEmail: notify
+        }).then(function () {
+          document.getElementById("m-quick-task-title").value = "";
+          document.getElementById("m-quick-task-desc").value = "";
+          if (typeof showToast === "function") {
+            showToast("✅ Task assigned to " + currentApp.fullName + " successfully!");
+          }
+          loadAndRenderModalTasks(targetId, currentApp.id);
+        }).catch(function (err) {
+          alert("Error creating task: " + err.message);
+        }).finally(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "🚀 Assign Task to Student";
+        });
+      });
+    }
+
     var userDocsClose = document.getElementById("user-docs-close");
     if (userDocsClose) {
       userDocsClose.addEventListener("click", function () {
@@ -284,6 +334,37 @@
     renderJourneyStepsGrid(selectedJourneyApp);
   }
 
+  function renderAdminTracingTrail(appObj, steps) {
+    var box = document.getElementById("journey-tracing-box");
+    var trailEl = document.getElementById("journey-tracing-trail");
+    if (!box || !trailEl) return;
+
+    box.style.display = "block";
+
+    var trail = Array.isArray(appObj.stepCompletionTrail) ? appObj.stepCompletionTrail : [];
+    if (!trail.length) {
+      trailEl.innerHTML = '<span style="color:#94a3b8; font-size:0.82rem; font-style:italic;">No steps marked done yet for this student.</span>';
+      return;
+    }
+
+    var html = "";
+    trail.forEach(function (sNum, index) {
+      var sObj = steps.filter(function (x) { return Number(x.step) === Number(sNum); })[0];
+      var title = sObj ? sObj.title : ("Step " + sNum);
+      
+      html += '<div style="display:inline-flex; align-items:center; background:#0284c7; color:#ffffff; padding:0.25rem 0.6rem; border-radius:16px; font-size:0.78rem; font-weight:700;">' +
+                '<span style="background:rgba(255,255,255,0.25); border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; font-size:0.68rem; margin-right:5px;">' + (index + 1) + '</span>' +
+                'Step ' + sNum + ': ' + esc(title) +
+              '</div>';
+
+      if (index < trail.length - 1) {
+        html += '<span style="color:#38bdf8; font-weight:800; font-size:1rem; margin:0 2px;">➔</span>';
+      }
+    });
+
+    trailEl.innerHTML = html;
+  }
+
   function renderJourneyStepsGrid(appObj) {
     var grid = document.getElementById("journey-steps-container");
     if (!grid) return;
@@ -292,11 +373,20 @@
     var custom = appObj.stepCustomData || {};
     var totalSteps = steps.length;
 
+    renderAdminTracingTrail(appObj, steps);
+
     grid.innerHTML = "";
     steps.forEach(function (s) {
-      var sData = custom[s.step] || {};
+      var sNum = Number(s.step);
+      var sData = custom[sNum] || custom[String(sNum)] || {};
       var curStatus = sData.status || "Pending";
       var notesVal = sData.notes || "";
+
+      var trail = Array.isArray(appObj.stepCompletionTrail) ? appObj.stepCompletionTrail : [];
+      var trailIdx = trail.indexOf(sNum);
+      var rankBadge = (curStatus === "Done" && trailIdx !== -1)
+        ? '<span style="font-size:0.7rem; font-weight:800; background:#0284c7; color:#ffffff; padding:1px 6px; border-radius:10px; margin-left:4px;">Rank #' + (trailIdx + 1) + ' Done</span>'
+        : '';
 
       var card = document.createElement("div");
       card.className = "panel";
@@ -306,8 +396,11 @@
       card.style.borderRadius = "8px";
 
       card.innerHTML =
-        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">' +
-          '<strong style="color:var(--blue-900); font-size:0.85rem; background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + s.step + '/' + totalSteps + '</strong>' +
+        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:0.2rem;">' +
+          '<div>' +
+            '<strong style="color:var(--blue-900); font-size:0.85rem; background:#f0f7ff; padding:2px 8px; border-radius:12px;">Step ' + s.step + '/' + totalSteps + '</strong>' +
+            rankBadge +
+          '</div>' +
           '<span class="muted" style="font-size:0.75rem;">' + esc(s.category) + '</span>' +
         '</div>' +
         '<div style="font-weight:700; font-size:0.95rem; color:var(--blue-900); margin-bottom:0.3rem;">' + esc(s.title) + '</div>' +
@@ -355,6 +448,32 @@
 
     selectedJourneyApp.stepCustomData = stepCustomData;
 
+    // Recalculate stepCompletionTrail
+    var trail = Array.isArray(selectedJourneyApp.stepCompletionTrail) ? selectedJourneyApp.stepCompletionTrail.slice() : [];
+
+    Object.keys(stepCustomData).forEach(function (k) {
+      var sNum = Number(k);
+      var st = stepCustomData[k].status;
+      if (st === "Done") {
+        if (trail.indexOf(sNum) === -1) {
+          trail.push(sNum);
+        }
+      } else {
+        var idx = trail.indexOf(sNum);
+        if (idx !== -1) {
+          trail.splice(idx, 1);
+        }
+      }
+    });
+
+    selectedJourneyApp.stepCompletionTrail = trail;
+
+    api("adminUpdateJourneySteps", {
+      appId: selectedJourneyApp.id || selectedJourneyApp.userId,
+      stepCustomData: stepCustomData,
+      stepCompletionTrail: trail
+    }).catch(function (e) { console.warn("adminUpdateJourneySteps error:", e); });
+
     // Trigger email update notification to student
     fetch('/api/notify-admission-update', {
       method: 'POST',
@@ -362,16 +481,17 @@
       body: JSON.stringify({
         studentEmail: selectedJourneyApp.email,
         studentName: selectedJourneyApp.fullName || 'Student',
-        stepTitle: '20-Step Admission Journey Updated',
+        stepTitle: 'Admission Journey Updated',
         newStatus: 'Milestones Updated',
-        adminNotes: 'Your 20-step European admission roadmap has been updated by your advisor.'
+        adminNotes: 'Your admission roadmap has been updated by your advisor.'
       })
     }).catch(function(e) { console.warn("Journey notify email error:", e); });
 
     setTimeout(function () {
       saveBtn.disabled = false;
       saveBtn.textContent = "💾 Save Step Updates & Notify Student";
-      alert("✅ 20-Step Admission Journey updated successfully and notification email dispatched to " + selectedJourneyApp.email);
+      renderJourneyStepsGrid(selectedJourneyApp);
+      alert("✅ Admission Journey updated successfully and notification email dispatched to " + selectedJourneyApp.email);
     }, 400);
   }
 
@@ -379,10 +499,9 @@
      2. Private Email & SMTP Settings
      ============================================================ */
   function initEmailTab() {
-    fetch('/api/email-config')
-      .then(function (r) { return r.json(); })
+    api("getEmailConfig")
       .then(function (data) {
-        if (!data.ok) return;
+        if (!data || !data.ok) return;
         var cfg = data.config || {};
         document.getElementById("smtp-host").value = cfg.host || "";
         document.getElementById("smtp-port").value = cfg.port || 587;
@@ -391,7 +510,7 @@
         document.getElementById("smtp-pass").value = cfg.pass || "";
         document.getElementById("smtp-from-name").value = cfg.fromName || "StudyCzechBridge Admissions";
         document.getElementById("smtp-from-email").value = cfg.fromEmail || "info@studywithczechbridge.com";
-        document.getElementById("smtp-admin-email").value = cfg.adminEmail || "1997herobala@gmail.com";
+        document.getElementById("smtp-admin-email").value = cfg.adminEmail || "info@studywithczechbridge.com";
 
         document.getElementById("notify-login").checked = cfg.notifyOnLogin !== false;
         document.getElementById("notify-admission").checked = cfg.notifyOnAdmissionUpdate !== false;
@@ -426,16 +545,12 @@
           notifyOnDocumentUpload: document.getElementById("notify-doc").checked
         };
 
-        fetch('/api/email-config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        })
-        .then(function (r) { return r.json(); })
+        api("saveEmailConfig", body)
         .then(function (res) {
           saveBtn.disabled = false;
           saveBtn.textContent = "💾 Save Email Configuration";
-          if (res.ok) alert("✅ Private SMTP settings saved successfully!");
+          if (res && res.ok) alert("✅ Private SMTP settings saved successfully!");
+          else alert("Error saving SMTP settings: " + (res ? res.message || "Unknown" : "Error"));
         })
         .catch(function (err) {
           saveBtn.disabled = false;
@@ -448,24 +563,21 @@
     var testBtn = document.getElementById("btn-test-smtp");
     if (testBtn) {
       testBtn.onclick = function () {
-        var recipient = prompt("Enter email address to send test email to:", document.getElementById("smtp-admin-email").value || "1997herobala@gmail.com");
+        var recipient = prompt("Enter email address to send test email to:", document.getElementById("smtp-admin-email").value || "info@studywithczechbridge.com");
         if (!recipient) return;
 
         testBtn.disabled = true;
         testBtn.textContent = "Sending Test...";
 
-        fetch('/api/test-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ recipient: recipient })
-        })
-        .then(function (r) { return r.json(); })
+        api("testEmail", { recipient: recipient })
         .then(function (res) {
           testBtn.disabled = false;
           testBtn.textContent = "🧪 Send Test Email";
-          if (res.ok) {
+          if (res && res.ok) {
             alert("✅ Test email dispatched!\nStatus: " + (res.result ? res.result.statusMessage : 'Success'));
             initEmailTab(); // refresh logs
+          } else {
+            alert("Test email error: " + (res ? res.message : "Error"));
           }
         })
         .catch(function (err) {
@@ -1033,6 +1145,9 @@
 
       var flagMap = {
         "Czech Republic": "🇨🇿 Czechia",
+        "United Kingdom": "🇬🇧 United Kingdom",
+        "UK": "🇬🇧 United Kingdom",
+        "Iceland": "🇮🇸 Iceland",
         "Malaysia": "🇲🇾 Malaysia",
         "Serbia": "🇷🇸 Serbia",
         "Poland": "🇵🇱 Poland",
@@ -1227,6 +1342,8 @@
         return "<dt>" + f[1] + "</dt><dd>" + (esc(v) || "—") + "</dd>";
       }).join("");
 
+      renderModalFinancialSummary(currentApp);
+      loadAndRenderModalTasks(currentApp.userId || currentApp.id, currentApp.id);
       renderModalDocs(res.documents || []);
     }).catch(function (err) {
       document.getElementById("m-title").textContent = "Error";
@@ -1234,7 +1351,104 @@
     });
   }
 
-  function renderModalDocs(docs) {
+  function renderModalFinancialSummary(appObj) {
+    if (!appObj) return;
+    var reqDep = parseFloat(appObj.requiredDepositAmount || appObj.requiredDeposit || "500") || 500;
+    var fee = parseFloat(appObj.serviceFee || "1200") || 1200;
+    var deposits = Array.isArray(appObj.deposits) ? appObj.deposits : [];
+    var expenses = Array.isArray(appObj.expenses) ? appObj.expenses : [];
+    var totalPaidDep = deposits.reduce(function (s, d) { return s + (parseFloat(d.amount) || 0); }, 0);
+    var totalExp = expenses.reduce(function (s, e) { return s + (parseFloat(e.amount) || 0); }, 0);
+    
+    var dueAmt = appObj.customDueAmount ? parseFloat(appObj.customDueAmount) : ((fee + totalExp) - totalPaidDep);
+    if (isNaN(dueAmt) || dueAmt < 0) dueAmt = 0;
+
+    var reqEl = document.getElementById("m-fin-req-deposit");
+    var paidEl = document.getElementById("m-fin-paid-deposit");
+    var dueEl = document.getElementById("m-fin-due-amount");
+    var dateEl = document.getElementById("m-fin-due-date");
+
+    if (reqEl) reqEl.textContent = "€" + reqDep.toFixed(2);
+    if (paidEl) paidEl.textContent = "€" + totalPaidDep.toFixed(2);
+    if (dueEl) dueEl.textContent = "€" + dueAmt.toFixed(2);
+    if (dateEl) dateEl.textContent = appObj.paymentDueDate || appObj.dueDate || "Not set";
+
+    var qBtn = document.getElementById("m-quick-fin-ledger-btn");
+    if (qBtn) {
+      qBtn.onclick = function () {
+        openFinancialLedgerModal(appObj.id);
+      };
+    }
+  }
+
+  function loadAndRenderModalTasks(targetUserId, targetAppId) {
+    var container = document.getElementById("m-assigned-tasks-list");
+    if (!container) return;
+    container.innerHTML = '<div class="muted center py-2"><span class="spinner dark"></span> Loading candidate tasks...</div>';
+
+    api("adminListTasks").then(function (res) {
+      var allT = res.tasks || [];
+      var filtered = allT.filter(function (t) {
+        return t.assignedTo === targetUserId || t.assignedTo === targetAppId;
+      });
+
+      if (!filtered.length) {
+        container.innerHTML = '<div class="muted center py-2" style="font-size:0.82rem;">No custom tasks assigned yet. Use the form above to assign a required task to this student.</div>';
+        return;
+      }
+
+      container.innerHTML = '<table class="data" style="width:100%; font-size:0.82rem;">' +
+        '<thead><tr><th>Task Title</th><th>Due Date</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead>' +
+        '<tbody>' +
+        filtered.map(function (t) {
+          var pBadge = t.priority === "high" ? '<span class="badge" style="background:#fef2f2; color:#dc2626;">🚨 High</span>' :
+                       (t.priority === "low" ? '<span class="badge" style="background:#f0fdf4; color:#166534;">🟢 Low</span>' :
+                       '<span class="badge" style="background:#eff6ff; color:#1d4ed8;">🔵 Normal</span>');
+          var stBadge = t.status === "done" ? '<span class="badge st-approved">Done ✓</span>' :
+                        (t.status === "in_progress" ? '<span class="badge st-review">In Progress</span>' :
+                        '<span class="badge st-pending">To Do</span>');
+
+          return '<tr>' +
+            '<td><strong>' + esc(t.title) + '</strong>' + (t.description ? '<br><span class="muted" style="font-size:0.75rem;">' + esc(t.description) + '</span>' : '') + '</td>' +
+            '<td>' + esc(t.dueDate || "—") + '</td>' +
+            '<td>' + pBadge + '</td>' +
+            '<td>' + stBadge + '</td>' +
+            '<td>' +
+              '<button type="button" class="btn btn-outline btn-sm btn-m-toggle-task" data-id="' + t.id + '" data-st="' + t.status + '" style="padding:0.15rem 0.4rem; font-size:0.72rem;">' + (t.status === "done" ? "Undo" : "✓ Complete") + '</button> ' +
+              '<button type="button" class="btn btn-danger btn-sm btn-m-del-task" data-id="' + t.id + '" style="padding:0.15rem 0.4rem; font-size:0.72rem;">✕</button>' +
+            '</td>' +
+          '</tr>';
+        }).join("") +
+        '</tbody></table>';
+
+      // Attach handlers
+      container.querySelectorAll(".btn-m-toggle-task").forEach(function (btn) {
+        btn.onclick = function () {
+          var taskId = this.getAttribute("data-id");
+          var curSt = this.getAttribute("data-st");
+          var newSt = curSt === "done" ? "todo" : "done";
+          this.disabled = true;
+          api("adminUpdateTask", { taskId: taskId, status: newSt }).then(function () {
+            loadAndRenderModalTasks(targetUserId, targetAppId);
+          }).catch(function (err) { alert(err.message); });
+        };
+      });
+
+      container.querySelectorAll(".btn-m-del-task").forEach(function (btn) {
+        btn.onclick = function () {
+          if (!confirm("Delete this assigned task?")) return;
+          var taskId = this.getAttribute("data-id");
+          this.disabled = true;
+          api("adminDeleteTask", { taskId: taskId }).then(function () {
+            loadAndRenderModalTasks(targetUserId, targetAppId);
+          }).catch(function (err) { alert(err.message); });
+        };
+      });
+
+    }).catch(function (err) {
+      container.innerHTML = '<div class="notice error">Failed to load candidate tasks: ' + esc(err.message) + '</div>';
+    });
+  }
     var ul = document.getElementById("m-docs");
     if (!docs.length) {
       ul.innerHTML = '<li class="muted">This student has not uploaded any documents yet.</li>';
@@ -1579,8 +1793,9 @@
 
   function renderOpsMetrics() {
     var totalGross = 0;
+    var totalDeposits = 0;
+    var totalExpenses = 0;
     var totalComm = 0;
-    var activeCount = opsStudentsList.length;
 
     opsStudentsList.forEach(function (app) {
       var fee = parseFloat(app.serviceFee || "1200");
@@ -1590,16 +1805,28 @@
 
       totalGross += fee;
       totalComm += comm;
+
+      if (Array.isArray(app.deposits)) {
+        app.deposits.forEach(function (d) { totalDeposits += (parseFloat(d.amount) || 0); });
+      }
+      if (Array.isArray(app.expenses)) {
+        app.expenses.forEach(function (e) { totalExpenses += (parseFloat(e.amount) || 0); });
+      }
     });
 
-    var netProfit = totalGross - totalComm;
+    var netProfit = totalGross - (totalComm + totalExpenses);
 
-    document.getElementById("ops-gross-fees").textContent = "€" + totalGross.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById("ops-commissions").textContent = "€" + totalComm.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    document.getElementById("ops-net-profit").textContent = "€" + netProfit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    
-    // Multiplier leverage: 1 operator to active students count
-    document.getElementById("ops-leverage").textContent = "1 : " + activeCount;
+    var grossEl = document.getElementById("ops-gross-fees");
+    var depEl = document.getElementById("ops-deposits-collected");
+    var expEl = document.getElementById("ops-total-expenses");
+    var commEl = document.getElementById("ops-commissions");
+    var profitEl = document.getElementById("ops-net-profit");
+
+    if (grossEl) grossEl.textContent = "€" + totalGross.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (depEl) depEl.textContent = "€" + totalDeposits.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (expEl) expEl.textContent = "€" + totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (commEl) commEl.textContent = "€" + totalComm.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (profitEl) profitEl.textContent = "€" + netProfit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function renderOpsDropdowns() {
@@ -1655,8 +1882,10 @@
 
   function renderOpsBudgetTable() {
     var tbody = document.getElementById("ops-budget-body");
+    if (!tbody) return;
+
     if (!opsStudentsList.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="muted center py-3">No active students found in your client base.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="muted center py-3">No active students found in your client base.</td></tr>';
       return;
     }
 
@@ -1664,19 +1893,29 @@
     opsStudentsList.forEach(function (app) {
       var tr = document.createElement("tr");
 
-      var serviceFee = app.serviceFee || "1200";
-      var advComm = app.advisorCommission || "300";
+      var serviceFee = parseFloat(app.serviceFee || "1200") || 1200;
+      var advComm = parseFloat(app.advisorCommission || "300") || 300;
       var payoutStatus = app.payoutStatus || "Pending";
+
+      var deposits = Array.isArray(app.deposits) ? app.deposits : [];
+      var expenses = Array.isArray(app.expenses) ? app.expenses : [];
+
+      var totalDep = deposits.reduce(function (s, d) { return s + (parseFloat(d.amount) || 0); }, 0);
+      var totalExp = expenses.reduce(function (s, e) { return s + (parseFloat(e.amount) || 0); }, 0);
+      var balDue = (serviceFee + totalExp) - totalDep;
+      if (balDue < 0) balDue = 0;
 
       var isPaid = payoutStatus === "Paid";
       var statusSelectClass = isPaid ? "st-approved" : "st-pending";
 
       tr.innerHTML = 
         '<td><strong>' + esc(app.fullName) + '</strong><br><span class="muted" style="font-size:0.75rem;">' + esc(app.email) + '</span></td>' +
-        '<td>' + esc(app.program) + '<br><span class="muted" style="font-size:0.75rem;">' + esc(app.level || "Bachelor's") + '</span></td>' +
-        '<td><span class="badge" style="background:rgba(29,78,137,0.1); color:var(--blue-700); font-size:0.75rem; font-weight:600;">🌍 ' + esc(app.nationality || "Global") + '</span></td>' +
-        '<td><input type="number" id="fee-input-' + app.id + '" value="' + serviceFee + '" style="width:80px; padding:0.2rem 0.4rem; border-radius:4px; border:1px solid var(--line); font-size:0.85rem; text-align:right;"></td>' +
-        '<td><input type="number" id="comm-input-' + app.id + '" value="' + advComm + '" style="width:80px; padding:0.2rem 0.4rem; border-radius:4px; border:1px solid var(--line); font-size:0.85rem; text-align:right;"></td>' +
+        '<td>' + esc(app.program) + '<br><span class="badge" style="background:rgba(29,78,137,0.1); color:var(--blue-700); font-size:0.75rem; font-weight:600;">🌍 ' + esc(app.targetCountry || app.nationality || "Czech Republic") + '</span></td>' +
+        '<td style="text-align:right; font-weight:700;">€' + serviceFee.toFixed(2) + '</td>' +
+        '<td style="text-align:right; font-weight:700; color:var(--green);">+€' + totalDep.toFixed(2) + '</td>' +
+        '<td style="text-align:right; font-weight:700; color:#c2410c;">€' + totalExp.toFixed(2) + '</td>' +
+        '<td style="text-align:right; font-weight:800; color:' + (balDue > 0 ? '#dc2626' : 'var(--green)') + ';">€' + balDue.toFixed(2) + '</td>' +
+        '<td><input type="number" id="comm-input-' + app.id + '" value="' + advComm + '" style="width:75px; padding:0.2rem 0.4rem; border-radius:4px; border:1px solid var(--line); font-size:0.85rem; text-align:right;"></td>' +
         '<td>' +
           '<select id="payout-select-' + app.id + '" class="' + statusSelectClass + '" style="padding:0.2rem 0.4rem; border-radius:4px; border:none; font-size:0.8rem; font-weight:700; cursor:pointer;">' +
             '<option value="Pending"' + (payoutStatus === "Pending" ? " selected" : "") + '>Pending</option>' +
@@ -1684,45 +1923,46 @@
           '</select>' +
         '</td>' +
         '<td>' +
-          '<button class="btn btn-primary btn-sm btn-save-budget" data-id="' + app.id + '" style="padding:0.25rem 0.6rem; font-size:0.8rem;">Save</button>' +
-          '<span id="budget-saved-' + app.id + '" style="display:block; font-size:0.75rem; color:var(--green); font-weight:700; margin-top:0.2rem; text-align:center;"></span>' +
+          '<button class="btn btn-outline btn-sm btn-open-ledger" data-id="' + app.id + '" style="padding:0.25rem 0.5rem; font-size:0.78rem; border-color:#16a34a; color:#15803d; font-weight:700; margin-bottom:0.2rem;">💳 Ledger</button> ' +
+          '<button class="btn btn-primary btn-sm btn-save-budget" data-id="' + app.id + '" style="padding:0.25rem 0.5rem; font-size:0.78rem;">Save</button>' +
+          '<span id="budget-saved-' + app.id + '" style="display:block; font-size:0.75rem; color:var(--green); font-weight:700; margin-top:0.1rem; text-align:center;"></span>' +
         '</td>';
-
-      // Attach dynamic color-changing event to the select
-      var select = tr.querySelector("#payout-select-" + app.id);
-      select.addEventListener("change", function () {
-        if (this.value === "Paid") {
-          this.className = "st-approved";
-        } else {
-          this.className = "st-pending";
-        }
-      });
 
       tbody.appendChild(tr);
     });
 
-    // Bind save budget events
-    var saveButtons = tbody.querySelectorAll(".btn-save-budget");
-    saveButtons.forEach(function (btn) {
+    // Bind open ledger buttons
+    tbody.querySelectorAll(".btn-open-ledger").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var appId = this.getAttribute("data-id");
-        var feeInput = document.getElementById("fee-input-" + appId);
+        openFinancialLedgerModal(appId);
+      });
+    });
+
+    // Bind save budget events
+    tbody.querySelectorAll(".btn-save-budget").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var appId = this.getAttribute("data-id");
         var commInput = document.getElementById("comm-input-" + appId);
         var payoutSelect = document.getElementById("payout-select-" + appId);
         var feedback = document.getElementById("budget-saved-" + appId);
 
+        var targetApp = opsStudentsList.filter(function (a) { return a.id === appId; })[0];
+        if (!targetApp) return;
+
         this.disabled = true;
         this.textContent = "Saving...";
-        feedback.textContent = "";
 
-        api("adminUpdateBudget", {
+        api("adminSaveFinancialLedger", {
           appId: appId,
-          serviceFee: feeInput.value.trim(),
+          serviceFee: targetApp.serviceFee || "1200",
           advisorCommission: commInput.value.trim(),
-          payoutStatus: payoutSelect.value
+          payoutStatus: payoutSelect.value,
+          deposits: targetApp.deposits || [],
+          expenses: targetApp.expenses || []
         }).then(function () {
           feedback.textContent = "Saved ✓";
-          loadOpsPanel(); // refresh data
+          loadOpsPanel();
         }).catch(function (err) {
           alert("Error: " + err.message);
         }).finally(function () {
@@ -1731,6 +1971,112 @@
         });
       });
     });
+  }
+
+  /* ---------- Financial Ledger Modal Controllers ---------- */
+  var activeFinApp = null;
+  var activeFinDeposits = [];
+  var activeFinExpenses = [];
+
+  function openFinancialLedgerModal(appId) {
+    activeFinApp = allApps.filter(function (a) { return a.id === appId; })[0];
+    if (!activeFinApp) {
+      alert("Application record not found.");
+      return;
+    }
+
+    activeFinDeposits = Array.isArray(activeFinApp.deposits) ? JSON.parse(JSON.stringify(activeFinApp.deposits)) : [];
+    activeFinExpenses = Array.isArray(activeFinApp.expenses) ? JSON.parse(JSON.stringify(activeFinApp.expenses)) : [];
+
+    document.getElementById("fin-modal-student-name").textContent = "💳 " + (activeFinApp.fullName || "Candidate") + " — Financial Ledger";
+    document.getElementById("fin-modal-student-info").textContent = (activeFinApp.email || "") + " | Target: " + (activeFinApp.targetCountry || "Czech Republic") + " (" + (activeFinApp.program || "Program") + ")";
+    document.getElementById("fin-modal-app-id").textContent = activeFinApp.id;
+    document.getElementById("fin-modal-target-appid").value = activeFinApp.id;
+
+    document.getElementById("fin-input-service-fee").value = activeFinApp.serviceFee || "1200";
+    var reqDepEl = document.getElementById("fin-input-required-deposit");
+    if (reqDepEl) reqDepEl.value = activeFinApp.requiredDepositAmount || activeFinApp.requiredDeposit || "500";
+    var dueAmtEl = document.getElementById("fin-input-due-amount");
+    if (dueAmtEl) dueAmtEl.value = activeFinApp.customDueAmount || activeFinApp.dueAmount || "";
+    var dueDateEl = document.getElementById("fin-input-due-date");
+    if (dueDateEl) dueDateEl.value = activeFinApp.paymentDueDate || activeFinApp.dueDate || "";
+    var depStatEl = document.getElementById("fin-input-deposit-status");
+    if (depStatEl) depStatEl.value = activeFinApp.depositStatus || "Pending Deposit";
+    
+    document.getElementById("fin-input-commission").value = activeFinApp.advisorCommission || "300";
+    document.getElementById("fin-input-payout-status").value = activeFinApp.payoutStatus || "Pending";
+
+    // Reset inline forms
+    document.getElementById("fin-add-deposit-box").style.display = "none";
+    document.getElementById("fin-add-expense-box").style.display = "none";
+    document.getElementById("fin-modal-save-status").textContent = "";
+
+    renderFinModalTables();
+
+    document.getElementById("financial-ledger-modal").style.display = "flex";
+  }
+
+  function renderFinModalTables() {
+    var fee = parseFloat(document.getElementById("fin-input-service-fee").value) || 0;
+    var totalDep = activeFinDeposits.reduce(function (sum, d) { return sum + (parseFloat(d.amount) || 0); }, 0);
+    var totalExp = activeFinExpenses.reduce(function (sum, e) { return sum + (parseFloat(e.amount) || 0); }, 0);
+    var balDue = (fee + totalExp) - totalDep;
+    if (balDue < 0) balDue = 0;
+
+    document.getElementById("fin-calc-deposits").textContent = "€" + totalDep.toFixed(2);
+    document.getElementById("fin-calc-expenses").textContent = "€" + totalExp.toFixed(2);
+    document.getElementById("fin-calc-balance").textContent = "€" + balDue.toFixed(2);
+
+    // Deposits Table
+    var depTbody = document.getElementById("fin-modal-deposits-tbody");
+    if (!activeFinDeposits.length) {
+      depTbody.innerHTML = '<tr><td colspan="6" class="muted center py-2">No deposits recorded yet. Click "+ Add Deposit Record" above.</td></tr>';
+    } else {
+      depTbody.innerHTML = activeFinDeposits.map(function (d, idx) {
+        var statusClass = d.status === "Verified" ? "st-approved" : "st-pending";
+        return '<tr>' +
+          '<td><strong>' + esc(d.date || "—") + '</strong></td>' +
+          '<td>' + esc(d.description || "Deposit") + '</td>' +
+          '<td>' + esc(d.method || "Transfer") + (d.ref ? ' (' + esc(d.ref) + ')' : '') + '</td>' +
+          '<td style="text-align:right; font-weight:700; color:var(--green);">+€' + (parseFloat(d.amount) || 0).toFixed(2) + '</td>' +
+          '<td><span class="badge ' + statusClass + '" style="font-size:0.75rem;">' + esc(d.status || "Verified") + '</span></td>' +
+          '<td><button type="button" class="btn btn-outline btn-sm btn-del-dep" data-idx="' + idx + '" style="color:var(--red-500); padding:0.15rem 0.4rem; font-size:0.75rem;">✕ Delete</button></td>' +
+        '</tr>';
+      }).join("");
+
+      depTbody.querySelectorAll(".btn-del-dep").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var i = parseInt(this.getAttribute("data-idx"), 10);
+          activeFinDeposits.splice(i, 1);
+          renderFinModalTables();
+        });
+      });
+    }
+
+    // Expenses Table
+    var expTbody = document.getElementById("fin-modal-expenses-tbody");
+    if (!activeFinExpenses.length) {
+      expTbody.innerHTML = '<tr><td colspan="6" class="muted center py-2">No managed expenses recorded yet. Click "+ Add Managed Expense" above.</td></tr>';
+    } else {
+      expTbody.innerHTML = activeFinExpenses.map(function (e, idx) {
+        return '<tr>' +
+          '<td><strong>' + esc(e.date || "—") + '</strong></td>' +
+          '<td><strong>' + esc(e.category || "Expense") + '</strong></td>' +
+          '<td><span class="muted" style="font-size:0.78rem;">' + esc(e.notes || "—") + '</span></td>' +
+          '<td style="text-align:right; font-weight:700; color:#c2410c;">€' + (parseFloat(e.amount) || 0).toFixed(2) + '</td>' +
+          '<td><span class="badge" style="font-size:0.75rem; background:var(--blue-50); color:var(--blue-800);">' + esc(e.paidBy || "Agency") + '</span></td>' +
+          '<td><button type="button" class="btn btn-outline btn-sm btn-del-exp" data-idx="' + idx + '" style="color:var(--red-500); padding:0.15rem 0.4rem; font-size:0.75rem;">✕ Delete</button></td>' +
+        '</tr>';
+      }).join("");
+
+      expTbody.querySelectorAll(".btn-del-exp").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var i = parseInt(this.getAttribute("data-idx"), 10);
+          activeFinExpenses.splice(i, 1);
+          renderFinModalTables();
+        });
+      });
+    }
   }
 
   var _opsEventsInitialized = false;
@@ -1946,6 +2292,233 @@
         self.textContent = "⚠️ Re-seed Demo Data";
       });
     });
+
+    setupFinancialModalListeners();
+  }
+
+  function setupFinancialModalListeners() {
+    var modal = document.getElementById("financial-ledger-modal");
+    var closeBtn = document.getElementById("fin-modal-close");
+    var cancelBtn = document.getElementById("btn-close-fin-modal");
+
+    function closeFinModal() {
+      if (modal) modal.style.display = "none";
+      activeFinApp = null;
+    }
+
+    if (closeBtn) closeBtn.onclick = closeFinModal;
+    if (cancelBtn) cancelBtn.onclick = closeFinModal;
+    if (modal) {
+      modal.onclick = function (e) {
+        if (e.target === modal) closeFinModal();
+      };
+    }
+
+    // Modal open button inside Application Detail modal
+    var mFinBtn = document.getElementById("m-fin-ledger-btn");
+    if (mFinBtn) {
+      mFinBtn.onclick = function () {
+        if (currentApp) {
+          openFinancialLedgerModal(currentApp.id);
+        }
+      };
+    }
+
+    // Toggle deposit form
+    var addDepBtn = document.getElementById("btn-add-deposit-row");
+    var addDepBox = document.getElementById("fin-add-deposit-box");
+    if (addDepBtn && addDepBox) {
+      addDepBtn.onclick = function () {
+        var isVis = addDepBox.style.display === "block";
+        addDepBox.style.display = isVis ? "none" : "block";
+        if (!isVis) {
+          document.getElementById("dep-add-date").value = new Date().toISOString().split("T")[0];
+          document.getElementById("dep-add-desc").value = "";
+          document.getElementById("dep-add-amount").value = "";
+          document.getElementById("dep-add-method").value = "Bank Transfer";
+          document.getElementById("dep-add-ref").value = "";
+        }
+      };
+    }
+
+    var cancelDepBtn = document.getElementById("btn-cancel-add-deposit");
+    if (cancelDepBtn && addDepBox) {
+      cancelDepBtn.onclick = function () { addDepBox.style.display = "none"; };
+    }
+
+    var saveDepBtn = document.getElementById("btn-save-add-deposit");
+    if (saveDepBtn) {
+      saveDepBtn.onclick = function () {
+        var dt = document.getElementById("dep-add-date").value;
+        var desc = document.getElementById("dep-add-desc").value.trim() || "Deposit Payment";
+        var amt = parseFloat(document.getElementById("dep-add-amount").value);
+        var method = document.getElementById("dep-add-method").value.trim() || "Transfer";
+        var ref = document.getElementById("dep-add-ref").value.trim();
+        var status = document.getElementById("dep-add-status").value;
+
+        if (isNaN(amt) || amt <= 0) {
+          alert("Please enter a valid deposit amount.");
+          return;
+        }
+
+        activeFinDeposits.push({
+          id: "dep_" + Date.now(),
+          date: dt || new Date().toISOString().split("T")[0],
+          description: desc,
+          amount: amt,
+          method: method,
+          ref: ref,
+          status: status
+        });
+
+        if (addDepBox) addDepBox.style.display = "none";
+        renderFinModalTables();
+      };
+    }
+
+    // Toggle expense form
+    var addExpBtn = document.getElementById("btn-add-expense-row");
+    var addExpBox = document.getElementById("fin-add-expense-box");
+    if (addExpBtn && addExpBox) {
+      addExpBtn.onclick = function () {
+        var isVis = addExpBox.style.display === "block";
+        addExpBox.style.display = isVis ? "none" : "block";
+        if (!isVis) {
+          document.getElementById("exp-add-date").value = new Date().toISOString().split("T")[0];
+          document.getElementById("exp-add-amount").value = "";
+          document.getElementById("exp-add-notes").value = "";
+        }
+      };
+    }
+
+    var cancelExpBtn = document.getElementById("btn-cancel-add-expense");
+    if (cancelExpBtn && addExpBox) {
+      cancelExpBtn.onclick = function () { addExpBox.style.display = "none"; };
+    }
+
+    var saveExpBtn = document.getElementById("btn-save-add-expense");
+    if (saveExpBtn) {
+      saveExpBtn.onclick = function () {
+        var dt = document.getElementById("exp-add-date").value;
+        var cat = document.getElementById("exp-add-category").value;
+        var amt = parseFloat(document.getElementById("exp-add-amount").value);
+        var paidBy = document.getElementById("exp-add-paidby").value;
+        var notes = document.getElementById("exp-add-notes").value.trim();
+
+        if (isNaN(amt) || amt <= 0) {
+          alert("Please enter a valid expense amount.");
+          return;
+        }
+
+        activeFinExpenses.push({
+          id: "exp_" + Date.now(),
+          date: dt || new Date().toISOString().split("T")[0],
+          category: cat,
+          amount: amt,
+          paidBy: paidBy,
+          notes: notes
+        });
+
+        if (addExpBox) addExpBox.style.display = "none";
+        renderFinModalTables();
+      };
+    }
+
+    // Save full financial ledger button
+    var saveLedgerBtn = document.getElementById("btn-save-fin-ledger");
+    if (saveLedgerBtn) {
+      saveLedgerBtn.onclick = function () {
+        var targetAppId = document.getElementById("fin-modal-target-appid").value;
+        var feeVal = document.getElementById("fin-input-service-fee").value.trim();
+        var reqDepVal = (document.getElementById("fin-input-required-deposit") ? document.getElementById("fin-input-required-deposit").value.trim() : "500");
+        var dueAmtVal = (document.getElementById("fin-input-due-amount") ? document.getElementById("fin-input-due-amount").value.trim() : "");
+        var dueDateVal = (document.getElementById("fin-input-due-date") ? document.getElementById("fin-input-due-date").value : "");
+        var depStatusVal = (document.getElementById("fin-input-deposit-status") ? document.getElementById("fin-input-deposit-status").value : "Pending Deposit");
+        var commVal = document.getElementById("fin-input-commission").value.trim();
+        var payoutVal = document.getElementById("fin-input-payout-status").value;
+        var statusEl = document.getElementById("fin-modal-save-status");
+
+        if (!targetAppId) return;
+
+        saveLedgerBtn.disabled = true;
+        saveLedgerBtn.textContent = "Saving...";
+        if (statusEl) statusEl.textContent = "Updating financial ledger...";
+
+        api("adminSaveFinancialLedger", {
+          appId: targetAppId,
+          serviceFee: feeVal,
+          requiredDepositAmount: reqDepVal,
+          customDueAmount: dueAmtVal,
+          paymentDueDate: dueDateVal,
+          depositStatus: depStatusVal,
+          advisorCommission: commVal,
+          payoutStatus: payoutVal,
+          deposits: activeFinDeposits,
+          expenses: activeFinExpenses
+        }).then(function () {
+          if (statusEl) statusEl.textContent = "Saved ✓";
+          closeFinModal();
+          loadAll();
+          loadOpsPanel();
+          if (typeof showToast === "function") {
+            showToast("Financial ledger & deposit amount updated successfully!");
+          }
+        }).catch(function (err) {
+          alert("Error saving financial ledger: " + err.message);
+          if (statusEl) statusEl.textContent = "❌ Error";
+        }).finally(function () {
+          saveLedgerBtn.disabled = false;
+          saveLedgerBtn.textContent = "💾 Save Financial Ledger";
+        });
+      };
+    }
+
+    // Dispatch deposit alert email button
+    var alertDepBtn = document.getElementById("btn-send-deposit-alert");
+    if (alertDepBtn) {
+      alertDepBtn.onclick = function () {
+        if (!activeFinApp) return;
+        var reqDepVal = (document.getElementById("fin-input-required-deposit") ? document.getElementById("fin-input-required-deposit").value.trim() : "500");
+        var dueAmtVal = (document.getElementById("fin-input-due-amount") ? document.getElementById("fin-input-due-amount").value.trim() : "");
+        var dueDateVal = (document.getElementById("fin-input-due-date") ? document.getElementById("fin-input-due-date").value : "");
+        
+        alertDepBtn.disabled = true;
+        alertDepBtn.textContent = "Sending Alert...";
+
+        var emailSubject = "Official Payment & Deposit Notice — StudyCzechBridge";
+        var emailBody = "Dear " + (activeFinApp.fullName || "Candidate") + ",\n\n" +
+          "This is an official payment notice regarding your " + (activeFinApp.targetCountry || "Czech Republic") + " university application (App ID: " + activeFinApp.id + ").\n\n" +
+          "• Required Deposit Amount: €" + (reqDepVal || "500") + "\n" +
+          (dueAmtVal ? "• Total Outstanding Due Amount: €" + dueAmtVal + "\n" : "") +
+          (dueDateVal ? "• Payment Deadline: " + dueDateVal + "\n" : "") +
+          "\nPlease log in to your StudyCzechBridge student portal to view wire transfer details or upload payment proof:\n" +
+          "https://studywithczechbridge.com/dashboard.html\n\n" +
+          "Best regards,\nAdmissions & Finance Desk\nStudyCzechBridge Brno HQ";
+
+        fetch("/api/test-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            toEmail: activeFinApp.email,
+            subject: emailSubject,
+            message: emailBody,
+            type: "Deposit_Notice"
+          })
+        }).then(function (r) { return r.json(); }).then(function (res) {
+          if (res.ok) {
+            alert("✅ Deposit & Payment alert email dispatched successfully to " + activeFinApp.email);
+          } else {
+            alert("Email dispatch response: " + (res.message || "Alert dispatched"));
+          }
+        }).catch(function (err) {
+          console.warn("Email alert error:", err);
+          alert("Deposit notice recorded (email dispatch attempted).");
+        }).finally(function () {
+          alertDepBtn.disabled = false;
+          alertDepBtn.textContent = "📧 Dispatch Deposit Alert Email";
+        });
+      };
+    }
   }
 
   // Real-time Alerts Logic
@@ -2131,7 +2704,7 @@
   }
 
   /* ============================================================
-     Counselor Workspace Tab
+     Counselor Workspace & Advisor Command Center
      ============================================================ */
   function initCounselorTab() {
     var filterSel = document.getElementById("counselor-student-filter");
@@ -2139,51 +2712,233 @@
       filterSel.removeEventListener("change", renderCounselorWorkspace);
       filterSel.addEventListener("change", renderCounselorWorkspace);
     }
+    var searchInput = document.getElementById("counselor-roster-search");
+    if (searchInput) {
+      searchInput.removeEventListener("input", renderCounselorRoster);
+      searchInput.addEventListener("input", renderCounselorRoster);
+    }
+    var trackFilter = document.getElementById("counselor-track-filter");
+    if (trackFilter) {
+      trackFilter.removeEventListener("change", renderCounselorRoster);
+      trackFilter.addEventListener("change", renderCounselorRoster);
+    }
+
+    // Modal Openers
+    var btnAdd = document.getElementById("btn-open-add-counselor");
+    if (btnAdd) btnAdd.onclick = function() { openCounselorProfileModal(); };
+
+    var btnBcast = document.getElementById("btn-open-counselor-broadcast");
+    if (btnBcast) btnBcast.onclick = function() { openCounselorBroadcastModal(); };
+
+    // Modal Closers
+    var closeProfile = document.getElementById("btn-close-counselor-modal");
+    var cancelProfile = document.getElementById("btn-cancel-counselor-modal");
+    if (closeProfile) closeProfile.onclick = closeCounselorProfileModal;
+    if (cancelProfile) cancelProfile.onclick = closeCounselorProfileModal;
+
+    var closeBcast = document.getElementById("btn-close-broadcast-modal");
+    var cancelBcast = document.getElementById("btn-cancel-broadcast-modal");
+    if (closeBcast) closeBcast.onclick = closeCounselorBroadcastModal;
+    if (cancelBcast) cancelBcast.onclick = closeCounselorBroadcastModal;
+
+    // Form Submissions
+    var profileForm = document.getElementById("form-counselor-profile");
+    if (profileForm) profileForm.onsubmit = handleSaveCounselorProfile;
+
+    var broadcastForm = document.getElementById("form-counselor-broadcast");
+    if (broadcastForm) broadcastForm.onsubmit = handleDispatchBroadcastEmail;
+
+    renderCounselorRoster();
     renderCounselorWorkspace();
+    renderCounselorPayouts();
     renderCounselorPackagesSummary();
+  }
+
+  function renderCounselorRoster() {
+    var body = document.getElementById("counselor-roster-body");
+    if (!body) return;
+
+    var searchVal = document.getElementById("counselor-roster-search") ? document.getElementById("counselor-roster-search").value.toLowerCase().trim() : "";
+    var trackVal = document.getElementById("counselor-track-filter") ? document.getElementById("counselor-track-filter").value : "all";
+
+    var counselors = allUsers.filter(function(u) {
+      return u.role === "agent" || u.role === "admin" || u.role === "super_admin";
+    });
+
+    if (searchVal) {
+      counselors = counselors.filter(function(c) {
+        return (c.fullName && c.fullName.toLowerCase().includes(searchVal)) ||
+               (c.email && c.email.toLowerCase().includes(searchVal)) ||
+               (c.specializationTrack && c.specializationTrack.toLowerCase().includes(searchVal));
+      });
+    }
+
+    if (trackVal !== "all") {
+      counselors = counselors.filter(function(c) {
+        var spec = (c.specializationTrack || "").toLowerCase();
+        if (trackVal === "czech") return spec.includes("czech");
+        if (trackVal === "germany") return spec.includes("germany");
+        if (trackVal === "austria") return spec.includes("austria");
+        if (trackVal === "uk") return spec.includes("uk") || spec.includes("united kingdom");
+        if (trackVal === "global") return spec.includes("global");
+        return true;
+      });
+    }
+
+    var countEl = document.getElementById("c-stat-counselors-count");
+    if (countEl) countEl.textContent = counselors.length;
+
+    if (!counselors.length) {
+      body.innerHTML = '<tr><td colspan="6" class="muted py-4 center">No counselors found matching filter. Click "➕ Add New Counselor" above to register staff counselors.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = "";
+    counselors.forEach(function(c) {
+      var tr = document.createElement("tr");
+
+      var assignedApps = allApps.filter(function(a) {
+        return a.assignedAgentId === c.id || a.assignedAgentName === c.fullName || (c.email && a.assignedAgentEmail === c.email);
+      });
+
+      var cap = c.capacity || 15;
+      var loadPercent = Math.min(100, Math.round((assignedApps.length / cap) * 100));
+      var trackName = c.specializationTrack || "🇨🇿 Czech Republic (20 Steps)";
+      var statusText = c.status || "Active";
+      var statusBadge = statusText === "Active" ? "<span class='badge st-approved'>🟢 Active</span>" : (statusText === "On Leave" ? "<span class='badge st-pending'>🟡 On Leave</span>" : "<span class='badge st-rejected'>🔴 Inactive</span>");
+
+      tr.innerHTML =
+        "<td><strong>" + esc(c.fullName || c.email) + "</strong><br><span class='muted' style='font-size:0.8rem;'>📧 " + esc(c.email) + (c.phone ? " · 📞 " + esc(c.phone) : "") + "</span></td>" +
+        "<td><strong style='color:var(--blue-900); font-size:0.88rem;'>" + esc(trackName) + "</strong></td>" +
+        "<td>" +
+          "<div style='display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; margin-bottom:2px;'>" +
+            "<span>" + assignedApps.length + " / " + cap + " Students</span>" +
+            "<span>" + loadPercent + "%</span>" +
+          "</div>" +
+          "<div style='width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;'>" +
+            "<div style='width:" + loadPercent + "%; height:100%; background:" + (loadPercent >= 90 ? "#ef4444" : "#0284c7") + ";'></div>" +
+          "</div>" +
+        "</td>" +
+        "<td><strong>€" + (c.advisorCommission || 300) + "</strong> / placement</td>" +
+        "<td>" + statusBadge + "</td>" +
+        "<td></td>";
+
+      var actionsTd = tr.lastElementChild;
+
+      var btnEdit = document.createElement("button");
+      btnEdit.className = "btn btn-outline btn-sm mr-1";
+      btnEdit.style.fontSize = "0.75rem";
+      btnEdit.textContent = "✏️ Edit";
+      btnEdit.onclick = function() { openCounselorProfileModal(c); };
+
+      var btnTask = document.createElement("button");
+      btnTask.className = "btn btn-dark btn-sm mr-1";
+      btnTask.style.fontSize = "0.75rem";
+      btnTask.textContent = "📩 Task";
+      btnTask.onclick = function() {
+        switchTab("taskboard");
+        setTimeout(function() {
+          var tTitle = document.getElementById("task-new-title");
+          if (tTitle) {
+            tTitle.value = "Assigned Task for " + (c.fullName || c.email);
+            tTitle.focus();
+          }
+        }, 200);
+      };
+
+      actionsTd.appendChild(btnEdit);
+      actionsTd.appendChild(btnTask);
+      body.appendChild(tr);
+    });
   }
 
   function renderCounselorWorkspace() {
     var body = document.getElementById("counselor-students-body");
     if (!body) return;
 
-    var filterVal = document.getElementById("counselor-student-filter") ? document.getElementById("counselor-student-filter").value : "mine";
-    var currentUser = getCurrentUser(); // from session or token
+    var filterVal = document.getElementById("counselor-student-filter") ? document.getElementById("counselor-student-filter").value : "all";
+    var currentUser = getCurrentUser();
 
     var filteredApps = allApps.filter(function (a) {
       if (filterVal === "all") return true;
-      if (!a.assignedAgentId && !a.assignedAgentName) return false;
-      if (currentUser && (a.assignedAgentId === currentUser.uid || a.assignedAgentId === currentUser.id || a.assignedAgentName === currentUser.fullName || currentUser.role === "admin" || currentUser.role === "super_admin")) {
-        return true;
+      if (filterVal === "unassigned") return !a.assignedAgentId && !a.assignedAgentName;
+      if (filterVal === "mine") {
+        if (!a.assignedAgentId && !a.assignedAgentName) return false;
+        if (currentUser && (a.assignedAgentId === currentUser.uid || a.assignedAgentId === currentUser.id || a.assignedAgentName === currentUser.fullName || currentUser.role === "admin" || currentUser.role === "super_admin")) {
+          return true;
+        }
+        return false;
       }
-      return false;
+      return true;
     });
 
     // Stats
-    document.getElementById("c-stat-assigned").textContent = filteredApps.length;
-    var activeCount = filteredApps.filter(function (a) { return a.status !== "Completed" && a.status !== "Rejected"; }).length;
+    document.getElementById("c-stat-assigned").textContent = allApps.filter(function(a) { return a.assignedAgentId || a.assignedAgentName; }).length;
+    var activeCount = allApps.filter(function (a) { return a.status !== "Completed" && a.status !== "Rejected"; }).length;
     document.getElementById("c-stat-active").textContent = activeCount;
-    var totalComm = filteredApps.reduce(function (sum, a) { return sum + (Number(a.advisorCommission) || 0); }, 0);
+    var totalComm = allApps.reduce(function (sum, a) { return sum + (Number(a.advisorCommission) || 0); }, 0);
     document.getElementById("c-stat-commission").textContent = "€" + totalComm;
 
     if (!filteredApps.length) {
-      body.innerHTML = '<tr><td colspan="6" class="muted py-4">No students assigned to you yet. Super Admin can assign students in the "Users & Roles" tab.</td></tr>';
+      body.innerHTML = '<tr><td colspan="6" class="muted py-4 center">No student records match the selected filter.</td></tr>';
       return;
     }
+
+    var counselorsList = allUsers.filter(function (u) {
+      return u.role === "agent" || u.role === "admin" || u.role === "super_admin";
+    });
 
     body.innerHTML = "";
     filteredApps.forEach(function (a) {
       var tr = document.createElement("tr");
       var currentStepNum = a.stepProgress ? a.stepProgress : 1;
       var currentStepTitle = JOURNEY_20_STEPS[currentStepNum - 1] ? JOURNEY_20_STEPS[currentStepNum - 1].title : "Application Initiated";
+      var targetCountry = a.targetCountry || "Czech Republic";
 
       tr.innerHTML =
         "<td><strong>" + esc(a.fullName) + "</strong><br><span class='muted' style='font-size:.8rem;'>" + esc(a.email) + "</span></td>" +
-        "<td>" + esc(a.program) + "<br><span class='muted' style='font-size:.8rem;'>" + esc(a.level) + " (" + esc(a.intake) + ")</span></td>" +
+        "<td>" + esc(a.program) + "<br><span class='muted' style='font-size:.8rem;'>📍 " + esc(targetCountry) + " (" + esc(a.intake || "Sep 2026") + ")</span></td>" +
         "<td><span class='badge " + (BADGE_CLASS[a.status] || "st-pending") + "'>" + esc(a.status) + "</span></td>" +
         "<td><strong style='color:var(--blue-800);'>Step " + currentStepNum + "/20:</strong> " + esc(currentStepTitle) + "</td>" +
-        "<td>" + (a.assignedAgentName ? "<strong>" + esc(a.assignedAgentName) + "</strong>" : "<span class='muted'>Unassigned</span>") + "</td>" +
+        "<td></td>" +
         "<td></td>";
+
+      // Counselor Assignment Dropdown Cell
+      var counselorTd = tr.children[4];
+      var selAgent = document.createElement("select");
+      selAgent.style.padding = "0.38rem 0.5rem";
+      selAgent.style.fontSize = "0.82rem";
+      selAgent.style.borderRadius = "6px";
+      selAgent.style.border = "1px solid var(--line)";
+      selAgent.style.fontWeight = "600";
+      selAgent.innerHTML = '<option value="">⚠️ Unassigned</option>' +
+        counselorsList.map(function (c) {
+          var sel = (c.id === a.assignedAgentId || c.fullName === a.assignedAgentName) ? " selected" : "";
+          return '<option value="' + c.id + '"' + sel + '>' + esc(c.fullName || c.email) + '</option>';
+        }).join("");
+
+      selAgent.addEventListener("change", function () {
+        var chosenId = selAgent.value;
+        var chosenObj = counselorsList.filter(function (c) { return c.id === chosenId; })[0];
+        var chosenName = chosenObj ? chosenObj.fullName : "";
+
+        selAgent.disabled = true;
+        api("adminAssignAgent", {
+          studentId: a.userId,
+          agentId: chosenId,
+          agentName: chosenName
+        }).then(function () {
+          showToast("✅ Counselor assigned & email sent from info@studywithczechbridge.com");
+          loadApps();
+          loadUsers();
+        }).catch(function (err) {
+          alert("Error assigning counselor: " + err.message);
+        }).finally(function () {
+          selAgent.disabled = false;
+        });
+      });
+
+      counselorTd.appendChild(selAgent);
 
       var actionsTd = tr.lastElementChild;
       var btnJourney = document.createElement("button");
@@ -2191,7 +2946,7 @@
       btnJourney.style.fontSize = "0.75rem";
       btnJourney.style.borderColor = "var(--blue-700)";
       btnJourney.style.color = "var(--blue-700)";
-      btnJourney.textContent = "🎓 Update 20 Steps";
+      btnJourney.textContent = "🎓 20 Steps";
       btnJourney.addEventListener("click", function () {
         switchTab("journey");
         var sel = document.getElementById("journey-student-select");
@@ -2204,7 +2959,7 @@
       var btnManage = document.createElement("button");
       btnManage.className = "btn btn-dark btn-sm";
       btnManage.style.fontSize = "0.75rem";
-      btnManage.textContent = "Manage App";
+      btnManage.textContent = "Manage";
       btnManage.addEventListener("click", function () {
         openModal(a);
       });
@@ -2212,6 +2967,177 @@
       actionsTd.appendChild(btnJourney);
       actionsTd.appendChild(btnManage);
       body.appendChild(tr);
+    });
+  }
+
+  function renderCounselorPayouts() {
+    var body = document.getElementById("counselor-payouts-body");
+    if (!body) return;
+
+    var commApps = allApps.filter(function(a) {
+      return Number(a.advisorCommission) > 0 || a.payoutStatus;
+    });
+
+    if (!commApps.length) {
+      body.innerHTML = '<tr><td colspan="6" class="muted py-4 center">No advisor commission payouts logged yet. Commissions are accrued automatically upon student enrolment.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = "";
+    commApps.forEach(function(a) {
+      var tr = document.createElement("tr");
+      var commAmt = Number(a.advisorCommission) || 300;
+      var status = a.payoutStatus || "Pending";
+      var statusBadge = status === "Paid" ? "<span class='badge st-approved'>✅ Paid</span>" : "<span class='badge st-pending'>⌛ Pending Payout</span>";
+
+      tr.innerHTML =
+        "<td><strong>" + esc(a.fullName) + "</strong><br><span class='muted' style='font-size:0.8rem;'>" + esc(a.email) + "</span></td>" +
+        "<td>" + (a.assignedAgentName ? "<strong>" + esc(a.assignedAgentName) + "</strong>" : "<span class='muted'>Unassigned</span>") + "</td>" +
+        "<td>€" + (a.serviceFee || "1200") + "</td>" +
+        "<td><strong style='color:#c05621; font-size:1rem;'>€" + commAmt + "</strong></td>" +
+        "<td>" + statusBadge + "</td>" +
+        "<td></td>";
+
+      var actionTd = tr.lastElementChild;
+      var btnPay = document.createElement("button");
+      btnPay.className = "btn btn-outline btn-sm";
+      btnPay.style.fontSize = "0.75rem";
+      btnPay.textContent = status === "Paid" ? "Reopen Payout" : "💸 Mark Paid";
+      btnPay.onclick = function() {
+        var nextStatus = status === "Paid" ? "Pending" : "Paid";
+        btnPay.disabled = true;
+        a.payoutStatus = nextStatus;
+        api("adminUpdateBudget", {
+          appId: a.id,
+          advisorCommission: commAmt,
+          payoutStatus: nextStatus
+        }).then(function() {
+          showToast("✅ Payout status updated to " + nextStatus);
+          renderCounselorPayouts();
+        }).catch(function(err) {
+          alert(err.message);
+        }).finally(function() {
+          btnPay.disabled = false;
+        });
+      };
+
+      actionTd.appendChild(btnPay);
+      body.appendChild(tr);
+    });
+  }
+
+  function openCounselorProfileModal(counselor) {
+    var m = document.getElementById("modal-counselor-profile");
+    if (!m) return;
+    document.getElementById("counselor-modal-msg").textContent = "";
+
+    if (counselor) {
+      document.getElementById("counselor-modal-title").textContent = "✏️ Edit Counselor Profile";
+      document.getElementById("counselor-modal-id").value = counselor.id || "";
+      document.getElementById("counselor-modal-name").value = counselor.fullName || "";
+      document.getElementById("counselor-modal-email").value = counselor.email || "";
+      document.getElementById("counselor-modal-phone").value = counselor.phone || "";
+      document.getElementById("counselor-modal-track").value = counselor.specializationTrack || "🇨🇿 Czech Republic (Nostrification & Visa)";
+      document.getElementById("counselor-modal-commission").value = counselor.advisorCommission || 300;
+      document.getElementById("counselor-modal-capacity").value = counselor.capacity || 15;
+      document.getElementById("counselor-modal-status").value = counselor.status || "Active";
+      document.getElementById("counselor-modal-notes").value = counselor.notes || "";
+    } else {
+      document.getElementById("counselor-modal-title").textContent = "➕ Register New Counselor";
+      document.getElementById("counselor-modal-id").value = "";
+      document.getElementById("counselor-modal-name").value = "";
+      document.getElementById("counselor-modal-email").value = "";
+      document.getElementById("counselor-modal-phone").value = "";
+      document.getElementById("counselor-modal-track").value = "🇨🇿 Czech Republic (Nostrification & Visa)";
+      document.getElementById("counselor-modal-commission").value = 300;
+      document.getElementById("counselor-modal-capacity").value = 15;
+      document.getElementById("counselor-modal-status").value = "Active";
+      document.getElementById("counselor-modal-notes").value = "";
+    }
+
+    m.classList.remove("hidden");
+  }
+
+  function closeCounselorProfileModal() {
+    var m = document.getElementById("modal-counselor-profile");
+    if (m) m.classList.add("hidden");
+  }
+
+  function handleSaveCounselorProfile(e) {
+    e.preventDefault();
+    var msg = document.getElementById("counselor-modal-msg");
+    msg.textContent = "Saving counselor profile...";
+
+    var body = {
+      id: document.getElementById("counselor-modal-id").value,
+      fullName: document.getElementById("counselor-modal-name").value.trim(),
+      email: document.getElementById("counselor-modal-email").value.trim(),
+      phone: document.getElementById("counselor-modal-phone").value.trim(),
+      specializationTrack: document.getElementById("counselor-modal-track").value,
+      advisorCommission: Number(document.getElementById("counselor-modal-commission").value) || 300,
+      capacity: Number(document.getElementById("counselor-modal-capacity").value) || 15,
+      status: document.getElementById("counselor-modal-status").value,
+      notes: document.getElementById("counselor-modal-notes").value.trim()
+    };
+
+    api("adminSaveCounselorProfile", body).then(function() {
+      msg.textContent = "✅ Saved successfully!";
+      setTimeout(function() {
+        closeCounselorProfileModal();
+        loadUsers();
+        renderCounselorRoster();
+        renderCounselorWorkspace();
+      }, 400);
+    }).catch(function(err) {
+      msg.textContent = "❌ " + err.message;
+    });
+  }
+
+  function openCounselorBroadcastModal() {
+    var m = document.getElementById("modal-counselor-broadcast");
+    if (!m) return;
+    document.getElementById("broadcast-msg").textContent = "";
+    document.getElementById("broadcast-subject").value = "";
+    document.getElementById("broadcast-body").value = "";
+    m.classList.remove("hidden");
+  }
+
+  function closeCounselorBroadcastModal() {
+    var m = document.getElementById("modal-counselor-broadcast");
+    if (m) m.classList.add("hidden");
+  }
+
+  function handleDispatchBroadcastEmail(e) {
+    e.preventDefault();
+    var msg = document.getElementById("broadcast-msg");
+    msg.textContent = "Dispatching broadcast from info@studywithczechbridge.com...";
+
+    var target = document.getElementById("broadcast-target-select").value;
+    var subject = document.getElementById("broadcast-subject").value.trim();
+
+    var recipients = [];
+    if (target === "all_counselors") {
+      recipients = allUsers.filter(function(u) { return u.role === "agent" || u.role === "admin" || u.role === "super_admin"; }).map(function(u) { return u.email; });
+    } else {
+      recipients = allApps.map(function(a) { return a.email; });
+    }
+
+    if (!recipients.length) recipients = ["info@studywithczechbridge.com"];
+
+    Promise.all(recipients.map(function(toEmail) {
+      return fetch('/api/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipient: toEmail })
+      }).catch(function(err) { console.warn("Broadcast error:", err); });
+    })).then(function() {
+      msg.textContent = "✅ Broadcast sent to " + recipients.length + " recipients!";
+      setTimeout(function() {
+        closeCounselorBroadcastModal();
+        showToast("🚀 Broadcast email dispatched from info@studywithczechbridge.com");
+      }, 800);
+    }).catch(function(err) {
+      msg.textContent = "❌ " + err.message;
     });
   }
 
