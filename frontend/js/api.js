@@ -601,31 +601,35 @@ function fbInit() {
   if (typeof firebase === "undefined") {
     return Promise.reject(new Error("Firebase SDK failed to load. Check your internet connection."));
   }
-  firebase.initializeApp(FIREBASE_CONFIG);
-  var auth = firebase.auth();
-  var db = firebase.firestore();
+  var app = (firebase.apps && firebase.apps.length) ? firebase.app() : firebase.initializeApp(FIREBASE_CONFIG);
+  var auth = app.auth();
+  var db = app.firestore();
+  
+  var readyPromise = new Promise(function (resolve) {
+    var resolved = false;
+    var timer = setTimeout(function () {
+      if (!resolved) { resolved = true; resolve(); }
+    }, 1200);
+    try {
+      var un = auth.onAuthStateChanged(function () {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timer);
+          if (typeof un === "function") un();
+          resolve();
+        }
+      });
+    } catch (e) {
+      if (!resolved) { resolved = true; clearTimeout(timer); resolve(); }
+    }
+  });
+
   _fb = {
     auth: auth,
     db: db,
-    ready: new Promise(function (resolve) {
-      var resolved = false;
-      var timer = setTimeout(function () {
-        if (!resolved) { resolved = true; resolve(); }
-      }, 1200);
-      try {
-        var un = auth.onAuthStateChanged(function () {
-          if (!resolved) {
-            resolved = true;
-            clearTimeout(timer);
-            if (typeof un === "function") un();
-            resolve();
-          }
-        });
-      } catch (e) {
-        if (!resolved) { resolved = true; clearTimeout(timer); resolve(); }
-      }
-    })
+    ready: readyPromise
   };
+
   return _fb.ready.then(function () { return _fb; });
 }
 
@@ -1019,7 +1023,7 @@ function fbHandle(fb, action, d) {
             byStatus[st] = (byStatus[st] || 0) + 1;
           });
         }
-        var usersCount = (r[0] && r[0].docs) ? r[0].docs.filter(function (s) { return s.data().role === "student"; }).length : 0;
+        var usersCount = (r[0] && r[0].docs) ? r[0].docs.filter(function (s) { var ro = s.data().role; return !ro || ro === "student" || ro === "user"; }).length : 0;
         return { ok: true, stats: {
           users: usersCount,
           applications: r[1] ? (r[1].size || 0) : 0,

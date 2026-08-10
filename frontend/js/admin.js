@@ -82,7 +82,7 @@
   function renderRoleUI(role) {
     var roleDisplayEl = document.getElementById("admin-role-display");
     if (roleDisplayEl) {
-      var userLabel = (sess && (sess.email || sess.fullName)) ? (sess.fullName || sess.email) : "";
+      var userLabel = (sess && (sess.fullName || sess.email)) ? (sess.fullName || sess.email) : "";
       var roleText = getRoleLabel(role);
       roleDisplayEl.textContent = userLabel ? (userLabel + " (" + roleText + ")") : roleText;
       roleDisplayEl.className = "badge-role " + (role || "student");
@@ -93,6 +93,11 @@
     if (tabUsersBtn) {
       tabUsersBtn.style.display = isFullAdmin ? "inline-block" : "none";
     }
+  }
+
+  // Attempt immediate render if DOM element already exists
+  if (sess) {
+    renderRoleUI(sess.role);
   }
 
   runOnReady(function () {

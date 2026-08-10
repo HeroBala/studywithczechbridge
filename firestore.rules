@@ -1,41 +1,13 @@
 rules_version = '2';
 
 // ============================================================
-// StudyCzechBridge — Firestore security rules with Super Admin & Staff Permissions
+// StudyWithCzechBridge — Firestore security rules
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper functions
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    // Publicly accessible collections for homepage and directory listings
-    match /universities/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-
-    match /testimonials/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-
-    match /packages/{id} {
-      allow read: if true;
-      allow write: if true;
-    }
-
-    // Public contact form message submission
-    match /messages/{id} {
-      allow create: if true;
-      allow read, write: if signedIn();
-    }
-
-    // Default catch-all for authenticated users (Applications, Documents, Users, Tasks, Alerts, Config)
     match /{document=**} {
-      allow read, write: if signedIn();
+      allow read, write: if true;
     }
   }
 }
+
