@@ -33,7 +33,7 @@
     var ctaHtml;
     var mobileCtaHtml;
     if (s && s.token) {
-      var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent";
+      var isStaff = (typeof isStaffRole === "function" && isStaffRole(s.role)) || s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent" || s.role === "counselor" || s.role === "admission_officer" || s.role === "finance_manager";
       ctaHtml =
         (isStaff
           ? '<a class="btn btn-dark btn-sm nav-btn-desktop" href="admin.html">Admin Panel</a>'

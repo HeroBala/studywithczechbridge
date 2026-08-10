@@ -1028,10 +1028,12 @@ table.data tbody tr:hover { background: #fdf6f7; }
   font-weight: 700;
   text-transform: capitalize;
 }
-.badge-role.super_admin { background: #f3e8ff; color: #6b21a8; }
-.badge-role.admin { background: #dbeafe; color: #1e40af; }
-.badge-role.agent { background: #e0f2fe; color: #0369a1; }
-.badge-role.student { background: #f1f5f9; color: #475569; }
+.badge-role.super_admin { background: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
+.badge-role.admin { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.badge-role.agent, .badge-role.counselor, .badge-role.councilor { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+.badge-role.admission_officer, .badge-role.officer { background: #f3e8ff; color: #5b21b6; border: 1px solid #c084fc; }
+.badge-role.finance_manager, .badge-role.finance { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.badge-role.student, .badge-role.user { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
 .panel-row {
   display: flex;

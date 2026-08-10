@@ -1321,7 +1321,7 @@ function fbHandle(fb, action, d) {
         return db.collection("users").doc(uUpd.uid).get().then(function (uSnap) {
           var uData = uSnap.exists ? uSnap.data() : null;
           var role = uData ? uData.role : null;
-          var isStaff = role === "super_admin" || role === "admin" || role === "staff" || role === "agent";
+          var isStaff = role === "super_admin" || role === "admin" || role === "staff" || role === "agent" || role === "counselor" || role === "councilor" || role === "admission_officer" || role === "officer" || role === "finance_manager" || role === "finance";
           if (!isStaff && taskData.assignedTo !== uUpd.uid) fail("FORBIDDEN");
           
           var upd = {};
@@ -2170,7 +2170,7 @@ function mockHandle(action, data) {
       var dd = db.documents.filter(function (x) { return x.id === data.docId; })[0];
       if (!dd) fail("NOT_FOUND");
       var curUser = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-      var isStaffUser = curUser && (curUser.role === "admin" || curUser.role === "super_admin" || curUser.role === "agent");
+      var isStaffUser = curUser && (curUser.role === "admin" || curUser.role === "super_admin" || curUser.role === "agent" || curUser.role === "counselor" || curUser.role === "councilor" || curUser.role === "admission_officer" || curUser.role === "officer" || curUser.role === "finance_manager" || curUser.role === "finance");
       if (!isStaffUser && dd.userId !== sess.userId) fail("FORBIDDEN");
       return { ok: true, base64: dd.base64 || "", mimeType: dd.mimeType, fileName: dd.fileName };
     }
@@ -2404,7 +2404,7 @@ function mockHandle(action, data) {
       if (!targetTask) fail("NOT_FOUND");
       
       var actor = db.users.filter(function (u) { return u.id === sess.userId; })[0];
-      var isStaffActor = actor && (actor.role === "super_admin" || actor.role === "admin" || actor.role === "agent");
+      var isStaffActor = actor && (actor.role === "super_admin" || actor.role === "admin" || actor.role === "agent" || actor.role === "counselor" || actor.role === "councilor" || actor.role === "admission_officer" || actor.role === "officer" || actor.role === "finance_manager" || actor.role === "finance");
       
       if (!isStaffActor && targetTask.assignedTo !== sess.userId) {
         fail("FORBIDDEN");

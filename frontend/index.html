@@ -13,47 +13,63 @@
 <header class="site-header"></header>
 
 <!-- 1. Process & Track Selector Section -->
-<section class="section alt" id="process-section">
+<section class="section alt" id="process-section" style="padding-top: 1.75rem;">
   <div class="container">
-    <div class="section-head">
-      <div class="kicker">Interactive Process Roadmap</div>
-      <h2>End-to-End European Study &amp; Work Visa Roadmap</h2>
-      <p>Select your destination country to view step-by-step requirements from profile screening to visa issuance &amp; airport arrival.</p>
-    </div>
-
-    <!-- Non-Linear Execution Banner -->
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; border: 1px solid rgba(56,189,248,0.3); box-shadow: 0 4px 14px rgba(0,0,0,0.15);">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+    
+    <!-- Top Filter Header Bar with Interactive Process Roadmap & Non-Linear Tracing Info -->
+    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 12px; padding: 0.9rem 1.2rem; margin-bottom: 0.85rem; border: 1px solid rgba(56,189,248,0.25); box-shadow: var(--shadow-sm);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
         <div>
-          <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">⚡ Non-Linear Flexible Execution &amp; Tracing</div>
-          <h3 style="margin: 0.2rem 0 0.3rem 0; color: #ffffff; font-size: 1.2rem; font-weight: 800;">Complete Any Milestone in Your Preferred Order</h3>
-          <p style="margin: 0; font-size: 0.88rem; color: #cbd5e1; line-height: 1.45;">
-            Every student's journey is unique. Any milestone can be completed earlier or later depending on your document readiness and university deadlines. Your personal dashboard automatically traces your exact sequence trail (e.g., <strong>Step 1 ➔ Step 3 ➔ Step 2</strong>).
-          </p>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.15rem;">
+            <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">Interactive Process Roadmap</span>
+            <span style="background: rgba(56,189,248,0.15); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.3); font-size: 0.72rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 999px;">⚡ Non-Linear Flexible Execution &amp; Tracing</span>
+          </div>
+          <h2 style="margin: 0; color: #ffffff; font-size: 1.15rem; font-weight: 800; line-height: 1.25;">End-to-End European Study &amp; Work Visa Roadmap</h2>
+          <p style="margin: 0.15rem 0 0 0; font-size: 0.83rem; color: #cbd5e1;">Select destination country filter below to view step-by-step requirements from profile screening to visa issuance &amp; airport arrival.</p>
         </div>
-        <a href="register.html" class="btn btn-primary" style="background: #0284c7; border-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.88rem; padding: 0.5rem 1.1rem; white-space: nowrap;">
-          🚀 Start Your Track
-        </a>
+        <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+          <button id="toggle-nonlinear-info" class="btn btn-sm" style="background: rgba(255,255,255,0.1); color: #f1f5f9; border: 1px solid rgba(255,255,255,0.2); font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.65rem; cursor: pointer;">
+            ⚡ Flexible Order Info
+          </button>
+          <a href="register.html" class="btn btn-primary btn-sm" style="background: #0284c7; border-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.8rem; padding: 0.3rem 0.75rem; white-space: nowrap;">
+            🚀 Start Your Track
+          </a>
+        </div>
+      </div>
+
+      <!-- Minimized Expandable Non-Linear Execution Drawer -->
+      <div id="nonlinear-info-box" style="display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.2); font-size: 0.82rem; color: #e2e8f0; line-height: 1.45;">
+        <strong style="color: #38bdf8;">Complete Any Milestone in Your Preferred Order:</strong> Every student's journey is unique. Any milestone can be completed earlier or later depending on your document readiness and university deadlines. Your personal dashboard automatically traces your exact sequence trail (e.g., <strong>Step 1 ➔ Step 3 ➔ Step 2</strong>).
       </div>
     </div>
 
-    <!-- European & International Track Selector Tabs -->
-    <div style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:2.5rem;" id="home-process-track-tabs">
-      <button class="btn btn-dark home-track-btn active" data-track="czech" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇨🇿 Czech Republic (20 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="germany" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇩🇪 Germany (10 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="poland" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇵🇱 Poland (10 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="austria" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇦🇹 Austria (9 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="italy" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇮🇹 Italy (8 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="uk" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇬🇧 United Kingdom (10 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="ireland" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇮🇪 Ireland (8 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="canada" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇨🇦 Canada (8 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="australia" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇦🇺 Australia (8 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="france" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇫🇷 France (7 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="spain" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇪🇸 Spain (7 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="sweden" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇸🇪 Sweden (9 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="netherlands" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇳🇱 Netherlands (8 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="serbia" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇷🇸 Serbia Work Visa (8 Steps)</button>
-      <button class="btn btn-outline home-track-btn" data-track="malaysia" style="border-radius:30px; padding:0.5rem 1.1rem; font-size:0.88rem; font-weight:700;">🇲🇾 Malaysia Work &amp; Study (8 Steps)</button>
+    <!-- Filter Control Bar (Top Destination Country Filter) -->
+    <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <div style="font-weight: 800; font-size: 0.85rem; color: var(--blue-900); display: flex; align-items: center; gap: 0.4rem;">
+          <span>🎯 Select Destination Country Filter:</span>
+        </div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">15 Country Tracks</div>
+      </div>
+      
+      <!-- Country Track Selector Tabs (FILTER AT THE TOP) -->
+      <div style="display:flex; gap:0.35rem; flex-wrap:wrap;" id="home-process-track-tabs">
+        <button class="btn btn-dark home-track-btn active" data-track="czech" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇨🇿 Czech Republic (20 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="germany" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇩🇪 Germany (10 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="poland" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇵🇱 Poland (10 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="austria" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇦🇹 Austria (9 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="italy" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇮🇹 Italy (8 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="uk" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇬🇧 United Kingdom (10 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="ireland" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇮🇪 Ireland (8 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="canada" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇨🇦 Canada (8 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="australia" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇦🇺 Australia (8 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="france" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇫🇷 France (7 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="spain" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇪🇸 Spain (7 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="sweden" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇸🇪 Sweden (9 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="netherlands" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇳🇱 Netherlands (8 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="serbia" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇷🇸 Serbia Work Visa (8 Steps)</button>
+        <button class="btn btn-outline home-track-btn" data-track="malaysia" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇲🇾 Malaysia Work &amp; Study (8 Steps)</button>
+      </div>
     </div>
 
     <!-- Dynamic Steps Container -->
@@ -243,6 +259,20 @@ document.addEventListener("DOMContentLoaded", function() {
       renderTrack(this.getAttribute("data-track"));
     });
   });
+
+  var toggleBtn = document.getElementById("toggle-nonlinear-info");
+  var infoBox = document.getElementById("nonlinear-info-box");
+  if (toggleBtn && infoBox) {
+    toggleBtn.addEventListener("click", function() {
+      if (infoBox.style.display === "none") {
+        infoBox.style.display = "block";
+        toggleBtn.textContent = "✖ Hide Info";
+      } else {
+        infoBox.style.display = "none";
+        toggleBtn.textContent = "⚡ Flexible Order Info";
+      }
+    });
+  }
 
   renderTrack("czech");
 });

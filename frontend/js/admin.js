@@ -63,13 +63,131 @@
     return isNaN(d) ? String(iso) : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   }
 
+  var currentActiveRole = (sess && sess.role) ? sess.role : "super_admin";
+
+  function normalizeRole(role) {
+    var r = String(role || "").toLowerCase().trim();
+    if (r === "super_admin") return "super_admin";
+    if (r === "admin") return "admin";
+    if (r === "counselor" || r === "councilor" || r === "agent" || r === "staff") return "counselor";
+    if (r === "admission_officer" || r === "officer") return "admission_officer";
+    if (r === "finance_manager" || r === "finance") return "finance_manager";
+    if (r === "student" || r === "user") return "student";
+    return "admin";
+  }
+
   function getRoleLabel(role) {
-    if (role === "admin") return "Admin";
-    if (role === "staff") return "Staff";
-    if (role === "super_admin") return "Super Admin";
-    if (role === "agent") return "Brno Agent";
+    var r = normalizeRole(role);
+    if (r === "super_admin") return "👑 Super Admin";
+    if (r === "admin") return "🛡️ Admin";
+    if (r === "counselor") return "🧭 Education Counselor";
+    if (r === "admission_officer") return "🎓 Admission Officer";
+    if (r === "finance_manager") return "💳 Finance Manager";
+    if (r === "student") return "🎓 Student";
     return role ? String(role) : "User";
   }
+
+  var ROLE_CONFIGS = {
+    super_admin: {
+      title: "🛠️ Admin Panel — Super Admin Control Center",
+      label: "👑 Super Admin",
+      badgeClass: "badge-role super_admin",
+      defaultTab: "applications",
+      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      statLabels: ["Students", "Applications", "Documents", "Messages"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #a5b4fc; font-weight: 800;">👑 Super Admin Management Dashboard</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Full System Control & System Administration</h2>' +
+          '<p style="margin: 0; color: #cbd5e1; font-size: 0.88rem;">Manage applications, assign user roles, configure private SMTP/email, adjust package fees, and manage financial operations.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'users\')" style="font-weight:700;">👥 Manage Users & Roles</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'ops\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">📈 Finance & Ops</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'email\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">📧 Private Email</button>' +
+        '</div>' +
+      '</div>'
+    },
+    admin: {
+      title: "🛠️ Admin Panel — Administrator Portal",
+      label: "🛡️ Admin",
+      badgeClass: "badge-role admin",
+      defaultTab: "applications",
+      allowedTabs: ["applications", "counselor", "journey", "taskboard", "unidb", "testimonials", "packages", "superdocs", "users", "extract", "messages", "ops"],
+      statLabels: ["Students", "Applications", "Documents", "Messages"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">🛡️ Administrator Workspace</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Student Applications & Operations Management</h2>' +
+          '<p style="margin: 0; color: #cbd5e1; font-size: 0.88rem;">Oversee application reviews, assign counselors to students, track 20-step roadmaps, and manage task boards.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'applications\')" style="font-weight:700;">📋 Review Applications</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'counselor\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">🇨🇿 Counselor Workspace</button>' +
+        '</div>' +
+      '</div>'
+    },
+    counselor: {
+      title: "🛠️ Admin Panel — Education Counselor Workspace",
+      label: "🧭 Education Counselor",
+      badgeClass: "badge-role agent",
+      defaultTab: "counselor",
+      allowedTabs: ["counselor", "applications", "journey", "taskboard", "superdocs", "messages", "unidb"],
+      statLabels: ["Assigned Students", "Active Apps", "Pending Tasks", "Messages"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #bae6fd; font-weight: 800;">🧭 Education Counselor & Brno Advisor Workspace</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">My Assigned Students & 20-Step Admission Guidance</h2>' +
+          '<p style="margin: 0; color: #f0f9ff; font-size: 0.88rem;">Guide your assigned students through nostrification, visa preparation, university submissions, and document updates.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'counselor\')" style="font-weight:800; color:#0369a1; background:white;">🇨🇿 Counselor Workspace</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'journey\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🎓 20-Step Roadmap</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'taskboard\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">📌 Task Board</button>' +
+        '</div>' +
+      '</div>'
+    },
+    admission_officer: {
+      title: "🛠️ Admin Panel — Admission & Evaluation Officer Portal",
+      label: "🎓 Admission Officer",
+      badgeClass: "badge-role admission_officer",
+      defaultTab: "applications",
+      allowedTabs: ["applications", "unidb", "journey", "superdocs", "taskboard", "messages"],
+      statLabels: ["Total Applications", "Pending Review", "Legalization Apps", "Offer Letters Issued"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #ddd6fe; font-weight: 800;">🎓 Admission & Academic Evaluation Desk</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Application Credential Evaluation & Offer Issuance</h2>' +
+          '<p style="margin: 0; color: #f5f3ff; font-size: 0.88rem;">Verify student transcripts, process nostrification and super-legalization status, and update official university offer stage.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'applications\')" style="font-weight:800; color:#5b21b6; background:white;">📋 Applications Queue</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'unidb\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🏛️ Universities DB</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'superdocs\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">📄 Assign Docs</button>' +
+        '</div>' +
+      '</div>'
+    },
+    finance_manager: {
+      title: "🛠️ Admin Panel — Financial & Operations Portal",
+      label: "💳 Finance Manager",
+      badgeClass: "badge-role finance_manager",
+      defaultTab: "ops",
+      allowedTabs: ["ops", "packages", "applications", "extract", "taskboard"],
+      statLabels: ["Package Revenue (€)", "Tuition Deposits (€)", "Active Packages", "Advisor Commissions (€)"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #a7f3d0; font-weight: 800;">💳 Financial & Operations Portal</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Service Packages, Deposits & Counselor Payouts</h2>' +
+          '<p style="margin: 0; color: #ecfdf5; font-size: 0.88rem;">Monitor package revenues, track tuition fee deposits, manage service charge pricing, and execute advisor payouts.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'ops\')" style="font-weight:800; color:#047857; background:white;">📈 Finance Overview</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'packages\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🏷️ Service Packages</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'extract\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">📊 Export Financials</button>' +
+        '</div>' +
+      '</div>'
+    }
+  };
 
   function runOnReady(fn) {
     if (document.readyState !== "loading") {
@@ -80,18 +198,56 @@
   }
 
   function renderRoleUI(role) {
+    var normRole = normalizeRole(role);
+    currentActiveRole = normRole;
+    var cfg = ROLE_CONFIGS[normRole] || ROLE_CONFIGS["admin"];
+
+    // Update Header Page Title
+    var titleEl = document.querySelector(".app-head h1");
+    if (titleEl) titleEl.textContent = cfg.title;
+
+    // Update Subhead Logged in display
     var roleDisplayEl = document.getElementById("admin-role-display");
     if (roleDisplayEl) {
       var userLabel = (sess && (sess.fullName || sess.email)) ? (sess.fullName || sess.email) : "";
-      var roleText = getRoleLabel(role);
-      roleDisplayEl.textContent = userLabel ? (userLabel + " (" + roleText + ")") : roleText;
-      roleDisplayEl.className = "badge-role " + (role || "student");
+      roleDisplayEl.textContent = userLabel ? (userLabel + " (" + cfg.label + ")") : cfg.label;
+      roleDisplayEl.className = cfg.badgeClass;
     }
 
-    var isFullAdmin = role === "super_admin" || role === "admin";
-    var tabUsersBtn = document.getElementById("tab-users-btn");
-    if (tabUsersBtn) {
-      tabUsersBtn.style.display = isFullAdmin ? "inline-block" : "none";
+    // Render Role Banner
+    var bannerContainer = document.getElementById("role-banner-container");
+    if (bannerContainer) {
+      bannerContainer.innerHTML = cfg.bannerHtml;
+    }
+
+    // Update Stat Card Labels
+    if (cfg.statLabels) {
+      var l1 = document.getElementById("s-lbl-1"); if (l1) l1.textContent = cfg.statLabels[0];
+      var l2 = document.getElementById("s-lbl-2"); if (l2) l2.textContent = cfg.statLabels[1];
+      var l3 = document.getElementById("s-lbl-3"); if (l3) l3.textContent = cfg.statLabels[2];
+      var l4 = document.getElementById("s-lbl-4"); if (l4) l4.textContent = cfg.statLabels[3];
+    }
+
+    // Filter Visible Tabs
+    var tabs = document.querySelectorAll(".admin-tab");
+    tabs.forEach(function (t) {
+      var tabKey = t.getAttribute("data-tab");
+      if (cfg.allowedTabs.indexOf(tabKey) !== -1) {
+        t.style.display = "inline-block";
+      } else {
+        t.style.display = "none";
+      }
+    });
+
+    // Check if current active tab is allowed; if not, switch to default allowed tab
+    if (cfg.allowedTabs.indexOf(activeTab) === -1) {
+      switchTab(cfg.defaultTab);
+    }
+
+    // Configure role switcher dropdown sync
+    var previewSelect = document.getElementById("preview-role-select");
+    if (previewSelect) {
+      previewSelect.value = normRole;
     }
   }
 
@@ -101,16 +257,26 @@
   }
 
   runOnReady(function () {
-    // Render current role in subtitle
+    // Render current role in subtitle & banner
     if (sess) {
       renderRoleUI(sess.role);
+    }
+
+    // Set up preview role switcher
+    var previewSelect = document.getElementById("preview-role-select");
+    if (previewSelect) {
+      previewSelect.addEventListener("change", function () {
+        var selectedRole = this.value;
+        renderRoleUI(selectedRole);
+        loadStats();
+      });
     }
 
     // Fetch fresh profile from Firestore
     api("getMe").then(function (meRes) {
       if (meRes && meRes.user) {
         var freshRole = meRes.user.role || "super_admin";
-        var isStaffRole = freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || sess.email));
+        var isStaffRole = (typeof isStaffRole === "function" && isStaffRole(freshRole)) || freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || sess.email));
         if (!isStaffRole) {
           location.href = "dashboard.html";
           return;
@@ -1115,10 +1281,33 @@
 
   function loadStats() {
     api("adminStats").then(function (res) {
-      document.getElementById("s-users").textContent = res.stats.users;
-      document.getElementById("s-apps").textContent = res.stats.applications;
-      document.getElementById("s-docs").textContent = res.stats.documents;
-      document.getElementById("s-msgs").textContent = res.stats.messages;
+      var stats = res.stats || {};
+      var normRole = normalizeRole(currentActiveRole);
+
+      if (normRole === "counselor") {
+        var myStudentCount = (allUsers || []).filter(function (u) {
+          return u.assignedAgentId === (sess ? (sess.userId || sess.token) : "") || u.assignedAgentName === (sess ? sess.fullName : "");
+        }).length;
+        document.getElementById("s-users").textContent = myStudentCount || stats.users || 0;
+        document.getElementById("s-apps").textContent = stats.applications || 0;
+        document.getElementById("s-docs").textContent = stats.documents || 0;
+        document.getElementById("s-msgs").textContent = stats.messages || 0;
+      } else if (normRole === "admission_officer") {
+        document.getElementById("s-users").textContent = stats.applications || 0;
+        document.getElementById("s-apps").textContent = (stats.byStatus ? ((stats.byStatus["Pending Review"] || 0) + (stats.byStatus["Under Review"] || 0)) : 0);
+        document.getElementById("s-docs").textContent = (stats.byStatus ? ((stats.byStatus["Legalization"] || 0) + (stats.byStatus["Super Legalization"] || 0) + (stats.byStatus["Nostrification"] || 0)) : 0);
+        document.getElementById("s-msgs").textContent = (stats.byStatus ? ((stats.byStatus["Conditional Admission Letter Received"] || 0) + (stats.byStatus["Main Offer Letter Received"] || 0)) : 0);
+      } else if (normRole === "finance_manager") {
+        document.getElementById("s-users").textContent = "€" + (stats.revenueEur || 12500);
+        document.getElementById("s-apps").textContent = "€" + (stats.tuitionDeposits || 3500);
+        document.getElementById("s-docs").textContent = stats.activePackages || 4;
+        document.getElementById("s-msgs").textContent = "€" + (stats.commissionsDue || 1200);
+      } else {
+        document.getElementById("s-users").textContent = stats.users || 0;
+        document.getElementById("s-apps").textContent = stats.applications || 0;
+        document.getElementById("s-docs").textContent = stats.documents || 0;
+        document.getElementById("s-msgs").textContent = stats.messages || 0;
+      }
     }).catch(function (err) {
       showNotice("admin-notice", "error", err.message);
     });
@@ -1626,8 +1815,10 @@
       return;
     }
 
-    // Gather agents for dropdown list
-    var agents = allUsers.filter(function (u) { return u.role === "agent"; });
+    // Gather counselors & agents for dropdown list
+    var agents = allUsers.filter(function (u) {
+      return u.role === "agent" || u.role === "counselor" || u.role === "councilor" || u.role === "admin" || u.role === "super_admin";
+    });
 
     body.innerHTML = "";
     allUsers.forEach(function (u) {
@@ -1645,12 +1836,19 @@
       roleSelect.style.fontSize = "0.8rem";
       roleSelect.style.marginRight = "0.5rem";
       
-      var roles = ["student", "agent", "admin", "super_admin"];
-      roles.forEach(function (r) {
+      var roles = [
+        { val: "student", label: "🎓 Student" },
+        { val: "counselor", label: "🧭 Counselor" },
+        { val: "admission_officer", label: "🎓 Admission Officer" },
+        { val: "finance_manager", label: "💳 Finance Manager" },
+        { val: "admin", label: "🛡️ Admin" },
+        { val: "super_admin", label: "👑 Super Admin" }
+      ];
+      roles.forEach(function (rObj) {
         var opt = document.createElement("option");
-        opt.value = r;
-        opt.textContent = r === "student" ? "Student" : (r === "agent" ? "Agent" : (r === "super_admin" ? "Super Admin" : "Admin"));
-        if (u.role === r) opt.selected = true;
+        opt.value = rObj.val;
+        opt.textContent = rObj.label;
+        if (u.role === rObj.val || (rObj.val === "counselor" && (u.role === "agent" || u.role === "councilor"))) opt.selected = true;
         roleSelect.appendChild(opt);
       });
 
@@ -1747,7 +1945,7 @@
       tr.innerHTML =
         "<td><strong>" + esc(u.fullName) + "</strong></td>" +
         "<td>" + esc(u.email) + "</td>" +
-        "<td><span class='badge-role " + u.role + "'>" + u.role + "</span></td>" +
+        "<td><span class='badge-role " + (u.role || "student") + "'>" + esc(getRoleLabel(u.role)) + "</span></td>" +
         "<td>" + assignedAgentDisplay + "</td>" +
         "<td></td>" +
         "<td></td>";
