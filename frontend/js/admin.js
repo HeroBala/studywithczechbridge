@@ -248,6 +248,14 @@
     var previewSelect = document.getElementById("preview-role-select");
     if (previewSelect) {
       previewSelect.value = normRole;
+      var parentContainer = previewSelect.closest(".role-switcher-box") || previewSelect.parentElement;
+      if (parentContainer) {
+        if (sess && sess.role === "super_admin") {
+          parentContainer.style.display = "";
+        } else {
+          parentContainer.style.display = "none";
+        }
+      }
     }
   }
 
@@ -413,6 +421,11 @@
 
         if (!title) {
           alert("Please enter a task title.");
+          return;
+        }
+
+        if (normalizeRole(currentActiveRole) !== "super_admin") {
+          alert("⚠️ Access Restricted: Only Super Admin can assign tasks.");
           return;
         }
 
@@ -758,6 +771,10 @@
     if (form) {
       form.onsubmit = function (e) {
         e.preventDefault();
+        if (normalizeRole(currentActiveRole) !== "super_admin") {
+          alert("🔒 Access Restricted: Only Super Admin can modify private SMTP settings.");
+          return;
+        }
         var saveBtn = document.getElementById("btn-save-smtp");
         saveBtn.disabled = true;
         saveBtn.textContent = "Saving...";
@@ -1277,6 +1294,8 @@
     loadMessages();
     loadTasks();
     loadUsers();
+    loadAdminUniversities();
+    loadAdminTestimonials();
   }
 
   function loadStats() {
@@ -1892,9 +1911,18 @@
         }
       });
 
-      actionsTd.appendChild(roleSelect);
-      actionsTd.appendChild(saveRoleBtn);
-      actionsTd.appendChild(assignTaskBtn);
+      var isSuperAdminUser = normalizeRole(currentActiveRole) === "super_admin";
+      if (isSuperAdminUser) {
+        actionsTd.appendChild(roleSelect);
+        actionsTd.appendChild(saveRoleBtn);
+        actionsTd.appendChild(assignTaskBtn);
+      } else {
+        var roleBadge = document.createElement("span");
+        roleBadge.className = "badge";
+        roleBadge.style.fontWeight = "700";
+        roleBadge.textContent = getRoleLabel(u.role);
+        actionsTd.appendChild(roleBadge);
+      }
 
       // Documents Column
       var docsTd = document.createElement("td");

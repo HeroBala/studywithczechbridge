@@ -57,6 +57,11 @@ var TaskBoardComponent = (function () {
   var _editingTask = null;
 
   function renderModal(targetUserId) {
+    if (!_editingTask && _session && _session.role !== "super_admin") {
+      alert("⚠️ Access Restricted: Only Super Admin can assign tasks.");
+      return;
+    }
+
     if (_modalEl) {
       document.body.removeChild(_modalEl);
       _modalEl = null;

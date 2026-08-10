@@ -704,6 +704,21 @@ function isAdminRoleValue(role) {
   return r === "admin" || r === "super_admin";
 }
 
+function isSuperAdminRoleValue(role) {
+  if (!role) return false;
+  var r = String(role).toLowerCase().trim();
+  return r === "super_admin";
+}
+
+function fbRequireSuperAdmin(fb) {
+  return fbRequireStaff(fb).then(function (user) {
+    if (!isSuperAdminRoleValue(user.role)) {
+      throw new Error("FORBIDDEN: Super Admin permissions required");
+    }
+    return user;
+  });
+}
+
 function fbRequireStaff(fb) {
   try {
     var u = fbUser(fb);
@@ -1234,7 +1249,7 @@ function fbHandle(fb, action, d) {
     }
 
     case "adminUpdateUserRole": {
-      return fbRequireAdminOrSuper(fb).then(function (u) {
+      return fbRequireSuperAdmin(fb).then(function (u) {
         return db.collection("users").doc(String(d.userId)).set({
           role: d.role,
           updatedAt: fbNow()
@@ -1303,7 +1318,7 @@ function fbHandle(fb, action, d) {
 
     case "adminAddTask":
     case "adminCreateTask": {
-      return fbRequireStaff(fb).then(function (u) {
+      return fbRequireSuperAdmin(fb).then(function (u) {
         return db.collection("users").doc(u.uid).get().then(function (callerSnap) {
           var callerData = callerSnap.exists ? callerSnap.data() : { fullName: u.displayName || u.email || "Admin" };
           var task = {
@@ -1378,7 +1393,7 @@ function fbHandle(fb, action, d) {
     }
 
     case "adminDeleteTask": {
-      return fbRequireStaff(fb).then(function () {
+      return fbRequireSuperAdmin(fb).then(function () {
         return db.collection("tasks").doc(String(d.taskId)).delete().then(function () {
           return { ok: true };
         });
