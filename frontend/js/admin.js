@@ -276,8 +276,8 @@
     api("getMe").then(function (meRes) {
       if (meRes && meRes.user) {
         var freshRole = meRes.user.role || "super_admin";
-        var isStaffRole = (typeof isStaffRole === "function" && isStaffRole(freshRole)) || freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || sess.email));
-        if (!isStaffRole) {
+        var userIsStaff = (typeof window.isStaffRole === "function" && window.isStaffRole(freshRole)) || freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent" || freshRole === "counselor" || freshRole === "admission_officer" || freshRole === "finance_manager" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || sess.email));
+        if (!userIsStaff) {
           location.href = "dashboard.html";
           return;
         }
@@ -1309,7 +1309,11 @@
         document.getElementById("s-msgs").textContent = stats.messages || 0;
       }
     }).catch(function (err) {
-      showNotice("admin-notice", "error", err.message);
+      showNotice("admin-notice", "error", "Failed to load dashboard statistics: " + (err.message || err));
+      var elU = document.getElementById("s-users"); if (elU && (elU.textContent === "—" || elU.textContent === "Loading...")) elU.textContent = "0";
+      var elA = document.getElementById("s-apps"); if (elA && (elA.textContent === "—" || elA.textContent === "Loading...")) elA.textContent = "0";
+      var elD = document.getElementById("s-docs"); if (elD && (elD.textContent === "—" || elD.textContent === "Loading...")) elD.textContent = "0";
+      var elM = document.getElementById("s-msgs"); if (elM && (elM.textContent === "—" || elM.textContent === "Loading...")) elM.textContent = "0";
     });
   }
 
@@ -1703,6 +1707,8 @@
       container.innerHTML = '<div class="notice error">Failed to load candidate tasks: ' + esc(err.message) + '</div>';
     });
   }
+
+  function renderModalDocs(docs) {
     var ul = document.getElementById("m-docs");
     if (!docs.length) {
       ul.innerHTML = '<li class="muted">This student has not uploaded any documents yet.</li>';
