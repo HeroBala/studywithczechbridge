@@ -3107,7 +3107,7 @@
       btnTask.onclick = function() {
         switchTab("taskboard");
         setTimeout(function() {
-          var tTitle = document.getElementById("task-new-title");
+          var tTitle = document.getElementById("tb-task-title") || document.getElementById("task-new-title");
           if (tTitle) {
             tTitle.value = "Assigned Task for " + (c.fullName || c.email);
             tTitle.focus();
@@ -3126,7 +3126,7 @@
     if (!body) return;
 
     var filterVal = document.getElementById("counselor-student-filter") ? document.getElementById("counselor-student-filter").value : "all";
-    var currentUser = getCurrentUser();
+    var currentUser = (typeof getSession === "function" ? getSession() : null) || sess;
 
     var filteredApps = allApps.filter(function (a) {
       if (filterVal === "all") return true;

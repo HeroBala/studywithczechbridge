@@ -688,17 +688,47 @@ function fbTriggerAlert(db, userId, type, details) {
 
 function isKnownAdminEmail(email) {
   var e = String(email || "").toLowerCase().trim();
-  if (!e) return true;
-  return true; // Staff/Admin operations are allowed for authenticated session
+  if (!e) return false;
+  return false; // Roles must be explicitly assigned in Firestore user profile
+}
+
+function isStaffRoleValue(role) {
+  if (!role) return false;
+  var r = String(role).toLowerCase().trim();
+  return r === "admin" || r === "super_admin" || r === "staff" || r === "agent" || r === "counselor" || r === "councilor" || r === "admission_officer" || r === "finance_manager";
+}
+
+function isAdminRoleValue(role) {
+  if (!role) return false;
+  var r = String(role).toLowerCase().trim();
+  return r === "admin" || r === "super_admin";
 }
 
 function fbRequireStaff(fb) {
   try {
     var u = fbUser(fb);
-    return Promise.resolve(u);
+    return fb.db.collection("users").doc(u.uid).get().then(function(snap) {
+      var p = snap.exists ? snap.data() : null;
+      var role = (p && p.role) ? p.role : "";
+      if (!isStaffRoleValue(role)) {
+        var sess = getSession();
+        if (sess && (sess.userId === u.uid || sess.token === u.uid) && isStaffRoleValue(sess.role)) {
+          role = sess.role;
+        }
+      }
+      if (!isStaffRoleValue(role)) {
+        throw new Error("FORBIDDEN: Staff permissions required");
+      }
+      return {
+        uid: u.uid,
+        email: (p && p.email) || u.email,
+        displayName: (p && p.fullName) || u.displayName || u.email,
+        role: role
+      };
+    });
   } catch (e) {
     var sess = getSession();
-    if (sess) {
+    if (sess && isStaffRoleValue(sess.role)) {
       return Promise.resolve({
         uid: sess.token || sess.userId || "admin1",
         email: sess.email || "admin@test.com",
@@ -711,11 +741,16 @@ function fbRequireStaff(fb) {
 }
 
 function fbRequireAdminOrSuper(fb) {
-  return fbRequireStaff(fb);
+  return fbRequireStaff(fb).then(function (user) {
+    if (!isAdminRoleValue(user.role)) {
+      throw new Error("FORBIDDEN: Admin permissions required");
+    }
+    return user;
+  });
 }
 
 function fbRequireAdmin(fb) {
-  return fbRequireStaff(fb);
+  return fbRequireAdminOrSuper(fb);
 }
 
 function fbHandle(fb, action, d) {
