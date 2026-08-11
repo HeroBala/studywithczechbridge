@@ -12,15 +12,7 @@
 
   function el(f) { return document.getElementById("a-" + f); }
 
-  function runOnReady(fn) {
-    if (document.readyState !== "loading") {
-      setTimeout(fn, 0);
-    } else {
-      document.addEventListener("DOMContentLoaded", fn);
-    }
-  }
-
-  runOnReady(function () {
+  document.addEventListener("DOMContentLoaded", function () {
     // Pre-fill name from session
     if (sess.fullName) el("fullName").value = sess.fullName;
 

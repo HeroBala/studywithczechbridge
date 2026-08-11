@@ -23,6 +23,25 @@
           <input type="email" id="l-email" required maxlength="160" placeholder="you@example.com">
         </div>
         <div class="field">
+          <label for="l-country">Destination Preference</label>
+          <select id="l-country" style="width:100%; padding:0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.9rem; background:var(--surface); color:var(--text);">
+            <option value="">Keep Saved Profile Destination</option>
+            <option value="Czech Republic">🇨🇿 Czech Republic (Higher Education & Degree Roadmap)</option>
+            <option value="United Kingdom">🇬🇧 United Kingdom (Study Visa / CAS / BRP / eVisa)</option>
+            <option value="Iceland">🇮🇸 Iceland (Higher Education / Útlendingastofnun / Kennitala)</option>
+            <option value="Sweden">🇸🇪 Sweden (University Admissions Sweden / Migrationsverket)</option>
+            <option value="Austria">🇦🇹 Austria (Study Permit / OeAD Dormitories / Vienna)</option>
+            <option value="Italy">🇮🇹 Italy (Universitaly / CIMEA / Permesso di Soggiorno)</option>
+            <option value="Netherlands">🇳🇱 Netherlands (Recognized Sponsor / Studielink / BSN)</option>
+            <option value="France">🇫🇷 France (Campus France / France-Visas / VLS-TS)</option>
+            <option value="Spain">🇪🇸 Spain (Estancia por Estudios / UNEDasiss / TIE Card)</option>
+            <option value="Estonia">🇪🇪 Estonia (DreamApply Estonia / Study D-Visa)</option>
+            <option value="Serbia">🇷🇸 Serbia (NES Labour Test / Type D Work Visa / Single Permit)</option>
+            <option value="Moldova">🇲🇩 Moldova (Employment Authorization / Long-Stay Work Visa)</option>
+            <option value="Europe General">🇪🇺 Europe General (Schengen Higher Education Pathway)</option>
+          </select>
+        </div>
+        <div class="field">
           <label for="l-pass">Password</label>
           <input type="password" id="l-pass" required placeholder="Your password">
         </div>
@@ -58,10 +77,18 @@ document.getElementById("login-form").addEventListener("submit", function (ev) {
   var btn = document.getElementById("l-submit");
   btn.disabled = true;
   btn.textContent = "Logging in...";
+  var selCountry = document.getElementById("l-country").value;
   api("login", {
     email: document.getElementById("l-email").value.trim(),
     password: document.getElementById("l-pass").value
   }).then(function (res) {
+    if (selCountry) {
+      return api("updateMyApplication", { targetCountry: selCountry }).then(function () {
+        return afterAuth(res);
+      }).catch(function () {
+        return afterAuth(res);
+      });
+    }
     return afterAuth(res);
   }).catch(function (err) {
     showNotice("login-notice", "error", err.message);

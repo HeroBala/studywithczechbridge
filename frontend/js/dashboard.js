@@ -52,19 +52,9 @@
     "Dropped": "st-dropped"
   };
 
-  function runOnReady(fn) {
-    if (document.readyState !== "loading") {
-      setTimeout(fn, 0);
-    } else {
-      document.addEventListener("DOMContentLoaded", fn);
-    }
-  }
-
-  runOnReady(function () {
-    var helloEl = document.getElementById("hello");
-    if (helloEl) {
-      helloEl.textContent = "Welcome, " + (sess.fullName || "Student") + " 👋";
-    }
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("hello").textContent =
+      "Welcome, " + (sess.fullName || "Student") + " 👋";
     loadApplication();
     loadDocuments();
     loadTasks();

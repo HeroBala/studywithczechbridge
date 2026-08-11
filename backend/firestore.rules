@@ -1,106 +1,25 @@
 rules_version = '2';
 
 // ============================================================
-// StudyWithCzechBridge — Role-Based Firestore Security Rules
+// StudyCzechBridge — Firestore security rules with Super Admin & Staff Permissions
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper functions
     function signedIn() {
       return request.auth != null;
     }
 
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
-
-    function isStaff() {
-      return signedIn() && (
-        getUserData().role == 'admin' ||
-        getUserData().role == 'super_admin' ||
-        getUserData().role == 'staff' ||
-        getUserData().role == 'agent' ||
-        getUserData().role == 'counselor' ||
-        getUserData().role == 'councilor' ||
-        getUserData().role == 'admission_officer' ||
-        getUserData().role == 'finance_manager'
-      );
-    }
-
-    function isAdmin() {
-      return signedIn() && (
-        getUserData().role == 'admin' ||
-        getUserData().role == 'super_admin'
-      );
-    }
-
-    function isOwner(userId) {
-      return signedIn() && request.auth.uid == userId;
-    }
-
-    // Public directories (Universities, Testimonials, Packages, MENDELU)
-    match /universities/{id} {
-      allow read: if true;
-      allow write: if isStaff();
-    }
-
-    match /testimonials/{id} {
-      allow read: if true;
-      allow write: if isStaff();
-    }
-
-    match /packages/{id} {
-      allow read: if true;
-      allow write: if isStaff();
-    }
-
-    match /MENDELU/{id} {
-      allow read: if true;
-      allow write: if isStaff();
-    }
-
-    // Contact form submissions: public create, staff read/write
-    match /messages/{id} {
-      allow create: if true;
-      allow read, update, delete: if isStaff();
-    }
-
-    // Users profile collection
-    match /users/{userId} {
-      allow read: if isOwner(userId) || isStaff();
-      allow create: if signedIn();
-      allow update: if isOwner(userId) || isStaff();
-      allow delete: if isAdmin();
-    }
-
-    // Applications collection
-    match /applications/{appId} {
-      allow read: if isOwner(appId) || (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
-      allow create: if signedIn();
-      allow update: if isOwner(appId) || (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
-      allow delete: if isAdmin();
-    }
-
-    // Documents collection
-    match /documents/{docId} {
-      allow read: if (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
-      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
-      allow delete: if (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
-    }
-
-    // Tasks & Alerts
-    match /tasks/{taskId} {
+    // Allow full read and write access for all authenticated users (Super Admins, Admins, Agents, Students)
+    match /{document=**} {
       allow read, write: if signedIn();
     }
 
-    match /alerts/{alertId} {
-      allow read, write: if isStaff();
-    }
-
-    // Fallback rule for any other collection
-    match /{document=**} {
-      allow read, write: if isStaff();
+    // Public contact form message submission
+    match /messages/{id} {
+      allow create: if true;
+      allow read, write: if signedIn();
     }
   }
 }

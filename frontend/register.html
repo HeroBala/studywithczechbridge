@@ -96,23 +96,7 @@
 (function () {
   var s = getSession();
   if (s && s.token) location.href = s.role === "admin" ? "admin.html" : "dashboard.html";
-
-  // Check if program query parameter is passed
-  var params = new URLSearchParams(window.location.search);
-  var selectedProg = params.get("program");
-  if (selectedProg) {
-    var noticeEl = document.getElementById("reg-notice");
-    if (noticeEl) {
-      noticeEl.innerHTML = '<div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem; font-weight:600; font-size:0.9rem;">🎯 <strong>Selected Program for Application:</strong> ' + escHtml(selectedProg) + '</div>';
-      noticeEl.style.display = "block";
-    }
-  }
 })();
-
-function escHtml(str) {
-  if (!str) return "";
-  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
 
 document.getElementById("reg-form").addEventListener("submit", function (ev) {
   ev.preventDefault();
