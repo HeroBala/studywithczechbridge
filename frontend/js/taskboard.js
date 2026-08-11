@@ -57,8 +57,9 @@ var TaskBoardComponent = (function () {
   var _editingTask = null;
 
   function renderModal(targetUserId) {
-    if (!_editingTask && _session && _session.role !== "super_admin") {
-      alert("⚠️ Access Restricted: Only Super Admin can assign tasks.");
+    var isTaskCreatorRole = _session && (_session.role === "super_admin" || _session.role === "admin");
+    if (!_editingTask && !isTaskCreatorRole) {
+      alert("⚠️ Access Restricted: Only Super Admin and Admin can assign tasks.");
       return;
     }
 
@@ -308,7 +309,7 @@ var TaskBoardComponent = (function () {
 
   function loadUsers() {
     // Only staff can list users
-    var isStaff = (typeof isStaffRole === "function" && isStaffRole(_session.role)) || _session.role === "admin" || _session.role === "super_admin" || _session.role === "staff" || _session.role === "agent";
+    var isStaff = (typeof isStaffRole === "function" && isStaffRole(_session ? _session.role : null)) || (_session && (_session.role === "admin" || _session.role === "super_admin" || _session.role === "staff" || _session.role === "agent" || _session.role === "counselor" || _session.role === "admission_officer" || _session.role === "finance_manager"));
     if (!isStaff) return Promise.resolve();
 
     return api("adminListUsers").then(function (res) {

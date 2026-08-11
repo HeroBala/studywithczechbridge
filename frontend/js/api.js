@@ -1241,15 +1241,56 @@ function fbHandle(fb, action, d) {
               };
             }
 
+            // Always merge mock / baseline users so all platform accounts are visible
+            try {
+              var mdbRaw = localStorage.getItem("cb_mockdb");
+              var mdb = mdbRaw ? JSON.parse(mdbRaw) : null;
+              var mUsers = (mdb && mdb.users && mdb.users.length) ? mdb.users : ((typeof mockDb !== "undefined") ? mockDb().users : []);
+              (mUsers || []).forEach(function (mu) {
+                if (!userMap[mu.id]) {
+                  var hasEmail = Object.keys(userMap).some(function (k) {
+                    return userMap[k].email && mu.email && userMap[k].email.toLowerCase() === mu.email.toLowerCase();
+                  });
+                  if (!hasEmail) {
+                    userMap[mu.id] = mu;
+                  }
+                }
+              });
+            } catch (e) {}
+
             var usersList = Object.keys(userMap).map(function (k) { return userMap[k]; });
             return { ok: true, users: usersList };
           });
+        });
+      }).catch(function (err) {
+        console.warn("adminListUsers fallback error:", err);
+        var fallbackUsers = (typeof mockDb !== "undefined") ? mockDb().users : [];
+        return { ok: true, users: fallbackUsers };
+      });
+    }
+
+    case "adminSaveUser": {
+      return fbRequireAdminOrSuper(fb).then(function (u) {
+        var uId = d.id || ("user-" + Math.random().toString(36).substring(2, 9));
+        var uData = {
+          id: uId,
+          fullName: d.fullName || "New User",
+          email: d.email || "",
+          phone: d.phone || "",
+          role: d.role || "student",
+          assignedAgentId: d.assignedAgentId || "",
+          assignedAgentName: d.assignedAgentName || "",
+          createdAt: fbNow(),
+          updatedAt: fbNow()
+        };
+        return db.collection("users").doc(uId).set(uData, { merge: true }).then(function () {
+          return { ok: true, id: uId };
         });
       });
     }
 
     case "adminUpdateUserRole": {
-      return fbRequireSuperAdmin(fb).then(function (u) {
+      return fbRequireAdminOrSuper(fb).then(function (u) {
         return db.collection("users").doc(String(d.userId)).set({
           role: d.role,
           updatedAt: fbNow()
@@ -1318,7 +1359,7 @@ function fbHandle(fb, action, d) {
 
     case "adminAddTask":
     case "adminCreateTask": {
-      return fbRequireSuperAdmin(fb).then(function (u) {
+      return fbRequireAdminOrSuper(fb).then(function (u) {
         return db.collection("users").doc(u.uid).get().then(function (callerSnap) {
           var callerData = callerSnap.exists ? callerSnap.data() : { fullName: u.displayName || u.email || "Admin" };
           var task = {
@@ -1393,7 +1434,7 @@ function fbHandle(fb, action, d) {
     }
 
     case "adminDeleteTask": {
-      return fbRequireSuperAdmin(fb).then(function () {
+      return fbRequireAdminOrSuper(fb).then(function () {
         return db.collection("tasks").doc(String(d.taskId)).delete().then(function () {
           return { ok: true };
         });
@@ -1825,7 +1866,7 @@ function filterProgramsResult(list, d) {
    MOCK BACKEND (localStorage) — for local testing only.
    Mirrors the real API contract above.
    ============================================================ */
-var MOCK_SEED_VERSION = 10; // bump to re-seed demo data in browsers that already have old data
+var MOCK_SEED_VERSION = 11; // bump to re-seed demo data in browsers that already have old data
 
 function mockDb() {
   var raw = localStorage.getItem("cb_mockdb");
@@ -1851,6 +1892,12 @@ function mockDb() {
         fullName: "Mock Admin", phone: "+420 444 555 666", role: "admin", createdAt: daysAgo(60) },
       { id: "agent1", email: "agent@test.com", password: "admin123",
         fullName: "Brno Agent", phone: "+420 777 123 456", role: "agent", createdAt: daysAgo(40) },
+      { id: "counselor1", email: "elena@studywithczechbridge.com", password: "admin123",
+        fullName: "Elena Svoboda", phone: "+420 771 987 654", role: "counselor", createdAt: daysAgo(35) },
+      { id: "officer1", email: "pavel@studywithczechbridge.com", password: "admin123",
+        fullName: "Pavel Dvorak", phone: "+420 772 456 789", role: "admission_officer", createdAt: daysAgo(30) },
+      { id: "finance1", email: "klara@studywithczechbridge.com", password: "admin123",
+        fullName: "Klara Novakova", phone: "+420 773 111 222", role: "finance_manager", createdAt: daysAgo(25) },
       { id: "stu-rahim", email: "rahim@demo.com", password: "demo123",
         fullName: "Rahim Ahmed", phone: "+880 1712-000001", role: "student", createdAt: daysAgo(25),
         assignedAgentId: "agent1", assignedAgentName: "Brno Agent" },
@@ -2321,10 +2368,45 @@ function mockHandle(action, data) {
     case "adminUpdateUserRole": {
       needAdminOrSuper();
       var target = db.users.filter(function (u) { return u.id === data.userId; })[0];
-      if (!target) fail("NOT_FOUND");
-      target.role = data.role;
+      if (target) {
+        target.role = data.role;
+      } else {
+        db.users.push({
+          id: data.userId,
+          fullName: data.fullName || "User",
+          email: data.email || "",
+          role: data.role
+        });
+      }
       mockSave(db);
       return { ok: true };
+    }
+    case "adminSaveUser": {
+      needAdminOrSuper();
+      var uId = data.id || ("user-" + Math.random().toString(36).substring(2, 9));
+      var existing = db.users.filter(function (u) { return u.id === uId || u.email === data.email; })[0];
+      if (existing) {
+        existing.fullName = data.fullName || existing.fullName;
+        existing.email = data.email || existing.email;
+        existing.phone = data.phone || existing.phone;
+        existing.role = data.role || existing.role;
+        if (data.assignedAgentId !== undefined) existing.assignedAgentId = data.assignedAgentId;
+        if (data.assignedAgentName !== undefined) existing.assignedAgentName = data.assignedAgentName;
+      } else {
+        var newUser = {
+          id: uId,
+          fullName: data.fullName || "New User",
+          email: data.email || "",
+          phone: data.phone || "",
+          role: data.role || "student",
+          assignedAgentId: data.assignedAgentId || "",
+          assignedAgentName: data.assignedAgentName || "",
+          createdAt: new Date().toISOString()
+        };
+        db.users.push(newUser);
+      }
+      mockSave(db);
+      return { ok: true, id: uId };
     }
     case "adminSaveCounselorProfile": {
       needAdminOrSuper();
