@@ -446,6 +446,81 @@ var DEFAULT_UNIVERSITIES = [
   { id: "uni-my-2", country: "Malaysia", countryTotalUniv: 104, name: "Asia Pacific University (APU)", website: "https://www.apu.edu.my", type: "Private", scienceSubjects: 20, commerceSubjects: 35, artsSubjects: 15, engineeringSubjects: 30, tuitionFees: "USD $4,000 – $7,500/yr" }
 ];
 
+var DEFAULT_PROGRAMS = [
+  // 🇨🇿 Czech Republic
+  { id: "prog-cz-1", country: "Czech Republic", university: "Charles University (Prague)", title: "General Medicine (MD)", level: "Master's", field: "Medicine & Health Sciences", language: "English", duration: "6 Years", intake: "September", tuitionFees: "€15,000 / year", applyUrl: "https://lf1.cuni.cz/en", portalApplyUrl: "register.html?program=Charles+University+-+General+Medicine" },
+  { id: "prog-cz-2", country: "Czech Republic", university: "Charles University (Prague)", title: "BSc Computer Science", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€3,500 / year", applyUrl: "https://www.mff.cuni.cz/en", portalApplyUrl: "register.html?program=Charles+University+-+BSc+Computer+Science" },
+  { id: "prog-cz-3", country: "Czech Republic", university: "Masaryk University (Brno)", title: "BSc Informatics & Software Development", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September, February", tuitionFees: "€2,800 / year", applyUrl: "https://fi.muni.cz/index.html.en", portalApplyUrl: "register.html?program=Masaryk+University+-+BSc+Informatics" },
+  { id: "prog-cz-4", country: "Czech Republic", university: "Masaryk University (Brno)", title: "MSc Business Management", level: "Master's", field: "Business & Economics", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€3,000 / year", applyUrl: "https://www.econ.muni.cz/en", portalApplyUrl: "register.html?program=Masaryk+University+-+MSc+Business+Management" },
+  { id: "prog-cz-5", country: "Czech Republic", university: "Czech Technical University in Prague (CTU)", title: "BEng Computer Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€2,400 / year", applyUrl: "https://fit.cvut.cz/en", portalApplyUrl: "register.html?program=CTU+Prague+-+BEng+Computer+Engineering" },
+  { id: "prog-cz-6", country: "Czech Republic", university: "Brno University of Technology (BUT)", title: "BEng Mechanical & Automotive Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€2,200 / year", applyUrl: "https://www.fme.vutbr.cz/en", portalApplyUrl: "register.html?program=Brno+Tech+-+BEng+Mechanical+Engineering" },
+  { id: "prog-cz-7", country: "Czech Republic", university: "Prague University of Economics & Business (VŠE)", title: "BSc International Business", level: "Bachelor's", field: "Business & Economics", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€3,800 / year", applyUrl: "https://ib.vse.cz", portalApplyUrl: "register.html?program=VSE+Prague+-+BSc+International+Business" },
+  { id: "prog-cz-8", country: "Czech Republic", university: "Mendel University in Brno", title: "MSc Sustainable Agriculture & Agribusiness", level: "Master's", field: "Agriculture & Food Science", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€2,000 / year", applyUrl: "https://af.mendelu.cz/en", portalApplyUrl: "register.html?program=Mendel+University+-+MSc+Agribusiness" },
+
+  // 🇩🇪 Germany
+  { id: "prog-de-1", country: "Germany", university: "Technical University of Munich (TUM)", title: "MSc Management & Technology", level: "Master's", field: "Business & Economics", language: "English", duration: "2 Years", intake: "October", tuitionFees: "€2,000 / year", applyUrl: "https://www.tum.de/en/studies/degree-programs", portalApplyUrl: "register.html?program=TUM+-+MSc+Management+and+Technology" },
+  { id: "prog-de-2", country: "Germany", university: "Ludwig Maximilian University of Munich (LMU)", title: "MSc Data Science & AI", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "October", tuitionFees: "Free / €150 Fee", applyUrl: "https://www.lmu.de/en/study", portalApplyUrl: "register.html?program=LMU+Munich+-+MSc+Data+Science" },
+  { id: "prog-de-3", country: "Germany", university: "RWTH Aachen University", title: "MSc Robotic Systems Engineering", level: "Master's", field: "Engineering & Technology", language: "English", duration: "2 Years", intake: "October", tuitionFees: "Free / €300 Fee", applyUrl: "https://www.rwth-aachen.de", portalApplyUrl: "register.html?program=RWTH+Aachen+-+MSc+Robotic+Systems" },
+  { id: "prog-de-4", country: "Germany", university: "GISMA Business School (Berlin)", title: "BSc Computer Science & Digital Business", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September, January", tuitionFees: "€11,500 / year", applyUrl: "https://www.gisma.com", portalApplyUrl: "register.html?program=GISMA+Berlin+-+BSc+Computer+Science" },
+
+  // 🇵🇱 Poland
+  { id: "prog-pl-1", country: "Poland", university: "Jagiellonian University (Krakow)", title: "MD General Medicine", level: "Master's", field: "Medicine & Health Sciences", language: "English", duration: "6 Years", intake: "October", tuitionFees: "€14,000 / year", applyUrl: "https://medschool.uj.edu.pl", portalApplyUrl: "register.html?program=Jagiellonian+University+-+MD+General+Medicine" },
+  { id: "prog-pl-2", country: "Poland", university: "University of Warsaw", title: "BSc Finance & International Investment", level: "Bachelor's", field: "Business & Economics", language: "English", duration: "3 Years", intake: "October", tuitionFees: "€2,500 / year", applyUrl: "https://en.uw.edu.pl", portalApplyUrl: "register.html?program=University+of+Warsaw+-+BSc+Finance" },
+  { id: "prog-pl-3", country: "Poland", university: "Warsaw University of Technology", title: "BEng Software Engineering & Networks", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3.5 Years", intake: "October, February", tuitionFees: "€2,800 / year", applyUrl: "https://www.pw.edu.pl/engpw", portalApplyUrl: "register.html?program=Warsaw+Tech+-+BEng+Software+Engineering" },
+
+  // 🇦🇹 Austria
+  { id: "prog-at-1", country: "Austria", university: "University of Vienna", title: "MSc Data Science & Analytics", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "October", tuitionFees: "€1,500 / year", applyUrl: "https://studieren.univie.ac.at/en", portalApplyUrl: "register.html?program=University+of+Vienna+-+MSc+Data+Science" },
+  { id: "prog-at-2", country: "Austria", university: "TU Wien", title: "MSc Software Engineering & Internet Computing", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "October", tuitionFees: "€1,500 / year", applyUrl: "https://www.tuwien.at/en/studies", portalApplyUrl: "register.html?program=TU+Wien+-+MSc+Software+Engineering" },
+
+  // 🇮🇹 Italy
+  { id: "prog-it-1", country: "Italy", university: "University of Bologna", title: "MSc Business Administration & Economics", level: "Master's", field: "Business & Economics", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€1,200 / year", applyUrl: "https://www.unibo.it/en", portalApplyUrl: "register.html?program=University+of+Bologna+-+MSc+Business" },
+  { id: "prog-it-2", country: "Italy", university: "Politecnico di Milano", title: "BEng Computer Science Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€1,500 / year", applyUrl: "https://www.polimi.it/en", portalApplyUrl: "register.html?program=Politecnico+di+Milano+-+BEng+Computer+Science" },
+
+  // 🇫🇷 France
+  { id: "prog-fr-1", country: "France", university: "Sorbonne University (Paris)", title: "MSc Artificial Intelligence & Optimization", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€3,770 / year", applyUrl: "https://www.sorbonne-universite.fr/en", portalApplyUrl: "register.html?program=Sorbonne+University+-+MSc+AI" },
+  { id: "prog-fr-2", country: "France", university: "HEC Paris Business School", title: "MSc International Finance", level: "Master's", field: "Business & Economics", language: "English", duration: "1.5 Years", intake: "September", tuitionFees: "€24,000 / year", applyUrl: "https://www.hec.edu/en", portalApplyUrl: "register.html?program=HEC+Paris+-+MSc+International+Finance" },
+
+  // 🇪🇸 Spain
+  { id: "prog-es-1", country: "Spain", university: "University of Barcelona", title: "MSc Bioinformatics & Health Data", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€3,200 / year", applyUrl: "https://www.ub.edu/web/portal/en", portalApplyUrl: "register.html?program=University+of+Barcelona+-+MSc+Bioinformatics" },
+
+  // 🇭🇺 Hungary
+  { id: "prog-hu-1", country: "Hungary", university: "Eötvös Loránd University (ELTE)", title: "BSc Computer Science", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September, February", tuitionFees: "€3,000 / year", applyUrl: "https://www.elte.hu/en", portalApplyUrl: "register.html?program=ELTE+Budapest+-+BSc+Computer+Science" },
+  { id: "prog-hu-2", country: "Hungary", university: "Budapest University of Tech & Econ (BME)", title: "BEng Computer Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3.5 Years", intake: "September", tuitionFees: "€3,200 / year", applyUrl: "https://www.bme.hu/?language=en", portalApplyUrl: "register.html?program=BME+Budapest+-+BEng+Computer+Engineering" },
+
+  // 🇸🇪 Sweden
+  { id: "prog-se-1", country: "Sweden", university: "KTH Royal Institute of Technology", title: "MSc Machine Learning & AI", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "August", tuitionFees: "SEK 155,000 / year (~€13,500)", applyUrl: "https://www.kth.se/en", portalApplyUrl: "register.html?program=KTH+Sweden+-+MSc+Machine+Learning" },
+
+  // 🇳🇱 Netherlands
+  { id: "prog-nl-1", country: "Netherlands", university: "University of Amsterdam", title: "BSc Computer Science", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€12,000 / year", applyUrl: "https://www.uva.nl/en", portalApplyUrl: "register.html?program=University+of+Amsterdam+-+BSc+Computer+Science" },
+
+  // 🇮🇪 Ireland
+  { id: "prog-ie-1", country: "Ireland", university: "Trinity College Dublin", title: "MSc Computer Science (Data Science Track)", level: "Master's", field: "Computer Science & IT", language: "English", duration: "1 Year", intake: "September", tuitionFees: "€18,500 / year", applyUrl: "https://www.tcd.ie/courses", portalApplyUrl: "register.html?program=Trinity+College+Dublin+-+MSc+Data+Science" },
+
+  // 🇬🇧 United Kingdom
+  { id: "prog-uk-1", country: "United Kingdom", university: "University of Manchester", title: "BSc Artificial Intelligence & Robotics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "£28,000 / year", applyUrl: "https://www.manchester.ac.uk", portalApplyUrl: "register.html?program=University+of+Manchester+-+BSc+AI" },
+
+  // 🇨🇦 Canada
+  { id: "prog-ca-1", country: "Canada", university: "University of Toronto", title: "BSc Computer Science & Data Analytics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "4 Years", intake: "September", tuitionFees: "CAD $48,000 / year", applyUrl: "https://www.utoronto.ca", portalApplyUrl: "register.html?program=University+of+Toronto+-+BSc+Computer+Science" },
+
+  // 🇦🇺 Australia
+  { id: "prog-au-1", country: "Australia", university: "University of Melbourne", title: "Master of Information Technology", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "February, July", tuitionFees: "AUD $46,000 / year", applyUrl: "https://www.unimelb.edu.au", portalApplyUrl: "register.html?program=University+of+Melbourne+-+Master+of+IT" },
+
+  // 🇷🇸 Serbia
+  { id: "prog-rs-1", country: "Serbia", university: "University of Belgrade", title: "BSc Software & Information Engineering (Work Track)", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "October", tuitionFees: "€2,500 / year", applyUrl: "https://www.bg.ac.rs/en", portalApplyUrl: "register.html?program=University+of+Belgrade+-+BSc+Software+Engineering" },
+
+  // 🇲🇾 Malaysia
+  { id: "prog-my-1", country: "Malaysia", university: "Asia Pacific University (APU)", title: "BSc Cybersecurity & Digital Forensics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September, November, February", tuitionFees: "USD $5,200 / year", applyUrl: "https://www.apu.edu.my", portalApplyUrl: "register.html?program=APU+Malaysia+-+BSc+Cybersecurity" },
+
+  // 🇪🇪 Estonia
+  { id: "prog-ee-1", country: "Estonia", university: "University of Tartu", title: "MSc Software Engineering", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€4,000 / year (Tuition Waivers)", applyUrl: "https://ut.ee/en", portalApplyUrl: "register.html?program=University+of+Tartu+-+MSc+Software+Engineering" },
+
+  // 🇮🇸 Iceland
+  { id: "prog-is-1", country: "Iceland", university: "University of Iceland", title: "MSc Sustainable Energy Science", level: "Master's", field: "Engineering & Technology", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€0 (Reg Fee €550 / year)", applyUrl: "https://english.hi.is", portalApplyUrl: "register.html?program=University+of+Iceland+-+MSc+Sustainable+Energy" },
+
+  // 🇲🇩 Moldova
+  { id: "prog-md-1", country: "Moldova", university: "Technical University of Moldova", title: "BSc Software Engineering & Tech Management", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "4 Years", intake: "September", tuitionFees: "€1,800 / year", applyUrl: "https://utm.md/en", portalApplyUrl: "register.html?program=Technical+University+of+Moldova+-+BSc+Software+Engineering" }
+];
+
 var DEFAULT_TESTIMONIALS = [
   {
     id: "vt-1",
@@ -526,16 +601,35 @@ function fbInit() {
   if (typeof firebase === "undefined") {
     return Promise.reject(new Error("Firebase SDK failed to load. Check your internet connection."));
   }
-  firebase.initializeApp(FIREBASE_CONFIG);
-  var auth = firebase.auth();
-  var db = firebase.firestore();
+  var app = (firebase.apps && firebase.apps.length) ? firebase.app() : firebase.initializeApp(FIREBASE_CONFIG);
+  var auth = app.auth();
+  var db = app.firestore();
+  
+  var readyPromise = new Promise(function (resolve) {
+    var resolved = false;
+    var timer = setTimeout(function () {
+      if (!resolved) { resolved = true; resolve(); }
+    }, 1200);
+    try {
+      var un = auth.onAuthStateChanged(function () {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timer);
+          if (typeof un === "function") un();
+          resolve();
+        }
+      });
+    } catch (e) {
+      if (!resolved) { resolved = true; clearTimeout(timer); resolve(); }
+    }
+  });
+
   _fb = {
     auth: auth,
     db: db,
-    ready: new Promise(function (resolve) {
-      var un = auth.onAuthStateChanged(function () { un(); resolve(); });
-    })
+    ready: readyPromise
   };
+
   return _fb.ready.then(function () { return _fb; });
 }
 
@@ -594,21 +688,73 @@ function fbTriggerAlert(db, userId, type, details) {
 
 function isKnownAdminEmail(email) {
   var e = String(email || "").toLowerCase().trim();
-  if (!e) return true;
-  return true; // Staff/Admin operations are allowed for authenticated session
+  if (!e) return false;
+  return false; // Roles must be explicitly assigned in Firestore user profile
+}
+
+function isStaffRoleValue(role) {
+  if (!role) return false;
+  var r = String(role).toLowerCase().trim();
+  return r === "admin" || r === "super_admin" || r === "staff" || r === "agent" || r === "counselor" || r === "councilor" || r === "admission_officer" || r === "finance_manager";
+}
+
+function isAdminRoleValue(role) {
+  if (!role) return false;
+  var r = String(role).toLowerCase().trim();
+  return r === "admin" || r === "super_admin";
+}
+
+function isSuperAdminRoleValue(role) {
+  if (!role) return false;
+  var r = String(role).toLowerCase().trim();
+  return r === "super_admin";
+}
+
+function fbRequireSuperAdmin(fb) {
+  return fbRequireStaff(fb).then(function (user) {
+    var sess = getSession();
+    var role = user.role;
+    if (sess && (sess.userId === user.uid || sess.token === user.uid || isSuperAdminRoleValue(sess.role)) && isSuperAdminRoleValue(sess.role)) {
+      role = sess.role;
+    }
+    if (!isSuperAdminRoleValue(role)) {
+      throw new Error("FORBIDDEN: Super Admin permissions required");
+    }
+    user.role = role;
+    return user;
+  });
 }
 
 function fbRequireStaff(fb) {
   try {
     var u = fbUser(fb);
-    return Promise.resolve(u);
+    return fb.db.collection("users").doc(u.uid).get().then(function(snap) {
+      var p = snap.exists ? snap.data() : null;
+      var role = (p && p.role) ? p.role : "";
+      if (!isStaffRoleValue(role)) {
+        var sess = getSession();
+        if (sess && (sess.userId === u.uid || sess.token === u.uid) && isStaffRoleValue(sess.role)) {
+          role = sess.role;
+        }
+      }
+      if (!isStaffRoleValue(role)) {
+        throw new Error("FORBIDDEN: Staff permissions required");
+      }
+      return {
+        uid: u.uid,
+        email: (p && p.email) || u.email,
+        displayName: (p && p.fullName) || u.displayName || u.email,
+        role: role
+      };
+    });
   } catch (e) {
     var sess = getSession();
-    if (sess) {
+    if (sess && isStaffRoleValue(sess.role)) {
       return Promise.resolve({
         uid: sess.token || sess.userId || "admin1",
         email: sess.email || "admin@test.com",
-        displayName: sess.fullName || "Super Admin"
+        displayName: sess.fullName || "Super Admin",
+        role: sess.role || "admin"
       });
     }
     return Promise.reject(e);
@@ -616,11 +762,22 @@ function fbRequireStaff(fb) {
 }
 
 function fbRequireAdminOrSuper(fb) {
-  return fbRequireStaff(fb);
+  return fbRequireStaff(fb).then(function (user) {
+    var sess = getSession();
+    var role = user.role;
+    if (sess && (sess.userId === user.uid || sess.token === user.uid || isAdminRoleValue(sess.role)) && isAdminRoleValue(sess.role)) {
+      role = sess.role;
+    }
+    if (!isAdminRoleValue(role)) {
+      throw new Error("FORBIDDEN: Admin permissions required");
+    }
+    user.role = role;
+    return user;
+  });
 }
 
 function fbRequireAdmin(fb) {
-  return fbRequireStaff(fb);
+  return fbRequireAdminOrSuper(fb);
 }
 
 function fbHandle(fb, action, d) {
@@ -656,15 +813,16 @@ function fbHandle(fb, action, d) {
       return fb.auth.signInWithEmailAndPassword(String(d.email || "").trim(), String(d.password || ""))
         .then(function (cred) {
           return db.collection("users").doc(cred.user.uid).get().then(function (snap) {
-            if (!snap.exists) {
+            var p = snap.exists ? snap.data() : null;
+            if (!p) {
               return db.collection("users").where("email", "==", cred.user.email).get().then(function (q) {
-                var p = !q.empty ? q.docs[0].data() : null;
+                p = !q.empty ? q.docs[0].data() : null;
                 var role = (p && p.role) ? p.role : (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
                 var fullName = (p && p.fullName) ? p.fullName : cred.user.email;
+                db.collection("users").doc(cred.user.uid).set({ email: cred.user.email, fullName: fullName, role: role }, { merge: true }).catch(function() {});
                 return { ok: true, token: cred.user.uid, role: role, fullName: fullName, email: cred.user.email };
               });
             }
-            var p = snap.data();
             var role = (p && p.role) ? p.role : (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
             return { ok: true, token: cred.user.uid, role: role, fullName: p.fullName || cred.user.email, email: cred.user.email };
           });
@@ -682,7 +840,9 @@ function fbHandle(fb, action, d) {
           return db.collection("users").where("email", "==", String(u0.email || "").toLowerCase().trim()).get().then(function (q) {
             p = !q.empty ? q.docs[0].data() : null;
             var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
-            return { ok: true, user: { uid: u0.uid, email: (p && p.email) || u0.email, fullName: (p && p.fullName) || u0.email, phone: (p && p.phone) || "", role: role, assignedAgentId: (p && p.assignedAgentId) || "", assignedAgentName: (p && p.assignedAgentName) || "" } };
+            var userData = { uid: u0.uid, email: (p && p.email) || u0.email, fullName: (p && p.fullName) || u0.email, phone: (p && p.phone) || "", role: role, assignedAgentId: (p && p.assignedAgentId) || "", assignedAgentName: (p && p.assignedAgentName) || "" };
+            db.collection("users").doc(u0.uid).set({ email: userData.email, fullName: userData.fullName, role: userData.role }, { merge: true }).catch(function() {});
+            return { ok: true, user: userData };
           });
         }
         var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
@@ -925,7 +1085,7 @@ function fbHandle(fb, action, d) {
             byStatus[st] = (byStatus[st] || 0) + 1;
           });
         }
-        var usersCount = (r[0] && r[0].docs) ? r[0].docs.filter(function (s) { return s.data().role === "student"; }).length : 0;
+        var usersCount = (r[0] && r[0].docs) ? r[0].docs.filter(function (s) { var ro = s.data().role; return !ro || ro === "student" || ro === "user"; }).length : 0;
         return { ok: true, stats: {
           users: usersCount,
           applications: r[1] ? (r[1].size || 0) : 0,
@@ -990,11 +1150,11 @@ function fbHandle(fb, action, d) {
     case "adminSetStatus": {
       if (CB_STATUSES.indexOf(d.status) === -1) fail("BAD_STATUS");
       return fbRequireStaff(fb).then(function () {
-        return db.collection("applications").doc(String(d.appId)).update({
+        return db.collection("applications").doc(String(d.appId)).set({
           status: d.status,
           adminNotes: d.adminNotes == null ? "" : String(d.adminNotes),
           updatedAt: fbNow()
-        });
+        }, { merge: true });
       }).then(function () { return { ok: true }; });
     }
 
@@ -1003,7 +1163,7 @@ function fbHandle(fb, action, d) {
         var updObj = { updatedAt: fbNow() };
         if (d.stepCustomData) updObj.stepCustomData = d.stepCustomData;
         if (d.stepCompletionTrail) updObj.stepCompletionTrail = d.stepCompletionTrail;
-        return db.collection("applications").doc(String(d.appId)).update(updObj);
+        return db.collection("applications").doc(String(d.appId)).set(updObj, { merge: true });
       }).then(function () { return { ok: true }; });
     }
 
@@ -1093,18 +1253,94 @@ function fbHandle(fb, action, d) {
               };
             }
 
+            // Always merge mock / baseline users so all platform accounts are visible
+            try {
+              var mdbRaw = localStorage.getItem("cb_mockdb");
+              var mdb = mdbRaw ? JSON.parse(mdbRaw) : null;
+              var mUsers = (mdb && mdb.users && mdb.users.length) ? mdb.users : ((typeof mockDb !== "undefined") ? mockDb().users : []);
+              (mUsers || []).forEach(function (mu) {
+                if (!userMap[mu.id]) {
+                  var hasEmail = Object.keys(userMap).some(function (k) {
+                    return userMap[k].email && mu.email && userMap[k].email.toLowerCase() === mu.email.toLowerCase();
+                  });
+                  if (!hasEmail) {
+                    userMap[mu.id] = mu;
+                  }
+                }
+              });
+            } catch (e) {}
+
             var usersList = Object.keys(userMap).map(function (k) { return userMap[k]; });
             return { ok: true, users: usersList };
           });
+        });
+      }).catch(function (err) {
+        console.warn("adminListUsers fallback error:", err);
+        var fallbackUsers = (typeof mockDb !== "undefined") ? mockDb().users : [];
+        return { ok: true, users: fallbackUsers };
+      });
+    }
+
+    case "adminSaveUser": {
+      return fbRequireAdminOrSuper(fb).then(function (u) {
+        var uId = d.id || ("user-" + Math.random().toString(36).substring(2, 9));
+        var uData = {
+          id: uId,
+          fullName: d.fullName || "New User",
+          email: d.email || "",
+          phone: d.phone || "",
+          role: d.role || "student",
+          assignedAgentId: d.assignedAgentId || "",
+          assignedAgentName: d.assignedAgentName || "",
+          createdAt: fbNow(),
+          updatedAt: fbNow()
+        };
+        return db.collection("users").doc(uId).set(uData, { merge: true }).then(function () {
+          return { ok: true, id: uId };
         });
       });
     }
 
     case "adminUpdateUserRole": {
       return fbRequireAdminOrSuper(fb).then(function (u) {
-        return db.collection("users").doc(String(d.userId)).update({
-          role: d.role
-        }).then(function () { return { ok: true }; });
+        return db.collection("users").doc(String(d.userId)).set({
+          role: d.role,
+          updatedAt: fbNow()
+        }, { merge: true }).then(function () {
+          var sess = getSession();
+          if (sess && (sess.userId === d.userId || sess.token === d.userId)) {
+            sess.role = d.role;
+            setSession(sess);
+          }
+          return { ok: true };
+        });
+      });
+    }
+
+    case "adminDeleteUser": {
+      return fbRequireAdminOrSuper(fb).then(function () {
+        var uId = String(d.userId || d.id);
+        return db.collection("users").doc(uId).delete().then(function () {
+          return { ok: true };
+        });
+      });
+    }
+
+    case "adminDeleteApplication": {
+      return fbRequireAdminOrSuper(fb).then(function () {
+        var appId = String(d.appId || d.id);
+        return db.collection("applications").doc(appId).delete().then(function () {
+          return { ok: true };
+        });
+      });
+    }
+
+    case "adminDeleteMessage": {
+      return fbRequireAdminOrSuper(fb).then(function () {
+        var msgId = String(d.messageId || d.id);
+        return db.collection("messages").doc(msgId).delete().then(function () {
+          return { ok: true };
+        });
       });
     }
 
@@ -1132,18 +1368,14 @@ function fbHandle(fb, action, d) {
 
     case "adminAssignAgent": {
       return fbRequireAdminOrSuper(fb).then(function (u) {
-        return db.collection("users").doc(String(d.studentId)).update({
+        return db.collection("users").doc(String(d.studentId)).set({
           assignedAgentId: d.agentId || "",
           assignedAgentName: d.agentName || ""
-        }).then(function () {
-          return db.collection("applications").doc(String(d.studentId)).get().then(function (appSnap) {
-            if (appSnap.exists) {
-              return db.collection("applications").doc(String(d.studentId)).update({
-                assignedAgentId: d.agentId || "",
-                assignedAgentName: d.agentName || ""
-              });
-            }
-          });
+        }, { merge: true }).then(function () {
+          return db.collection("applications").doc(String(d.studentId)).set({
+            assignedAgentId: d.agentId || "",
+            assignedAgentName: d.agentName || ""
+          }, { merge: true });
         }).then(function () { return { ok: true }; });
       });
     }
@@ -1166,7 +1398,7 @@ function fbHandle(fb, action, d) {
 
     case "adminAddTask":
     case "adminCreateTask": {
-      return fbRequireStaff(fb).then(function (u) {
+      return fbRequireAdminOrSuper(fb).then(function (u) {
         return db.collection("users").doc(u.uid).get().then(function (callerSnap) {
           var callerData = callerSnap.exists ? callerSnap.data() : { fullName: u.displayName || u.email || "Admin" };
           var task = {
@@ -1219,7 +1451,7 @@ function fbHandle(fb, action, d) {
         return db.collection("users").doc(uUpd.uid).get().then(function (uSnap) {
           var uData = uSnap.exists ? uSnap.data() : null;
           var role = uData ? uData.role : null;
-          var isStaff = role === "super_admin" || role === "admin" || role === "staff" || role === "agent";
+          var isStaff = role === "super_admin" || role === "admin" || role === "staff" || role === "agent" || role === "counselor" || role === "councilor" || role === "admission_officer" || role === "officer" || role === "finance_manager" || role === "finance";
           if (!isStaff && taskData.assignedTo !== uUpd.uid) fail("FORBIDDEN");
           
           var upd = {};
@@ -1241,7 +1473,7 @@ function fbHandle(fb, action, d) {
     }
 
     case "adminDeleteTask": {
-      return fbRequireStaff(fb).then(function () {
+      return fbRequireAdminOrSuper(fb).then(function () {
         return db.collection("tasks").doc(String(d.taskId)).delete().then(function () {
           return { ok: true };
         });
@@ -1250,7 +1482,7 @@ function fbHandle(fb, action, d) {
 
     case "adminUpdateBudget": {
       return fbRequireStaff(fb).then(function () {
-        return db.collection("applications").doc(String(d.appId)).update({
+        return db.collection("applications").doc(String(d.appId)).set({
           serviceFee: String(d.serviceFee || "0"),
           advisorCommission: String(d.advisorCommission || "0"),
           payoutStatus: String(d.payoutStatus || "Pending"),
@@ -1259,7 +1491,7 @@ function fbHandle(fb, action, d) {
           paymentDueDate: String(d.paymentDueDate || d.dueDate || ""),
           depositStatus: String(d.depositStatus || "Pending Deposit"),
           updatedAt: fbNow()
-        }).then(function () { return { ok: true }; });
+        }, { merge: true }).then(function () { return { ok: true }; });
       });
     }
 
@@ -1277,7 +1509,7 @@ function fbHandle(fb, action, d) {
           expenses: Array.isArray(d.expenses) ? d.expenses : [],
           updatedAt: fbNow()
         };
-        return db.collection("applications").doc(String(d.appId)).update(upd).then(function () {
+        return db.collection("applications").doc(String(d.appId)).set(upd, { merge: true }).then(function () {
           return { ok: true };
         });
       });
@@ -1285,19 +1517,19 @@ function fbHandle(fb, action, d) {
 
     case "adminUpdatePrivateNotes": {
       return fbRequireStaff(fb).then(function () {
-        return db.collection("applications").doc(String(d.appId)).update({
+        return db.collection("applications").doc(String(d.appId)).set({
           adminPrivateNotes: String(d.adminPrivateNotes || ""),
           updatedAt: fbNow()
-        }).then(function () { return { ok: true }; });
+        }, { merge: true }).then(function () { return { ok: true }; });
       });
     }
 
     case "adminUpdateDocLegalization": {
       return fbRequireStaff(fb).then(function () {
-        return db.collection("documents").doc(String(d.docId)).update({
+        return db.collection("documents").doc(String(d.docId)).set({
           legalizationState: String(d.legalizationState || "None"),
           updatedAt: fbNow()
-        }).then(function () { return { ok: true }; });
+        }, { merge: true }).then(function () { return { ok: true }; });
       });
     }
 
@@ -1343,6 +1575,9 @@ function fbHandle(fb, action, d) {
           return { ok: true, packages: DEFAULT_PACKAGES };
         }
         return { ok: true, packages: pkgs };
+      }).catch(function (err) {
+        console.warn("getPackages Firestore error, using defaults:", err);
+        return { ok: true, packages: DEFAULT_PACKAGES };
       });
     }
 
@@ -1412,6 +1647,71 @@ function fbHandle(fb, action, d) {
       });
     }
 
+    /* ---------- Programs Database ---------- */
+    case "getPrograms": {
+      return db.collection("programs").get().then(function (snap) {
+        var list = snap.docs.map(function (s) { var x = s.data(); x.id = s.id; return x; });
+        if (list.length === 0) {
+          var batch = db.batch();
+          DEFAULT_PROGRAMS.forEach(function (p) {
+            var ref = db.collection("programs").doc(p.id);
+            batch.set(ref, p);
+          });
+          return batch.commit().then(function () {
+            list = DEFAULT_PROGRAMS.slice();
+            return filterProgramsResult(list, d);
+          }).catch(function() {
+            return filterProgramsResult(DEFAULT_PROGRAMS.slice(), d);
+          });
+        }
+        return filterProgramsResult(list, d);
+      }).catch(function (err) {
+        console.warn("getPrograms Firestore error, using defaults:", err);
+        return filterProgramsResult(DEFAULT_PROGRAMS.slice(), d);
+      });
+    }
+
+    case "adminSaveProgram": {
+      return fbRequireStaff(fb).then(function () {
+        var progData = {
+          country: String(d.country || "Czech Republic").trim(),
+          university: String(d.university || "").trim(),
+          title: String(d.title || "").trim(),
+          level: String(d.level || "Bachelor's").trim(),
+          field: String(d.field || "Computer Science & IT").trim(),
+          language: String(d.language || "English").trim(),
+          duration: String(d.duration || "3 Years").trim(),
+          intake: String(d.intake || "September").trim(),
+          tuitionFees: String(d.tuitionFees || "Contact Faculty").trim(),
+          applyUrl: String(d.applyUrl || "").trim(),
+          portalApplyUrl: String(d.portalApplyUrl || "").trim(),
+          updatedAt: fbNow()
+        };
+        if (!progData.title || !progData.university) fail("MISSING_FIELDS");
+
+        if (d.id) {
+          return db.collection("programs").doc(String(d.id)).set(progData, { merge: true }).then(function () {
+            progData.id = String(d.id);
+            return { ok: true, program: progData };
+          });
+        } else {
+          progData.createdAt = fbNow();
+          return db.collection("programs").add(progData).then(function (ref) {
+            progData.id = ref.id;
+            return { ok: true, program: progData };
+          });
+        }
+      });
+    }
+
+    case "adminDeleteProgram": {
+      return fbRequireStaff(fb).then(function () {
+        return db.collection("programs").doc(String(d.id || d.programId)).delete().then(function () {
+          return { ok: true };
+        });
+      });
+    }
+
     /* ---------- Universities Database ---------- */
     case "getUniversities": {
       return db.collection("universities").get().then(function (snap) {
@@ -1425,9 +1725,14 @@ function fbHandle(fb, action, d) {
           return batch.commit().then(function () {
             list = DEFAULT_UNIVERSITIES.slice();
             return filterUniversitiesResult(list, d);
+          }).catch(function() {
+            return filterUniversitiesResult(DEFAULT_UNIVERSITIES.slice(), d);
           });
         }
         return filterUniversitiesResult(list, d);
+      }).catch(function (err) {
+        console.warn("getUniversities Firestore error, using defaults:", err);
+        return filterUniversitiesResult(DEFAULT_UNIVERSITIES.slice(), d);
       });
     }
 
@@ -1483,9 +1788,14 @@ function fbHandle(fb, action, d) {
           });
           return batch.commit().then(function () {
             return { ok: true, testimonials: DEFAULT_TESTIMONIALS.slice() };
+          }).catch(function() {
+            return { ok: true, testimonials: DEFAULT_TESTIMONIALS.slice() };
           });
         }
         return { ok: true, testimonials: list };
+      }).catch(function (err) {
+        console.warn("getTestimonials Firestore error, using defaults:", err);
+        return { ok: true, testimonials: DEFAULT_TESTIMONIALS.slice() };
       });
     }
 
@@ -1554,11 +1864,48 @@ function filterUniversitiesResult(list, d) {
   return { ok: true, universities: res, totalCount: list.length, countries: Object.keys(countryMap).sort() };
 }
 
+function filterProgramsResult(list, d) {
+  var country = d && d.country ? String(d.country).toLowerCase().trim() : "";
+  var level = d && d.level ? String(d.level).toLowerCase().trim() : "";
+  var field = d && d.field ? String(d.field).toLowerCase().trim() : "";
+  var search = d && d.search ? String(d.search).toLowerCase().trim() : "";
+
+  var res = list.filter(function (p) {
+    if (country && String(p.country || "").toLowerCase() !== country) return false;
+    if (level && String(p.level || "").toLowerCase() !== level) return false;
+    if (field && String(p.field || "").toLowerCase() !== field) return false;
+    if (search) {
+      var haystack = (p.title + " " + p.university + " " + p.country + " " + p.field + " " + p.level + " " + p.tuitionFees + " " + p.language + " " + p.intake).toLowerCase();
+      if (haystack.indexOf(search) === -1) return false;
+    }
+    return true;
+  });
+
+  var countryMap = {};
+  var levelMap = {};
+  var fieldMap = {};
+
+  list.forEach(function (p) {
+    if (p.country) countryMap[p.country] = (countryMap[p.country] || 0) + 1;
+    if (p.level) levelMap[p.level] = (levelMap[p.level] || 0) + 1;
+    if (p.field) fieldMap[p.field] = (fieldMap[p.field] || 0) + 1;
+  });
+
+  return {
+    ok: true,
+    programs: res,
+    totalCount: list.length,
+    countries: Object.keys(countryMap).sort(),
+    levels: Object.keys(levelMap).sort(),
+    fields: Object.keys(fieldMap).sort()
+  };
+}
+
 /* ============================================================
    MOCK BACKEND (localStorage) — for local testing only.
    Mirrors the real API contract above.
    ============================================================ */
-var MOCK_SEED_VERSION = 9; // bump to re-seed demo data in browsers that already have old data
+var MOCK_SEED_VERSION = 11; // bump to re-seed demo data in browsers that already have old data
 
 function mockDb() {
   var raw = localStorage.getItem("cb_mockdb");
@@ -1575,6 +1922,7 @@ function mockDb() {
     version: MOCK_SEED_VERSION,
     packages: DEFAULT_PACKAGES,
     universities: DEFAULT_UNIVERSITIES.slice(),
+    programs: DEFAULT_PROGRAMS.slice(),
     testimonials: DEFAULT_TESTIMONIALS.slice(),
     users: [
       { id: "superadmin1", email: "superadmin@test.com", password: "admin123",
@@ -1583,6 +1931,12 @@ function mockDb() {
         fullName: "Mock Admin", phone: "+420 444 555 666", role: "admin", createdAt: daysAgo(60) },
       { id: "agent1", email: "agent@test.com", password: "admin123",
         fullName: "Brno Agent", phone: "+420 777 123 456", role: "agent", createdAt: daysAgo(40) },
+      { id: "counselor1", email: "elena@studywithczechbridge.com", password: "admin123",
+        fullName: "Elena Svoboda", phone: "+420 771 987 654", role: "counselor", createdAt: daysAgo(35) },
+      { id: "officer1", email: "pavel@studywithczechbridge.com", password: "admin123",
+        fullName: "Pavel Dvorak", phone: "+420 772 456 789", role: "admission_officer", createdAt: daysAgo(30) },
+      { id: "finance1", email: "klara@studywithczechbridge.com", password: "admin123",
+        fullName: "Klara Novakova", phone: "+420 773 111 222", role: "finance_manager", createdAt: daysAgo(25) },
       { id: "stu-rahim", email: "rahim@demo.com", password: "demo123",
         fullName: "Rahim Ahmed", phone: "+880 1712-000001", role: "student", createdAt: daysAgo(25),
         assignedAgentId: "agent1", assignedAgentName: "Brno Agent" },
@@ -1795,22 +2149,44 @@ function mockHandle(action, data) {
   var s = getSession();
   var sess = s && s.token && db.sessions[s.token] ? db.sessions[s.token] : null;
 
-  function needSession() { if (!sess) { clearSession(); fail("SESSION_EXPIRED"); } }
-  function needStaff() {
-    needSession();
-    var cur = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-    if (sess && (sess.role === "super_admin" || sess.role === "admin" || sess.role === "staff" || sess.role === "agent")) return;
-    if (!cur || (cur.role !== "admin" && cur.role !== "super_admin" && cur.role !== "staff" && cur.role !== "agent")) {
-      fail("FORBIDDEN");
+  function needSession() {
+    if (!sess) {
+      if (s && s.token) {
+        sess = { userId: s.token, role: s.role || "admin" };
+        db.sessions[s.token] = sess;
+      } else {
+        clearSession();
+        fail("SESSION_EXPIRED");
+      }
     }
   }
-  function needAdminOrSuper() {
+
+  function needStaff() {
     needSession();
-    var cur = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-    if (sess && (sess.role === "super_admin" || sess.role === "admin")) return;
-    if (!cur || (cur.role !== "admin" && cur.role !== "super_admin")) {
+    var cur = db.users.filter(function (x) { return x.id === sess.userId || (s && x.email === s.email); })[0];
+    var effectiveRole = (cur && cur.role) ? cur.role : (s && s.role) ? s.role : (sess && sess.role) ? sess.role : "student";
+    if (isKnownAdminEmail((cur && cur.email) || (s && s.email))) {
+      effectiveRole = "super_admin";
+    }
+    var isStaff = effectiveRole === "admin" || effectiveRole === "super_admin" || effectiveRole === "staff" || effectiveRole === "agent" || effectiveRole === "counselor" || effectiveRole === "councilor" || effectiveRole === "admission_officer" || effectiveRole === "officer" || effectiveRole === "finance_manager" || effectiveRole === "finance";
+    if (!isStaff) {
       fail("FORBIDDEN");
     }
+    if (sess) sess.role = effectiveRole;
+  }
+
+  function needAdminOrSuper() {
+    needSession();
+    var cur = db.users.filter(function (x) { return x.id === sess.userId || (s && x.email === s.email); })[0];
+    var effectiveRole = (cur && cur.role) ? cur.role : (s && s.role) ? s.role : (sess && sess.role) ? sess.role : "student";
+    if (isKnownAdminEmail((cur && cur.email) || (s && s.email))) {
+      effectiveRole = "super_admin";
+    }
+    var isFullAdmin = effectiveRole === "admin" || effectiveRole === "super_admin";
+    if (!isFullAdmin) {
+      fail("FORBIDDEN");
+    }
+    if (sess) sess.role = effectiveRole;
   }
   function userDocs(uid) { return db.documents.filter(function (d) { return d.userId === uid; }); }
 
@@ -1930,7 +2306,7 @@ function mockHandle(action, data) {
       var dd = db.documents.filter(function (x) { return x.id === data.docId; })[0];
       if (!dd) fail("NOT_FOUND");
       var curUser = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-      var isStaffUser = curUser && (curUser.role === "admin" || curUser.role === "super_admin" || curUser.role === "agent");
+      var isStaffUser = curUser && (curUser.role === "admin" || curUser.role === "super_admin" || curUser.role === "agent" || curUser.role === "counselor" || curUser.role === "councilor" || curUser.role === "admission_officer" || curUser.role === "officer" || curUser.role === "finance_manager" || curUser.role === "finance");
       if (!isStaffUser && dd.userId !== sess.userId) fail("FORBIDDEN");
       return { ok: true, base64: dd.base64 || "", mimeType: dd.mimeType, fileName: dd.fileName };
     }
@@ -2031,10 +2407,66 @@ function mockHandle(action, data) {
     case "adminUpdateUserRole": {
       needAdminOrSuper();
       var target = db.users.filter(function (u) { return u.id === data.userId; })[0];
-      if (!target) fail("NOT_FOUND");
-      target.role = data.role;
+      if (target) {
+        target.role = data.role;
+      } else {
+        db.users.push({
+          id: data.userId,
+          fullName: data.fullName || "User",
+          email: data.email || "",
+          role: data.role
+        });
+      }
       mockSave(db);
       return { ok: true };
+    }
+    case "adminDeleteUser": {
+      needAdminOrSuper();
+      var uId = String(data.userId || data.id);
+      db.users = (db.users || []).filter(function (u) { return u.id !== uId; });
+      mockSave(db);
+      return { ok: true };
+    }
+    case "adminDeleteApplication": {
+      needAdminOrSuper();
+      var appId = String(data.appId || data.id);
+      db.applications = (db.applications || []).filter(function (a) { return a.id !== appId; });
+      mockSave(db);
+      return { ok: true };
+    }
+    case "adminDeleteMessage": {
+      needAdminOrSuper();
+      var msgId = String(data.messageId || data.id);
+      db.messages = (db.messages || []).filter(function (m) { return m.id !== msgId; });
+      mockSave(db);
+      return { ok: true };
+    }
+    case "adminSaveUser": {
+      needAdminOrSuper();
+      var uId = data.id || ("user-" + Math.random().toString(36).substring(2, 9));
+      var existing = db.users.filter(function (u) { return u.id === uId || u.email === data.email; })[0];
+      if (existing) {
+        existing.fullName = data.fullName || existing.fullName;
+        existing.email = data.email || existing.email;
+        existing.phone = data.phone || existing.phone;
+        existing.role = data.role || existing.role;
+        if (data.assignedAgentId !== undefined) existing.assignedAgentId = data.assignedAgentId;
+        if (data.assignedAgentName !== undefined) existing.assignedAgentName = data.assignedAgentName;
+      } else {
+        var newUser = {
+          id: uId,
+          fullName: data.fullName || "New User",
+          email: data.email || "",
+          phone: data.phone || "",
+          role: data.role || "student",
+          assignedAgentId: data.assignedAgentId || "",
+          assignedAgentName: data.assignedAgentName || "",
+          createdAt: new Date().toISOString()
+        };
+        db.users.push(newUser);
+      }
+      mockSave(db);
+      return { ok: true, id: uId };
     }
     case "adminSaveCounselorProfile": {
       needAdminOrSuper();
@@ -2164,7 +2596,7 @@ function mockHandle(action, data) {
       if (!targetTask) fail("NOT_FOUND");
       
       var actor = db.users.filter(function (u) { return u.id === sess.userId; })[0];
-      var isStaffActor = actor && (actor.role === "super_admin" || actor.role === "admin" || actor.role === "agent");
+      var isStaffActor = actor && (actor.role === "super_admin" || actor.role === "admin" || actor.role === "agent" || actor.role === "counselor" || actor.role === "councilor" || actor.role === "admission_officer" || actor.role === "officer" || actor.role === "finance_manager" || actor.role === "finance");
       
       if (!isStaffActor && targetTask.assignedTo !== sess.userId) {
         fail("FORBIDDEN");
@@ -2311,6 +2743,46 @@ function mockHandle(action, data) {
       db.documents.push(assignDoc);
       mockSave(db);
       return { ok: true, document: assignDoc };
+    }
+    case "getPrograms": {
+      db.programs = db.programs || DEFAULT_PROGRAMS.slice();
+      return filterProgramsResult(db.programs, data);
+    }
+    case "adminSaveProgram": {
+      needStaff();
+      db.programs = db.programs || DEFAULT_PROGRAMS.slice();
+      var progRec = {
+        id: data.id || ("prog-" + mockId()),
+        country: String(data.country || "Czech Republic").trim(),
+        university: String(data.university || "").trim(),
+        title: String(data.title || "").trim(),
+        level: String(data.level || "Bachelor's").trim(),
+        field: String(data.field || "Computer Science & IT").trim(),
+        language: String(data.language || "English").trim(),
+        duration: String(data.duration || "3 Years").trim(),
+        intake: String(data.intake || "September").trim(),
+        tuitionFees: String(data.tuitionFees || "Contact Faculty").trim(),
+        applyUrl: String(data.applyUrl || "").trim(),
+        portalApplyUrl: String(data.portalApplyUrl || "").trim(),
+        updatedAt: new Date().toISOString()
+      };
+      if (!progRec.title || !progRec.university) fail("MISSING_FIELDS");
+
+      if (data.id) {
+        db.programs = db.programs.map(function (p) { return p.id === data.id ? progRec : p; });
+      } else {
+        db.programs.push(progRec);
+      }
+      mockSave(db);
+      return { ok: true, program: progRec };
+    }
+    case "adminDeleteProgram": {
+      needStaff();
+      db.programs = (db.programs || DEFAULT_PROGRAMS.slice()).filter(function (p) {
+        return p.id !== data.id && p.id !== data.programId;
+      });
+      mockSave(db);
+      return { ok: true };
     }
     case "getUniversities": {
       db.universities = db.universities || DEFAULT_UNIVERSITIES.slice();

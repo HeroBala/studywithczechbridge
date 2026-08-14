@@ -1,12 +1,34 @@
-document.addEventListener("DOMContentLoaded", function () {
-  var searchInput = document.getElementById("uni-search");
-  var countrySelect = document.getElementById("uni-country-filter");
-  var typeSelect = document.getElementById("uni-type-filter");
+function runOnReady(fn) {
+  if (document.readyState !== "loading") {
+    setTimeout(fn, 0);
+  } else {
+    document.addEventListener("DOMContentLoaded", fn);
+  }
+}
 
-  if (searchInput) searchInput.addEventListener("input", debounce(loadUniversities, 300));
-  if (countrySelect) countrySelect.addEventListener("change", loadUniversities);
-  if (typeSelect) typeSelect.addEventListener("change", loadUniversities);
+runOnReady(function () {
+  // Programs Database Controls
+  var progSearchInput = document.getElementById("prog-search");
+  var progCountrySelect = document.getElementById("prog-country-filter");
+  var progLevelSelect = document.getElementById("prog-level-filter");
+  var progFieldSelect = document.getElementById("prog-field-filter");
 
+  if (progSearchInput) progSearchInput.addEventListener("input", debounce(loadPrograms, 300));
+  if (progCountrySelect) progCountrySelect.addEventListener("change", loadPrograms);
+  if (progLevelSelect) progLevelSelect.addEventListener("change", loadPrograms);
+  if (progFieldSelect) progFieldSelect.addEventListener("change", loadPrograms);
+
+  // University Directory Controls
+  var uniSearchInput = document.getElementById("uni-search");
+  var uniCountrySelect = document.getElementById("uni-country-filter");
+  var uniTypeSelect = document.getElementById("uni-type-filter");
+
+  if (uniSearchInput) uniSearchInput.addEventListener("input", debounce(loadUniversities, 300));
+  if (uniCountrySelect) uniCountrySelect.addEventListener("change", loadUniversities);
+  if (uniTypeSelect) uniTypeSelect.addEventListener("change", loadUniversities);
+
+  // Initial loads
+  loadPrograms();
   loadUniversities();
 });
 
@@ -17,6 +39,72 @@ function debounce(fn, delay) {
     clearTimeout(timer);
     timer = setTimeout(function () { fn.apply(context, args); }, delay);
   };
+}
+
+function loadPrograms() {
+  var searchEl = document.getElementById("prog-search");
+  var countryEl = document.getElementById("prog-country-filter");
+  var levelEl = document.getElementById("prog-level-filter");
+  var fieldEl = document.getElementById("prog-field-filter");
+
+  var search = searchEl ? searchEl.value : "";
+  var country = countryEl ? countryEl.value : "";
+  var level = levelEl ? levelEl.value : "";
+  var field = fieldEl ? fieldEl.value : "";
+
+  api("getPrograms", { search: search, country: country, level: level, field: field }).then(function (res) {
+    if (!res || !res.programs) return;
+    var list = res.programs;
+    var tbody = document.getElementById("prog-table-body");
+    var badge = document.getElementById("prog-count-badge");
+    if (badge) badge.textContent = list.length + " Programs Found";
+
+    // Populate country filter dropdown if not populated
+    if (countryEl && countryEl.options.length <= 1 && res.countries) {
+      res.countries.forEach(function (c) {
+        var opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = getCountryFlag(c) + " " + c;
+        countryEl.appendChild(opt);
+      });
+    }
+
+    if (!tbody) return;
+
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: #64748b; font-weight: 500;">No study programs match your filter criteria. Try clearing search terms or selecting another degree level/country.</td></tr>';
+      return;
+    }
+
+    var html = list.map(function (p) {
+      var flag = getCountryFlag(p.country);
+      
+      var regLink = p.portalApplyUrl || ('register.html?program=' + encodeURIComponent(p.university + ' - ' + p.title));
+      
+      var officialBtn = p.applyUrl 
+        ? '<a href="' + escAttr(p.applyUrl) + '" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:0.25rem; background:#f1f5f9; color:#334155; padding:0.35rem 0.65rem; border-radius:6px; text-decoration:none; font-weight:700; font-size:0.75rem; border:1px solid #cbd5e1; white-space:nowrap;">🌐 Official Link ↗</a>'
+        : '';
+
+      var applyBtn = '<a href="' + escAttr(regLink) + '" style="display:inline-flex; align-items:center; gap:0.25rem; background:#16a34a; color:#ffffff; padding:0.35rem 0.75rem; border-radius:6px; text-decoration:none; font-weight:700; font-size:0.78rem; white-space:nowrap; border:1px solid #15803d; box-shadow:0 1px 3px rgba(0,0,0,0.1);">🚀 Apply Now</a>';
+
+      var fieldBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:700; font-size:0.72rem; padding:0.15rem 0.4rem; border-radius:4px;">' + esc(p.field || 'General') + '</span>';
+
+      var levelBadge = '<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:700; font-size:0.75rem; padding:0.2rem 0.5rem; border-radius:12px;">' + esc(p.level || "Bachelor's") + '</span>';
+
+      return '<tr style="border-bottom: 1px solid #f1f5f9;">' +
+        '<td style="padding:0.9rem 1rem; font-weight:700; color:#1e293b;"><span style="font-size:1.1rem; margin-right:0.3rem;">' + flag + '</span> ' + esc(p.country) + '</td>' +
+        '<td style="padding:0.9rem 1rem;"><strong style="color:var(--blue-900); font-size:0.95rem; display:block; margin-bottom:0.2rem;">' + esc(p.title) + '</strong>' + fieldBadge + '</td>' +
+        '<td style="padding:0.9rem 1rem;"><strong style="color:#334155; font-size:0.88rem;">' + esc(p.university) + '</strong><br><span style="font-size:0.75rem; color:#64748b;">🗣️ ' + esc(p.language || 'English') + '</span></td>' +
+        '<td style="padding:0.9rem 1rem; text-align:center;">' + levelBadge + '<br><span style="font-size:0.75rem; color:#475569; display:inline-block; margin-top:0.2rem;">⏱️ ' + esc(p.duration || '3 Years') + '</span></td>' +
+        '<td style="padding:0.9rem 1rem; background:#fdf4ff; border-left:1px solid #fae8ff;"><strong style="color:#7e22ce; font-size:0.9rem; display:block;">' + esc(p.tuitionFees || "Contact Faculty") + '</strong><span style="font-size:0.72rem; color:#9333ea;">🗓️ Intake: ' + esc(p.intake || 'Sep') + '</span></td>' +
+        '<td style="padding:0.9rem 1rem; text-align:center;"><div style="display:flex; flex-direction:column; gap:0.4rem; align-items:center; justify-content:center;">' + applyBtn + officialBtn + '</div></td>' +
+      '</tr>';
+    }).join("");
+
+    tbody.innerHTML = html;
+  }).catch(function (err) {
+    console.error("Failed to load programs:", err);
+  });
 }
 
 function loadUniversities() {
@@ -98,6 +186,10 @@ function getCountryFlag(countryName) {
   if (c.indexOf("france") !== -1) return "🇫🇷";
   if (c.indexOf("estonia") !== -1) return "🇪🇪";
   if (c.indexOf("serbia") !== -1) return "🇷🇸";
+  if (c.indexOf("iceland") !== -1) return "🇮🇸";
+  if (c.indexOf("moldova") !== -1) return "🇲🇩";
+  if (c.indexOf("sweden") !== -1) return "🇸🇪";
+  if (c.indexOf("netherland") !== -1) return "🇳🇱";
   return "🌍";
 }
 

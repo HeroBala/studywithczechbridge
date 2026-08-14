@@ -8,7 +8,6 @@
     { href: "about.html",    label: "About" },
     { href: "services.html", label: "Services" },
     { href: "programs.html", label: "Programs" },
-    { href: "process.html",  label: "Process" },
     { href: "contact.html",  label: "Contact" }
   ];
 
@@ -31,18 +30,33 @@
       return '<li><a href="' + p.href + '"' + cls + ">" + p.label + "</a></li>";
     }).join("");
 
-    var cta;
+    var ctaHtml;
+    var mobileCtaHtml;
     if (s && s.token) {
-      var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent";
-      cta =
+      var isStaff = (typeof isStaffRole === "function" && isStaffRole(s.role)) || s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent" || s.role === "counselor" || s.role === "admission_officer" || s.role === "finance_manager";
+      ctaHtml =
         (isStaff
-          ? '<a class="btn btn-dark btn-sm" href="admin.html">Admin Panel</a>'
-          : '<a class="btn btn-dark btn-sm" href="dashboard.html">My Dashboard</a>') +
-        '<a class="btn btn-outline btn-sm" href="#" id="nav-logout">Logout</a>';
+          ? '<a class="btn btn-dark btn-sm nav-btn-desktop" href="admin.html">Admin Panel</a>'
+          : '<a class="btn btn-dark btn-sm nav-btn-desktop" href="dashboard.html">My Dashboard</a>') +
+        '<a class="btn btn-outline btn-sm nav-btn-desktop nav-logout-btn" href="#">Logout</a>';
+
+      mobileCtaHtml =
+        '<div class="mobile-cta-box">' +
+          (isStaff
+            ? '<a class="btn btn-dark btn-sm btn-block" href="admin.html">Admin Panel</a>'
+            : '<a class="btn btn-dark btn-sm btn-block" href="dashboard.html">My Dashboard</a>') +
+          '<a class="btn btn-outline btn-sm btn-block nav-logout-btn" href="#">Logout</a>' +
+        '</div>';
     } else {
-      cta =
-        '<a class="btn btn-outline btn-sm" href="login.html">Login</a>' +
+      ctaHtml =
+        '<a class="btn btn-outline btn-sm nav-btn-desktop" href="login.html">Login</a>' +
         '<a class="btn btn-primary btn-sm" href="register.html">Apply Now</a>';
+
+      mobileCtaHtml =
+        '<div class="mobile-cta-box">' +
+          '<a class="btn btn-outline btn-sm btn-block" href="login.html">Login</a>' +
+          '<a class="btn btn-primary btn-sm btn-block" href="register.html">Apply Now</a>' +
+        '</div>';
     }
 
     return (
@@ -54,9 +68,12 @@
             '<span class="brand-name">Czech<em>Bridge</em></span>' +
           "</span>" +
         "</a>" +
-        '<ul class="nav-links" id="nav-links">' + links + "</ul>" +
-        '<div class="nav-cta">' + cta +
-          '<button class="nav-toggle" id="nav-toggle" aria-label="Menu">☰</button>' +
+        '<div class="nav-links-wrapper" id="nav-links-wrapper">' +
+          '<ul class="nav-links" id="nav-links">' + links + "</ul>" +
+          mobileCtaHtml +
+        "</div>" +
+        '<div class="nav-cta">' + ctaHtml +
+          '<button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>' +
         "</div>" +
       "</div>"
     );
@@ -95,7 +112,6 @@
               '<li><a href="about.html">About Us</a></li>' +
               '<li><a href="services.html">Services</a></li>' +
               '<li><a href="programs.html">Programs</a></li>' +
-              '<li><a href="process.html">Application Process</a></li>' +
             '</ul>' +
           '</div>' +
           '<div>' +
@@ -124,7 +140,15 @@
     );
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  function runOnReady(fn) {
+    if (document.readyState !== "loading") {
+      setTimeout(fn, 0);
+    } else {
+      document.addEventListener("DOMContentLoaded", fn);
+    }
+  }
+
+  runOnReady(function () {
     var header = document.querySelector(".site-header");
     var footer = document.querySelector(".site-footer");
     if (header) header.innerHTML = buildHeader();
@@ -134,22 +158,44 @@
     }
 
     var toggle = document.getElementById("nav-toggle");
-    if (toggle) {
-      toggle.addEventListener("click", function () {
-        document.getElementById("nav-links").classList.toggle("open");
+    var navWrapper = document.getElementById("nav-links-wrapper");
+
+    if (toggle && navWrapper) {
+      toggle.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var isOpen = navWrapper.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        toggle.innerHTML = isOpen ? "✕" : "☰";
+      });
+
+      document.addEventListener("click", function (e) {
+        if (!navWrapper.contains(e.target) && !toggle.contains(e.target)) {
+          if (navWrapper.classList.contains("open")) {
+            navWrapper.classList.remove("open");
+            toggle.setAttribute("aria-expanded", "false");
+            toggle.innerHTML = "☰";
+          }
+        }
+      });
+
+      navWrapper.addEventListener("click", function (e) {
+        if (e.target.tagName === "A" && !e.target.classList.contains("nav-logout-btn")) {
+          navWrapper.classList.remove("open");
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.innerHTML = "☰";
+        }
       });
     }
 
-    var logout = document.getElementById("nav-logout");
-    if (logout) {
-      logout.addEventListener("click", function (ev) {
+    var logoutBtns = document.querySelectorAll(".nav-logout-btn");
+    logoutBtns.forEach(function (btn) {
+      btn.addEventListener("click", function (ev) {
         ev.preventDefault();
         var s = session();
         localStorage.removeItem("cb_session");
-        // Best-effort server-side logout; ignore result.
         if (window.api && s && s.token) { api("logout", {}).catch(function () {}); }
         location.href = "index.html";
       });
-    }
+    });
   });
 })();

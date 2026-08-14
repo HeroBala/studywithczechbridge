@@ -1,6 +1,23 @@
 /* Page guards + auth form handlers.
    Include on pages that need login state. */
 
+function isStaffRole(role) {
+  if (!role) return false;
+  var r = String(role).toLowerCase().trim();
+  return (
+    r === "super_admin" ||
+    r === "admin" ||
+    r === "counselor" ||
+    r === "councilor" ||
+    r === "agent" ||
+    r === "admission_officer" ||
+    r === "officer" ||
+    r === "finance_manager" ||
+    r === "finance" ||
+    r === "staff"
+  );
+}
+
 function requireLogin() {
   var s = getSession();
   if (!s || !s.token) {
@@ -13,7 +30,11 @@ function requireLogin() {
 function requireAdmin() {
   var s = requireLogin();
   if (s) {
-    var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent";
+    if (!s.role || s.role === "user") {
+      s.role = (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email)) ? "super_admin" : "admin";
+      setSession(s);
+    }
+    var isStaff = isStaffRole(s.role) || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email));
     if (!isStaff) {
       location.href = "dashboard.html";
       return null;
@@ -30,8 +51,9 @@ function showNotice(id, type, msg) {
 }
 
 function afterAuth(res) {
-  setSession({ token: res.token, role: res.role, fullName: res.fullName, email: res.email });
-  var isStaff = res.role === "admin" || res.role === "super_admin" || res.role === "staff" || res.role === "agent";
+  var userRole = res.role || ((typeof isKnownAdminEmail === "function" && isKnownAdminEmail(res.email)) ? "super_admin" : "student");
+  setSession({ token: res.token, role: userRole, fullName: res.fullName || res.email, email: res.email });
+  var isStaff = isStaffRole(userRole) || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(res.email));
   location.href = isStaff ? "admin.html" : "dashboard.html";
 }
 

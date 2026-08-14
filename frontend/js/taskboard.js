@@ -57,6 +57,12 @@ var TaskBoardComponent = (function () {
   var _editingTask = null;
 
   function renderModal(targetUserId) {
+    var isTaskCreatorRole = _session && (_session.role === "super_admin" || _session.role === "admin");
+    if (!_editingTask && !isTaskCreatorRole) {
+      alert("⚠️ Access Restricted: Only Super Admin and Admin can assign tasks.");
+      return;
+    }
+
     if (_modalEl) {
       document.body.removeChild(_modalEl);
       _modalEl = null;
@@ -83,8 +89,10 @@ var TaskBoardComponent = (function () {
       modalHtml += '<option value="">-- Select Target User --</option>';
       
       // Group by roles
-      var stus = _users.filter(function (u) { return u.role === "student"; });
-      var ags = _users.filter(function (u) { return u.role === "agent"; });
+      var stus = _users.filter(function (u) { return !u.role || u.role === "student" || u.role === "user"; });
+      var ags = _users.filter(function (u) { return u.role === "agent" || u.role === "counselor" || u.role === "councilor"; });
+      var off = _users.filter(function (u) { return u.role === "admission_officer" || u.role === "officer"; });
+      var fin = _users.filter(function (u) { return u.role === "finance_manager" || u.role === "finance"; });
       var adm = _users.filter(function (u) { return u.role === "admin" || u.role === "super_admin"; });
 
       if (stus.length) {
@@ -97,10 +105,28 @@ var TaskBoardComponent = (function () {
       }
 
       if (ags.length) {
-        modalHtml += '<optgroup label="💼 Counselors & Agents (' + ags.length + ')">';
+        modalHtml += '<optgroup label="💼 Counselors & Advisors (' + ags.length + ')">';
         ags.forEach(function (u) {
           var sel = (targetUserId && u.id === targetUserId) ? " selected" : "";
           modalHtml += '<option value="' + u.id + '"' + sel + ' data-email="' + esc(u.email) + '" data-name="' + esc(u.fullName) + '">' + esc(u.fullName) + ' (' + esc(u.email) + ') — Counselor</option>';
+        });
+        modalHtml += '</optgroup>';
+      }
+
+      if (off.length) {
+        modalHtml += '<optgroup label="🎓 Admission Officers (' + off.length + ')">';
+        off.forEach(function (u) {
+          var sel = (targetUserId && u.id === targetUserId) ? " selected" : "";
+          modalHtml += '<option value="' + u.id + '"' + sel + ' data-email="' + esc(u.email) + '" data-name="' + esc(u.fullName) + '">' + esc(u.fullName) + ' (' + esc(u.email) + ') — Officer</option>';
+        });
+        modalHtml += '</optgroup>';
+      }
+
+      if (fin.length) {
+        modalHtml += '<optgroup label="💳 Finance Managers (' + fin.length + ')">';
+        fin.forEach(function (u) {
+          var sel = (targetUserId && u.id === targetUserId) ? " selected" : "";
+          modalHtml += '<option value="' + u.id + '"' + sel + ' data-email="' + esc(u.email) + '" data-name="' + esc(u.fullName) + '">' + esc(u.fullName) + ' (' + esc(u.email) + ') — Finance</option>';
         });
         modalHtml += '</optgroup>';
       }
@@ -283,7 +309,7 @@ var TaskBoardComponent = (function () {
 
   function loadUsers() {
     // Only staff can list users
-    var isStaff = _session.role === "admin" || _session.role === "super_admin" || _session.role === "staff" || _session.role === "agent";
+    var isStaff = (typeof isStaffRole === "function" && isStaffRole(_session ? _session.role : null)) || (_session && (_session.role === "admin" || _session.role === "super_admin" || _session.role === "staff" || _session.role === "agent" || _session.role === "counselor" || _session.role === "admission_officer" || _session.role === "finance_manager"));
     if (!isStaff) return Promise.resolve();
 
     return api("adminListUsers").then(function (res) {
@@ -304,14 +330,12 @@ var TaskBoardComponent = (function () {
     var role = _session.role;
     var html = "";
 
-    if (role === "student") {
+    if (role === "student" || role === "user") {
       html = renderStudentBoard();
-    } else if (role === "agent") {
+    } else if (role === "agent" || role === "counselor" || role === "councilor") {
       html = renderAgentBoard();
-    } else if (role === "admin" || role === "super_admin") {
-      html = renderAdminBoard();
     } else {
-      html = '<div class="muted center py-4">Unauthorized session context. Please log in again.</div>';
+      html = renderAdminBoard();
     }
 
     _container.innerHTML = html;

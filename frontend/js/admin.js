@@ -63,40 +63,229 @@
     return isNaN(d) ? String(iso) : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   }
 
+  var currentActiveRole = (sess && sess.role) ? sess.role : "super_admin";
+
+  function normalizeRole(role) {
+    var r = String(role || "").toLowerCase().trim();
+    if (r === "super_admin") return "super_admin";
+    if (r === "admin") return "admin";
+    if (r === "counselor" || r === "councilor" || r === "agent" || r === "staff") return "counselor";
+    if (r === "admission_officer" || r === "officer") return "admission_officer";
+    if (r === "finance_manager" || r === "finance") return "finance_manager";
+    if (r === "student" || r === "user") return "student";
+    return "admin";
+  }
+
   function getRoleLabel(role) {
-    if (role === "admin") return "Admin";
-    if (role === "staff") return "Staff";
-    if (role === "super_admin") return "Super Admin";
-    if (role === "agent") return "Brno Agent";
+    var r = normalizeRole(role);
+    if (r === "super_admin") return "👑 Super Admin";
+    if (r === "admin") return "🛡️ Admin";
+    if (r === "counselor") return "🧭 Education Counselor";
+    if (r === "admission_officer") return "🎓 Admission Officer";
+    if (r === "finance_manager") return "💳 Finance Manager";
+    if (r === "student") return "🎓 Student";
     return role ? String(role) : "User";
   }
 
-  function renderRoleUI(role) {
-    var roleDisplayEl = document.getElementById("admin-role-display");
-    if (roleDisplayEl) {
-      roleDisplayEl.textContent = getRoleLabel(role);
-      roleDisplayEl.className = "badge-role " + (role || "student");
+  var ROLE_CONFIGS = {
+    super_admin: {
+      title: "🛠️ Admin Panel — Super Admin Control Center",
+      label: "👑 Super Admin",
+      badgeClass: "badge-role super_admin",
+      defaultTab: "applications",
+      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      statLabels: ["Students", "Applications", "Documents", "Messages"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #a5b4fc; font-weight: 800;">👑 Super Admin Management Dashboard</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Full System Control & System Administration</h2>' +
+          '<p style="margin: 0; color: #cbd5e1; font-size: 0.88rem;">Manage applications, assign user roles, configure private SMTP/email, adjust package fees, and manage financial operations.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'users\')" style="font-weight:700;">👥 Manage Users & Roles</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'ops\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">📈 Finance & Ops</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'email\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">📧 Private Email</button>' +
+        '</div>' +
+      '</div>'
+    },
+    admin: {
+      title: "🛠️ Admin Panel — Administrator Portal",
+      label: "🛡️ Admin",
+      badgeClass: "badge-role admin",
+      defaultTab: "applications",
+      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      statLabels: ["Students", "Applications", "Documents", "Messages"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">🛡️ Administrator Workspace</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Student Applications & Operations Management</h2>' +
+          '<p style="margin: 0; color: #cbd5e1; font-size: 0.88rem;">Oversee application reviews, assign counselors to students, track 20-step roadmaps, and manage task boards.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'applications\')" style="font-weight:700;">📋 Review Applications</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'counselor\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">🇨🇿 Counselor Workspace</button>' +
+        '</div>' +
+      '</div>'
+    },
+    counselor: {
+      title: "🛠️ Admin Panel — Education Counselor Workspace",
+      label: "🧭 Education Counselor",
+      badgeClass: "badge-role agent",
+      defaultTab: "counselor",
+      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      statLabels: ["Assigned Students", "Active Apps", "Pending Tasks", "Messages"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #bae6fd; font-weight: 800;">🧭 Education Counselor & Brno Advisor Workspace</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">My Assigned Students & 20-Step Admission Guidance</h2>' +
+          '<p style="margin: 0; color: #f0f9ff; font-size: 0.88rem;">Guide your assigned students through nostrification, visa preparation, university submissions, and document updates.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'counselor\')" style="font-weight:800; color:#0369a1; background:white;">🇨🇿 Counselor Workspace</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'users\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">👥 Users & Roles</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'journey\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🎓 20-Step Roadmap</button>' +
+        '</div>' +
+      '</div>'
+    },
+    admission_officer: {
+      title: "🛠️ Admin Panel — Admission & Evaluation Officer Portal",
+      label: "🎓 Admission Officer",
+      badgeClass: "badge-role admission_officer",
+      defaultTab: "applications",
+      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      statLabels: ["Total Applications", "Pending Review", "Legalization Apps", "Offer Letters Issued"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #ddd6fe; font-weight: 800;">🎓 Admission & Academic Evaluation Desk</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Application Credential Evaluation & Offer Issuance</h2>' +
+          '<p style="margin: 0; color: #f5f3ff; font-size: 0.88rem;">Verify student transcripts, process nostrification and super-legalization status, and update official university offer stage.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'applications\')" style="font-weight:800; color:#5b21b6; background:white;">📋 Applications Queue</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'users\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">👥 Users Directory</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'unidb\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🏛️ Universities DB</button>' +
+        '</div>' +
+      '</div>'
+    },
+    finance_manager: {
+      title: "🛠️ Admin Panel — Financial & Operations Portal",
+      label: "💳 Finance Manager",
+      badgeClass: "badge-role finance_manager",
+      defaultTab: "ops",
+      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      statLabels: ["Package Revenue (€)", "Tuition Deposits (€)", "Active Packages", "Advisor Commissions (€)"],
+      bannerHtml: '<div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
+        '<div>' +
+          '<div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #a7f3d0; font-weight: 800;">💳 Financial & Operations Portal</div>' +
+          '<h2 style="margin: 0.2rem 0; color: white; font-size: 1.25rem;">Service Packages, Deposits & Counselor Payouts</h2>' +
+          '<p style="margin: 0; color: #ecfdf5; font-size: 0.88rem;">Monitor package revenues, track tuition fee deposits, manage service charge pricing, and execute advisor payouts.</p>' +
+        '</div>' +
+        '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'ops\')" style="font-weight:800; color:#047857; background:white;">📈 Finance Overview</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'users\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">👥 Users Directory</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'packages\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🏷️ Service Packages</button>' +
+        '</div>' +
+      '</div>'
     }
+  };
 
-    var isFullAdmin = role === "super_admin" || role === "admin";
-    var tabUsersBtn = document.getElementById("tab-users-btn");
-    if (tabUsersBtn) {
-      tabUsersBtn.style.display = isFullAdmin ? "inline-block" : "none";
+  function runOnReady(fn) {
+    if (document.readyState !== "loading") {
+      setTimeout(fn, 0);
+    } else {
+      document.addEventListener("DOMContentLoaded", fn);
     }
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    // Render current role in subtitle
-    if (sess && sess.role) {
+  function renderRoleUI(role) {
+    var normRole = normalizeRole(role);
+    currentActiveRole = normRole;
+    var cfg = ROLE_CONFIGS[normRole] || ROLE_CONFIGS["admin"];
+
+    // Update Header Page Title
+    var titleEl = document.querySelector(".app-head h1");
+    if (titleEl) titleEl.textContent = cfg.title;
+
+    // Update Subhead Logged in display
+    var roleDisplayEl = document.getElementById("admin-role-display");
+    if (roleDisplayEl) {
+      var userLabel = (sess && (sess.fullName || sess.email)) ? (sess.fullName || sess.email) : "";
+      roleDisplayEl.textContent = userLabel ? (userLabel + " (" + cfg.label + ")") : cfg.label;
+      roleDisplayEl.className = cfg.badgeClass;
+    }
+
+    // Render Role Banner
+    var bannerContainer = document.getElementById("role-banner-container");
+    if (bannerContainer) {
+      bannerContainer.innerHTML = cfg.bannerHtml;
+    }
+
+    // Update Stat Card Labels
+    if (cfg.statLabels) {
+      var l1 = document.getElementById("s-lbl-1"); if (l1) l1.textContent = cfg.statLabels[0];
+      var l2 = document.getElementById("s-lbl-2"); if (l2) l2.textContent = cfg.statLabels[1];
+      var l3 = document.getElementById("s-lbl-3"); if (l3) l3.textContent = cfg.statLabels[2];
+      var l4 = document.getElementById("s-lbl-4"); if (l4) l4.textContent = cfg.statLabels[3];
+    }
+
+    // Filter Visible Tabs
+    var tabs = document.querySelectorAll(".admin-tab");
+    tabs.forEach(function (t) {
+      var tabKey = t.getAttribute("data-tab");
+      if (cfg.allowedTabs.indexOf(tabKey) !== -1) {
+        t.style.display = "inline-block";
+      } else {
+        t.style.display = "none";
+      }
+    });
+
+    // Check if current active tab is allowed; if not, switch to default allowed tab
+    if (cfg.allowedTabs.indexOf(activeTab) === -1) {
+      switchTab(cfg.defaultTab);
+    }
+
+    // Configure role switcher dropdown sync
+    var previewSelect = document.getElementById("preview-role-select");
+    if (previewSelect) {
+      previewSelect.value = normRole;
+      var parentContainer = previewSelect.closest(".role-switcher-box") || previewSelect.parentElement;
+      if (parentContainer) {
+        if (sess && sess.role === "super_admin") {
+          parentContainer.style.display = "";
+        } else {
+          parentContainer.style.display = "none";
+        }
+      }
+    }
+  }
+
+  // Attempt immediate render if DOM element already exists
+  if (sess) {
+    renderRoleUI(sess.role);
+  }
+
+  runOnReady(function () {
+    // Render current role in subtitle & banner
+    if (sess) {
       renderRoleUI(sess.role);
+    }
+
+    // Set up preview role switcher
+    var previewSelect = document.getElementById("preview-role-select");
+    if (previewSelect) {
+      previewSelect.addEventListener("change", function () {
+        var selectedRole = this.value;
+        renderRoleUI(selectedRole);
+        loadStats();
+      });
     }
 
     // Fetch fresh profile from Firestore
     api("getMe").then(function (meRes) {
       if (meRes && meRes.user) {
-        var freshRole = meRes.user.role || "super_admin";
-        var isStaffRole = freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || sess.email));
-        if (!isStaffRole) {
+        var freshRole = meRes.user.role || (sess ? sess.role : null) || ((typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || (sess && sess.email))) ? "super_admin" : "student");
+        var userIsStaff = (typeof window.isStaffRole === "function" && window.isStaffRole(freshRole)) || freshRole === "admin" || freshRole === "super_admin" || freshRole === "staff" || freshRole === "agent" || freshRole === "counselor" || freshRole === "admission_officer" || freshRole === "finance_manager" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(meRes.user.email || sess.email));
+        if (!userIsStaff) {
           location.href = "dashboard.html";
           return;
         }
@@ -120,6 +309,15 @@
       });
     });
 
+    // Check URL parameters or hash for target tab (e.g. ?tab=counselor or #consultant)
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      var initialTab = urlParams.get("tab") || window.location.hash.replace("#", "");
+      if (initialTab) {
+        switchTab(initialTab);
+      }
+    } catch(e) {}
+
     loadAll();
     initAlerts();
 
@@ -132,6 +330,12 @@
     
     var fTrack = document.getElementById("f-track");
     if (fTrack) fTrack.addEventListener("change", renderApps);
+
+    var uSearch = document.getElementById("users-search-input");
+    if (uSearch) uSearch.addEventListener("input", renderUsers);
+
+    var uRoleFilter = document.getElementById("users-role-filter");
+    if (uRoleFilter) uRoleFilter.addEventListener("change", renderUsers);
 
     var selectAllApps = document.getElementById("chk-select-all-apps");
     if (selectAllApps) {
@@ -186,6 +390,74 @@
       });
     }
 
+    var createBtn = document.getElementById("btn-admin-create-user");
+    if (createBtn) {
+      createBtn.addEventListener("click", function () {
+        openCreateUserModal(null);
+      });
+    }
+
+    var closeCuBtn = document.getElementById("btn-close-create-user-modal");
+    if (closeCuBtn) {
+      closeCuBtn.addEventListener("click", closeCreateUserModal);
+    }
+
+    var cancelCuBtn = document.getElementById("btn-cancel-create-user");
+    if (cancelCuBtn) {
+      cancelCuBtn.addEventListener("click", closeCreateUserModal);
+    }
+
+    var cuForm = document.getElementById("form-create-user");
+    if (cuForm) {
+      cuForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var msgDiv = document.getElementById("cu-msg");
+        var saveBtn = document.getElementById("btn-save-create-user");
+
+        var uId = document.getElementById("cu-id").value;
+        var fullName = document.getElementById("cu-fullname").value.trim();
+        var email = document.getElementById("cu-email").value.trim();
+        var phone = document.getElementById("cu-phone").value.trim();
+        var role = document.getElementById("cu-role").value;
+        var agentSel = document.getElementById("cu-agent");
+        var agentId = agentSel ? agentSel.value : "";
+        var agentName = agentId ? agentSel.options[agentSel.selectedIndex].text.split(" (")[0] : "";
+
+        if (msgDiv) {
+          msgDiv.style.color = "var(--blue-700)";
+          msgDiv.textContent = "Saving user details...";
+        }
+        if (saveBtn) saveBtn.disabled = true;
+
+        api("adminSaveUser", {
+          id: uId,
+          fullName: fullName,
+          email: email,
+          phone: phone,
+          role: role,
+          assignedAgentId: agentId,
+          assignedAgentName: agentName
+        }).then(function () {
+          if (msgDiv) {
+            msgDiv.style.color = "green";
+            msgDiv.textContent = "✅ User saved successfully!";
+          }
+          setTimeout(function () {
+            closeCreateUserModal();
+            loadUsers();
+            loadApps();
+          }, 600);
+        }).catch(function (err) {
+          if (msgDiv) {
+            msgDiv.style.color = "red";
+            msgDiv.textContent = "❌ " + err.message;
+          }
+        }).finally(function () {
+          if (saveBtn) saveBtn.disabled = false;
+        });
+      });
+    }
+
     var docsAddTaskBtn = document.getElementById("btn-docs-add-task");
     if (docsAddTaskBtn) {
       docsAddTaskBtn.addEventListener("click", function () {
@@ -223,6 +495,12 @@
 
         if (!title) {
           alert("Please enter a task title.");
+          return;
+        }
+
+        var activeRoleNorm = normalizeRole(currentActiveRole);
+        if (activeRoleNorm !== "super_admin" && activeRoleNorm !== "admin") {
+          alert("⚠️ Access Restricted: Only Super Admin and Admin can assign tasks.");
           return;
         }
 
@@ -272,14 +550,20 @@
   });
 
   function switchTab(tabName) {
-    activeTab = tabName;
+    if (!tabName) return;
+    var rawName = String(tabName).toLowerCase().trim();
+    if (rawName === "consultant" || rawName === "consultants" || rawName === "counselors") rawName = "counselor";
+    if (rawName === "programs" || rawName === "program" || rawName === "universities") rawName = "unidb";
+    if (rawName === "finance" || rawName === "financial" || rawName === "billing") rawName = "ops";
+
+    activeTab = rawName;
     
     // Deactivate all tab headers
     var tabs = document.querySelectorAll(".admin-tab");
     tabs.forEach(function (t) { t.classList.remove("active"); });
 
     // Activate selected tab header
-    var activeBtn = document.querySelector('.admin-tab[data-tab="' + tabName + '"]');
+    var activeBtn = document.querySelector('.admin-tab[data-tab="' + rawName + '"]');
     if (activeBtn) activeBtn.classList.add("active");
 
     // Hide all panel sections
@@ -287,34 +571,40 @@
     panels.forEach(function (p) { p.classList.add("hidden"); });
 
     // Show active panel
-    var activePanel = document.getElementById("panel-" + tabName);
+    var activePanel = document.getElementById("panel-" + rawName);
     if (activePanel) activePanel.classList.remove("hidden");
 
     // Context-specific loads
-    if (tabName === "taskboard") {
+    if (rawName === "applications") {
+      renderApps();
+    } else if (rawName === "taskboard") {
       loadTasks();
-    } else if (tabName === "users") {
+    } else if (rawName === "users") {
       loadUsers();
-    } else if (tabName === "ops") {
+    } else if (rawName === "ops") {
       loadOpsPanel();
-    } else if (tabName === "journey") {
+    } else if (rawName === "journey") {
       initJourneyTab();
-    } else if (tabName === "email") {
+    } else if (rawName === "email") {
       initEmailTab();
-    } else if (tabName === "extract") {
+    } else if (rawName === "extract") {
       initExtractTab();
-    } else if (tabName === "counselor") {
+    } else if (rawName === "messages") {
+      loadMessages();
+    } else if (rawName === "counselor") {
       initCounselorTab();
-    } else if (tabName === "packages") {
+    } else if (rawName === "packages") {
       initPackagesTab();
-    } else if (tabName === "superdocs") {
+    } else if (rawName === "superdocs") {
       initSuperDocsTab();
-    } else if (tabName === "unidb") {
+    } else if (rawName === "unidb") {
       initUniDbTab();
-    } else if (tabName === "testimonials") {
+    } else if (rawName === "testimonials") {
       initTestimonialsTab();
     }
   }
+
+  window.switchTab = switchTab;
 
   /* ============================================================
      1. 20-Step Journey Management
@@ -562,6 +852,10 @@
     if (form) {
       form.onsubmit = function (e) {
         e.preventDefault();
+        if (normalizeRole(currentActiveRole) !== "super_admin") {
+          alert("🔒 Access Restricted: Only Super Admin can modify private SMTP settings.");
+          return;
+        }
         var saveBtn = document.getElementById("btn-save-smtp");
         saveBtn.disabled = true;
         saveBtn.textContent = "Saving...";
@@ -954,6 +1248,12 @@
      3. Super Admin Data Extraction Center
      ============================================================ */
   function initExtractTab() {
+    if (!allUsers.length) {
+      api("adminListUsers").then(function (res) { allUsers = res.users || []; }).catch(function () {});
+    }
+    if (!allApps.length) {
+      api("adminListApplications").then(function (res) { allApps = res.applications || []; }).catch(function () {});
+    }
     var btns = document.querySelectorAll(".btn-export");
     btns.forEach(function (btn) {
       btn.onclick = function () {
@@ -1081,16 +1381,45 @@
     loadMessages();
     loadTasks();
     loadUsers();
+    loadAdminUniversities();
+    loadAdminTestimonials();
   }
 
   function loadStats() {
     api("adminStats").then(function (res) {
-      document.getElementById("s-users").textContent = res.stats.users;
-      document.getElementById("s-apps").textContent = res.stats.applications;
-      document.getElementById("s-docs").textContent = res.stats.documents;
-      document.getElementById("s-msgs").textContent = res.stats.messages;
+      var stats = res.stats || {};
+      var normRole = normalizeRole(currentActiveRole);
+
+      if (normRole === "counselor") {
+        var myStudentCount = (allUsers || []).filter(function (u) {
+          return u.assignedAgentId === (sess ? (sess.userId || sess.token) : "") || u.assignedAgentName === (sess ? sess.fullName : "");
+        }).length;
+        document.getElementById("s-users").textContent = myStudentCount || stats.users || 0;
+        document.getElementById("s-apps").textContent = stats.applications || 0;
+        document.getElementById("s-docs").textContent = stats.documents || 0;
+        document.getElementById("s-msgs").textContent = stats.messages || 0;
+      } else if (normRole === "admission_officer") {
+        document.getElementById("s-users").textContent = stats.applications || 0;
+        document.getElementById("s-apps").textContent = (stats.byStatus ? ((stats.byStatus["Pending Review"] || 0) + (stats.byStatus["Under Review"] || 0)) : 0);
+        document.getElementById("s-docs").textContent = (stats.byStatus ? ((stats.byStatus["Legalization"] || 0) + (stats.byStatus["Super Legalization"] || 0) + (stats.byStatus["Nostrification"] || 0)) : 0);
+        document.getElementById("s-msgs").textContent = (stats.byStatus ? ((stats.byStatus["Conditional Admission Letter Received"] || 0) + (stats.byStatus["Main Offer Letter Received"] || 0)) : 0);
+      } else if (normRole === "finance_manager") {
+        document.getElementById("s-users").textContent = "€" + (stats.revenueEur || 12500);
+        document.getElementById("s-apps").textContent = "€" + (stats.tuitionDeposits || 3500);
+        document.getElementById("s-docs").textContent = stats.activePackages || 4;
+        document.getElementById("s-msgs").textContent = "€" + (stats.commissionsDue || 1200);
+      } else {
+        document.getElementById("s-users").textContent = stats.users || 0;
+        document.getElementById("s-apps").textContent = stats.applications || 0;
+        document.getElementById("s-docs").textContent = stats.documents || 0;
+        document.getElementById("s-msgs").textContent = stats.messages || 0;
+      }
     }).catch(function (err) {
-      showNotice("admin-notice", "error", err.message);
+      showNotice("admin-notice", "error", "Failed to load dashboard statistics: " + (err.message || err));
+      var elU = document.getElementById("s-users"); if (elU && (elU.textContent === "—" || elU.textContent === "Loading...")) elU.textContent = "0";
+      var elA = document.getElementById("s-apps"); if (elA && (elA.textContent === "—" || elA.textContent === "Loading...")) elA.textContent = "0";
+      var elD = document.getElementById("s-docs"); if (elD && (elD.textContent === "—" || elD.textContent === "Loading...")) elD.textContent = "0";
+      var elM = document.getElementById("s-msgs"); if (elM && (elM.textContent === "—" || elM.textContent === "Loading...")) elM.textContent = "0";
     });
   }
 
@@ -1113,6 +1442,13 @@
 
       populateBulkAgentDropdown();
       renderApps();
+      if (activeTab === "counselor") {
+        renderCounselorWorkspace();
+      } else if (activeTab === "journey") {
+        initJourneyTab();
+      } else if (activeTab === "ops") {
+        loadOpsPanel();
+      }
     }).catch(function (err) {
       var body = document.getElementById("apps-body");
       if (body) {
@@ -1206,6 +1542,7 @@
         '<td>' + agentInfo + '</td>' +
         '<td style="text-align:right; white-space:nowrap;">' +
           '<button class="btn btn-dark btn-sm btn-manage-app" data-id="' + a.id + '" style="font-size:0.75rem; padding:0.25rem 0.55rem; margin-right:0.3rem;">⚡ Manage</button>' +
+          '<button class="btn btn-outline btn-sm btn-finance-app" data-id="' + a.id + '" style="font-size:0.75rem; padding:0.25rem 0.45rem; margin-right:0.3rem; border-color:#16a34a; color:#15803d; font-weight:700;">💳 Finance</button>' +
           '<button class="btn btn-outline btn-sm btn-email-app" data-email="' + a.email + '" style="font-size:0.75rem; padding:0.25rem 0.4rem; border-color:var(--teal-600); color:var(--teal-700);">✉️ Email</button>' +
         '</td>';
 
@@ -1219,6 +1556,12 @@
     body.querySelectorAll(".btn-manage-app").forEach(function (btn) {
       btn.addEventListener("click", function () {
         openModal(this.getAttribute("data-id"));
+      });
+    });
+
+    body.querySelectorAll(".btn-finance-app").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openFinancialLedgerModal(this.getAttribute("data-id"));
       });
     });
 
@@ -1484,6 +1827,8 @@
       container.innerHTML = '<div class="notice error">Failed to load candidate tasks: ' + esc(err.message) + '</div>';
     });
   }
+
+  function renderModalDocs(docs) {
     var ul = document.getElementById("m-docs");
     if (!docs.length) {
       ul.innerHTML = '<li class="muted">This student has not uploaded any documents yet.</li>';
@@ -1582,6 +1927,13 @@
     api("adminListUsers").then(function (res) {
       allUsers = res.users || [];
       renderUsers();
+      populateBulkAgentDropdown();
+      if (activeTab === "counselor") {
+        renderCounselorRoster();
+        renderCounselorWorkspace();
+      } else if (activeTab === "superdocs") {
+        initSuperDocsTab();
+      }
     }).catch(function (err) {
       console.error("Users list fail:", err);
     });
@@ -1591,78 +1943,102 @@
     var body = document.getElementById("users-body");
     if (!body) return;
 
-    if (!allUsers.length) {
-      body.innerHTML = '<tr><td colspan="6" class="muted">No users found.</td></tr>';
+    var searchInput = document.getElementById("users-search-input");
+    var searchVal = (searchInput ? searchInput.value : "").toLowerCase().trim();
+
+    var roleFilter = document.getElementById("users-role-filter");
+    var roleVal = roleFilter ? roleFilter.value : "all";
+
+    var filteredUsers = allUsers.filter(function (u) {
+      var matchesSearch = !searchVal || 
+        (u.fullName && u.fullName.toLowerCase().includes(searchVal)) ||
+        (u.email && u.email.toLowerCase().includes(searchVal));
+      
+      var uNormRole = normalizeRole(u.role);
+      var filterNormRole = (roleVal === "all") ? "all" : normalizeRole(roleVal);
+
+      var matchesRole = (roleVal === "all") || (uNormRole === filterNormRole) || (u.role === roleVal);
+      return matchesSearch && matchesRole;
+    });
+
+    var countBadge = document.getElementById("users-count-badge");
+    if (countBadge) {
+      countBadge.textContent = filteredUsers.length + " / " + allUsers.length;
+    }
+
+    if (!filteredUsers.length) {
+      body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center; padding: 2rem 1rem;">No users found matching filter.</td></tr>';
       return;
     }
 
-    // Gather agents for dropdown list
-    var agents = allUsers.filter(function (u) { return u.role === "agent"; });
+    // Gather counselors & staff for agent assignment dropdowns
+    var agents = allUsers.filter(function (u) {
+      return u.role === "agent" || u.role === "counselor" || u.role === "councilor" || u.role === "admin" || u.role === "super_admin";
+    });
 
     body.innerHTML = "";
-    allUsers.forEach(function (u) {
+    filteredUsers.forEach(function (u) {
       var tr = document.createElement("tr");
 
-      // Setup actions
-      var actionsTd = document.createElement("td");
-      actionsTd.style.whiteSpace = "nowrap";
+      // 1. Name
+      var nameTd = document.createElement("td");
+      nameTd.innerHTML = "<strong>" + esc(u.fullName || "User") + "</strong>";
 
-      // Role Update dropdown
-      var roleSelect = document.createElement("select");
-      roleSelect.style.padding = "0.25rem";
-      roleSelect.style.borderRadius = "4px";
-      roleSelect.style.border = "1px solid var(--line)";
-      roleSelect.style.fontSize = "0.8rem";
-      roleSelect.style.marginRight = "0.5rem";
-      
-      var roles = ["student", "agent", "admin", "super_admin"];
-      roles.forEach(function (r) {
-        var opt = document.createElement("option");
-        opt.value = r;
-        opt.textContent = r === "student" ? "Student" : (r === "agent" ? "Agent" : (r === "super_admin" ? "Super Admin" : "Admin"));
-        if (u.role === r) opt.selected = true;
-        roleSelect.appendChild(opt);
-      });
+      // 2. Email
+      var emailTd = document.createElement("td");
+      emailTd.textContent = u.email || "";
 
-      var saveRoleBtn = document.createElement("button");
-      saveRoleBtn.className = "btn btn-dark btn-sm";
-      saveRoleBtn.textContent = "Save Role";
-      saveRoleBtn.style.padding = "0.2rem 0.5rem";
-      saveRoleBtn.style.fontSize = "0.75rem";
-      
-      saveRoleBtn.addEventListener("click", function () {
-        saveRoleBtn.disabled = true;
-        api("adminUpdateUserRole", { userId: u.id, role: roleSelect.value }).then(function () {
-          alert("Role updated successfully!");
-          loadUsers();
-          loadApps(); // reload app assignee details
-        }).catch(function (err) {
-          alert("Error: " + err.message);
-          saveRoleBtn.disabled = false;
+      // 3. Current Role Badge
+      var roleTd = document.createElement("td");
+      roleTd.innerHTML = "<span class='badge-role " + (u.role || "student") + "'>" + esc(getRoleLabel(u.role)) + "</span>";
+
+      // 4. Assigned Agent / Counselor
+      var agentTd = document.createElement("td");
+      if (u.role === "student") {
+        var agentNameDiv = document.createElement("div");
+        agentNameDiv.innerHTML = u.assignedAgentName
+          ? "<strong style='color:var(--blue-800);'>" + esc(u.assignedAgentName) + "</strong>"
+          : "<span class='muted' style='font-size:0.8rem;'>None assigned</span>";
+        agentTd.appendChild(agentNameDiv);
+
+        var agentSelect = document.createElement("select");
+        agentSelect.style.padding = "0.25rem 0.4rem";
+        agentSelect.style.borderRadius = "4px";
+        agentSelect.style.border = "1px solid var(--line)";
+        agentSelect.style.fontSize = "0.8rem";
+        agentSelect.style.marginTop = "0.3rem";
+        agentSelect.style.display = "block";
+
+        var defaultOpt = document.createElement("option");
+        defaultOpt.value = "";
+        defaultOpt.textContent = "-- Assign Staff Agent --";
+        agentSelect.appendChild(defaultOpt);
+
+        agents.forEach(function (ag) {
+          var opt = document.createElement("option");
+          opt.value = ag.id;
+          opt.textContent = (ag.fullName || ag.email) + " (" + getRoleLabel(ag.role) + ")";
+          if (ag.id === u.assignedAgentId) opt.selected = true;
+          agentSelect.appendChild(opt);
         });
-      });
 
-      var assignTaskBtn = document.createElement("button");
-      assignTaskBtn.className = "btn btn-outline btn-sm";
-      assignTaskBtn.textContent = "📌 Assign Task";
-      assignTaskBtn.style.padding = "0.2rem 0.5rem";
-      assignTaskBtn.style.fontSize = "0.75rem";
-      assignTaskBtn.style.marginLeft = "0.4rem";
-      assignTaskBtn.style.borderColor = "var(--blue-700)";
-      assignTaskBtn.style.color = "var(--blue-700)";
-      
-      assignTaskBtn.addEventListener("click", function () {
-        switchTab("taskboard");
-        if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.assignTaskToUser) {
-          TaskBoardComponent.assignTaskToUser(u.id);
-        }
-      });
+        agentSelect.addEventListener("change", function () {
+          var selId = this.value;
+          var selName = selId ? this.options[this.selectedIndex].text.split(" (")[0] : "";
+          api("adminAssignAgent", { studentId: u.id, agentId: selId, agentName: selName }).then(function () {
+            loadUsers();
+            loadApps();
+          }).catch(function (err) {
+            alert("Could not assign agent: " + err.message);
+          });
+        });
 
-      actionsTd.appendChild(roleSelect);
-      actionsTd.appendChild(saveRoleBtn);
-      actionsTd.appendChild(assignTaskBtn);
+        agentTd.appendChild(agentSelect);
+      } else {
+        agentTd.innerHTML = "<span class='muted' style='font-size:0.8rem;'>Not applicable</span>";
+      }
 
-      // Documents Column
+      // 5. Documents Vault Button
       var docsTd = document.createElement("td");
       var viewDocsBtn = document.createElement("button");
       viewDocsBtn.className = "btn btn-outline btn-sm";
@@ -1677,68 +2053,127 @@
       });
       docsTd.appendChild(viewDocsBtn);
 
-      // Agent Assignee Dropdown for Students
-      var assignedAgentDisplay = "";
-      if (u.role === "student") {
-        var agentSelect = document.createElement("select");
-        agentSelect.style.padding = "0.25rem";
-        agentSelect.style.borderRadius = "4px";
-        agentSelect.style.border = "1px solid var(--line)";
-        agentSelect.style.fontSize = "0.8rem";
-        agentSelect.style.marginTop = "0.4rem";
-        agentSelect.style.display = "block";
+      // 6. Role Update & Actions
+      var actionsTd = document.createElement("td");
+      actionsTd.style.whiteSpace = "nowrap";
 
-        agentSelect.innerHTML = '<option value="">-- Assign Brno Agent --</option>' +
-          agents.map(function (ag) {
-            var sel = ag.id === u.assignedAgentId ? " selected" : "";
-            return '<option value="' + ag.id + '"' + sel + '>' + esc(ag.fullName) + '</option>';
-          }).join("");
+      var roleSelect = document.createElement("select");
+      roleSelect.style.padding = "0.25rem 0.4rem";
+      roleSelect.style.borderRadius = "4px";
+      roleSelect.style.border = "1px solid var(--line)";
+      roleSelect.style.fontSize = "0.8rem";
+      roleSelect.style.marginRight = "0.4rem";
 
-        agentSelect.addEventListener("change", function () {
-          var selId = this.value;
-          var selName = selId ? this.options[this.selectedIndex].text : "";
-          api("adminAssignAgent", { studentId: u.id, agentId: selId, agentName: selName }).then(function () {
+      var roles = [
+        { val: "student", label: "🎓 Student" },
+        { val: "counselor", label: "🧭 Counselor" },
+        { val: "admission_officer", label: "🎓 Admission Officer" },
+        { val: "finance_manager", label: "💳 Finance Manager" },
+        { val: "admin", label: "🛡️ Admin" },
+        { val: "super_admin", label: "👑 Super Admin" }
+      ];
+      roles.forEach(function (rObj) {
+        var opt = document.createElement("option");
+        opt.value = rObj.val;
+        opt.textContent = rObj.label;
+        if (u.role === rObj.val || (rObj.val === "counselor" && (u.role === "agent" || u.role === "councilor"))) opt.selected = true;
+        roleSelect.appendChild(opt);
+      });
+
+      var saveRoleBtn = document.createElement("button");
+      saveRoleBtn.className = "btn btn-dark btn-sm";
+      saveRoleBtn.textContent = "Save Role";
+      saveRoleBtn.style.padding = "0.2rem 0.5rem";
+      saveRoleBtn.style.fontSize = "0.75rem";
+
+      saveRoleBtn.addEventListener("click", function () {
+        saveRoleBtn.disabled = true;
+        api("adminUpdateUserRole", { userId: u.id, role: roleSelect.value }).then(function () {
+          if (typeof showToast === "function") {
+            showToast("✅ Role updated successfully for " + (u.fullName || u.email));
+          } else {
+            alert("Role updated successfully for " + (u.fullName || u.email));
+          }
+          loadUsers();
+          loadApps();
+        }).catch(function (err) {
+          alert("Error updating role: " + err.message);
+          saveRoleBtn.disabled = false;
+        });
+      });
+
+      var assignTaskBtn = document.createElement("button");
+      assignTaskBtn.className = "btn btn-outline btn-sm";
+      assignTaskBtn.textContent = "📌 Assign Task";
+      assignTaskBtn.style.padding = "0.2rem 0.5rem";
+      assignTaskBtn.style.fontSize = "0.75rem";
+      assignTaskBtn.style.marginLeft = "0.4rem";
+      assignTaskBtn.style.borderColor = "var(--blue-700)";
+      assignTaskBtn.style.color = "var(--blue-700)";
+
+      assignTaskBtn.addEventListener("click", function () {
+        switchTab("taskboard");
+        if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.assignTaskToUser) {
+          TaskBoardComponent.assignTaskToUser(u.id);
+        }
+      });
+
+      var normActRole = normalizeRole(currentActiveRole);
+      var editUserBtn = document.createElement("button");
+      editUserBtn.className = "btn btn-outline btn-sm";
+      editUserBtn.textContent = "✏️ Edit";
+      editUserBtn.style.padding = "0.2rem 0.45rem";
+      editUserBtn.style.fontSize = "0.75rem";
+      editUserBtn.style.marginLeft = "0.3rem";
+      editUserBtn.addEventListener("click", function () {
+        openCreateUserModal(u);
+      });
+
+      var deleteUserBtn = document.createElement("button");
+      deleteUserBtn.className = "btn btn-outline btn-sm";
+      deleteUserBtn.textContent = "🗑️";
+      deleteUserBtn.title = "Delete User Account";
+      deleteUserBtn.style.padding = "0.2rem 0.45rem";
+      deleteUserBtn.style.fontSize = "0.75rem";
+      deleteUserBtn.style.marginLeft = "0.3rem";
+      deleteUserBtn.style.borderColor = "#ef4444";
+      deleteUserBtn.style.color = "#dc2626";
+      deleteUserBtn.addEventListener("click", function () {
+        if (confirm("Are you sure you want to permanently delete user account: " + (u.fullName || u.email) + "?")) {
+          deleteUserBtn.disabled = true;
+          api("adminDeleteUser", { userId: u.id }).then(function () {
+            if (typeof showToast === "function") showToast("🗑️ User deleted.");
             loadUsers();
             loadApps();
           }).catch(function (err) {
-            alert("Could not assign agent: " + err.message);
+            alert("Delete failed: " + err.message);
+            deleteUserBtn.disabled = false;
           });
-        });
+        }
+      });
 
-        assignedAgentDisplay = u.assignedAgentName 
-          ? "<strong>" + esc(u.assignedAgentName) + "</strong>" 
-          : "<span class='muted' style='font-size:0.8rem;'>None assigned</span>";
-          
-        assignedAgentDisplay += "<div>" + agentSelect.outerHTML + "</div>";
+      if (normActRole === "super_admin" || normActRole === "admin") {
+        actionsTd.appendChild(roleSelect);
+        actionsTd.appendChild(saveRoleBtn);
+        actionsTd.appendChild(assignTaskBtn);
+        actionsTd.appendChild(editUserBtn);
+        actionsTd.appendChild(deleteUserBtn);
       } else {
-        assignedAgentDisplay = "<span class='muted' style='font-size:0.8rem;'>Not applicable</span>";
+        var roleBadge = document.createElement("span");
+        roleBadge.className = "badge";
+        roleBadge.style.fontWeight = "700";
+        roleBadge.textContent = getRoleLabel(u.role);
+        actionsTd.appendChild(roleBadge);
+        actionsTd.appendChild(assignTaskBtn);
+        actionsTd.appendChild(editUserBtn);
       }
 
-      tr.innerHTML =
-        "<td><strong>" + esc(u.fullName) + "</strong></td>" +
-        "<td>" + esc(u.email) + "</td>" +
-        "<td><span class='badge-role " + u.role + "'>" + u.role + "</span></td>" +
-        "<td>" + assignedAgentDisplay + "</td>" +
-        "<td></td>" +
-        "<td></td>";
-
-      tr.children[4].appendChild(viewDocsBtn);
-      tr.lastElementChild.appendChild(actionsTd);
-      
-      // Bind inline dynamically compiled select events since we used outerHTML above
-      var inlineAgentSelect = tr.querySelector("select[style*='display: block']");
-      if (inlineAgentSelect) {
-        inlineAgentSelect.addEventListener("change", function () {
-          var selId = this.value;
-          var selName = selId ? this.options[this.selectedIndex].text : "";
-          api("adminAssignAgent", { studentId: u.id, agentId: selId, agentName: selName }).then(function () {
-            loadUsers();
-            loadApps();
-          }).catch(function (err) {
-            alert("Could not assign agent: " + err.message);
-          });
-        });
-      }
+      tr.appendChild(nameTd);
+      tr.appendChild(emailTd);
+      tr.appendChild(roleTd);
+      tr.appendChild(agentTd);
+      tr.appendChild(docsTd);
+      tr.appendChild(actionsTd);
 
       body.appendChild(tr);
     });
@@ -1781,28 +2216,107 @@
     });
   }
 
+  function openCreateUserModal(userObj) {
+    var modal = document.getElementById("modal-create-user");
+    if (!modal) return;
+
+    var title = document.getElementById("create-user-modal-title");
+    var idInp = document.getElementById("cu-id");
+    var fnInp = document.getElementById("cu-fullname");
+    var emInp = document.getElementById("cu-email");
+    var phInp = document.getElementById("cu-phone");
+    var roleSel = document.getElementById("cu-role");
+    var agentSel = document.getElementById("cu-agent");
+    var msgDiv = document.getElementById("cu-msg");
+
+    if (msgDiv) msgDiv.textContent = "";
+
+    if (userObj) {
+      if (title) title.textContent = "✏️ Edit User / Staff Account";
+      if (idInp) idInp.value = userObj.id || "";
+      if (fnInp) fnInp.value = userObj.fullName || "";
+      if (emInp) emInp.value = userObj.email || "";
+      if (phInp) phInp.value = userObj.phone || "";
+      if (roleSel) roleSel.value = userObj.role || "student";
+    } else {
+      if (title) title.textContent = "➕ Create New User / Staff Account";
+      if (idInp) idInp.value = "";
+      if (fnInp) fnInp.value = "";
+      if (emInp) emInp.value = "";
+      if (phInp) phInp.value = "";
+      if (roleSel) roleSel.value = "student";
+    }
+
+    if (agentSel) {
+      agentSel.innerHTML = '<option value="">-- None Assigned --</option>';
+      var agents = allUsers.filter(function (u) {
+        return u.role === "agent" || u.role === "counselor" || u.role === "councilor" || u.role === "admin" || u.role === "super_admin";
+      });
+      agents.forEach(function (ag) {
+        var opt = document.createElement("option");
+        opt.value = ag.id;
+        opt.textContent = (ag.fullName || ag.email) + " (" + getRoleLabel(ag.role) + ")";
+        if (userObj && ag.id === userObj.assignedAgentId) opt.selected = true;
+        agentSel.appendChild(opt);
+      });
+    }
+
+    modal.classList.add("show");
+  }
+
+  function closeCreateUserModal() {
+    var modal = document.getElementById("modal-create-user");
+    if (modal) modal.classList.remove("show");
+  }
+
   /* ---------- Messages ---------- */
 
   function loadMessages() {
     api("adminListMessages").then(function (res) {
       var body = document.getElementById("msgs-body");
+      if (!body) return;
       var msgs = res.messages || [];
       if (!msgs.length) {
-        body.innerHTML = '<tr><td colspan="5" class="muted">No messages yet.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" class="muted">No messages yet.</td></tr>';
         return;
       }
-      body.innerHTML = msgs.map(function (m) {
-        return "<tr>" +
+      body.innerHTML = "";
+      msgs.forEach(function (m) {
+        var tr = document.createElement("tr");
+        var mailtoUrl = "mailto:" + encodeURIComponent(m.email || "") + "?subject=" + encodeURIComponent("Re: Study Czech Bridge Inquiry") + "&body=" + encodeURIComponent("Hi " + (m.name || "") + ",\n\nThanks for reaching out to Czech Bridge!\n\nBest regards,\nAdmissions Team");
+        
+        tr.innerHTML =
           "<td>" + fmtDate(m.createdAt) + "</td>" +
-          "<td>" + esc(m.name) + "</td>" +
-          "<td>" + esc(m.email) + (m.phone ? "<br>" + esc(m.phone) : "") + "</td>" +
-          "<td>" + esc(m.program) + "</td>" +
-          "<td style='max-width:340px;'>" + esc(m.message) + "</td>" +
-          "</tr>";
-      }).join("");
+          "<td><strong>" + esc(m.name) + "</strong></td>" +
+          "<td>" + esc(m.email) + (m.phone ? "<br><span class='muted' style='font-size:0.75rem;'>" + esc(m.phone) + "</span>" : "") + "</td>" +
+          "<td>" + esc(m.program || "General Inquiry") + "</td>" +
+          "<td style='max-width:300px;'>" + esc(m.message) + "</td>" +
+          "<td style='white-space:nowrap;'>" +
+            "<a href='" + mailtoUrl + "' class='btn btn-outline btn-sm' style='font-size:0.75rem; padding:0.2rem 0.45rem; margin-right:0.3rem;'>✉️ Reply</a>" +
+            "<button class='btn btn-outline btn-sm btn-delete-msg' data-id='" + m.id + "' style='font-size:0.75rem; padding:0.2rem 0.45rem; border-color:#ef4444; color:#dc2626;'>🗑️</button>" +
+          "</td>";
+
+        body.appendChild(tr);
+      });
+
+      body.querySelectorAll(".btn-delete-msg").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var mId = this.getAttribute("data-id");
+          if (confirm("Delete this contact message?")) {
+            api("adminDeleteMessage", { messageId: mId }).then(function () {
+              if (typeof showToast === "function") showToast("🗑️ Message deleted.");
+              loadMessages();
+            }).catch(function (err) {
+              alert("Could not delete message: " + err.message);
+            });
+          }
+        });
+      });
     }).catch(function (err) {
-      document.getElementById("msgs-body").innerHTML =
-        '<tr><td colspan="5" class="muted">Error: ' + esc(err.message) + "</td></tr>";
+      var body = document.getElementById("msgs-body");
+      if (body) {
+        body.innerHTML = '<tr><td colspan="6" class="muted">Error: ' + esc(err.message) + "</td></tr>";
+      }
     });
   }
 
@@ -2359,6 +2873,37 @@
       };
     }
 
+    // Quick 50k deposit verify & unlock button
+    var quick50kBtn = document.getElementById("btn-quick-verify-50k");
+    if (quick50kBtn) {
+      quick50kBtn.onclick = function () {
+        if (!activeFinApp) return;
+        var today = new Date().toISOString().split("T")[0];
+        // Check if 50k deposit already exists
+        var has50k = activeFinDeposits.some(function (d) { return (parseFloat(d.amount) || 0) >= 50000 && d.status === "Verified"; });
+        if (!has50k) {
+          activeFinDeposits.push({
+            id: "dep_" + Date.now(),
+            date: today,
+            description: "Initial Mandatory Deposit (50k Process Unlock)",
+            amount: 50000,
+            method: "Bank Transfer",
+            ref: "DEP50K-" + Math.random().toString(36).substring(2, 7).toUpperCase(),
+            status: "Verified"
+          });
+        }
+        var reqDepEl = document.getElementById("fin-input-required-deposit");
+        if (reqDepEl) reqDepEl.value = "50000";
+        var depStatEl = document.getElementById("fin-input-deposit-status");
+        if (depStatEl) depStatEl.value = "Deposit Paid";
+        
+        renderFinModalTables();
+        if (typeof showToast === "function") {
+          showToast("⚡ 50,000 Deposit applied! Click 'Save Financial Ledger' to persist changes.");
+        }
+      };
+    }
+
     // Toggle deposit form
     var addDepBtn = document.getElementById("btn-add-deposit-row");
     var addDepBox = document.getElementById("fin-add-deposit-box");
@@ -2873,7 +3418,7 @@
       btnTask.onclick = function() {
         switchTab("taskboard");
         setTimeout(function() {
-          var tTitle = document.getElementById("task-new-title");
+          var tTitle = document.getElementById("tb-task-title") || document.getElementById("task-new-title");
           if (tTitle) {
             tTitle.value = "Assigned Task for " + (c.fullName || c.email);
             tTitle.focus();
@@ -2892,7 +3437,7 @@
     if (!body) return;
 
     var filterVal = document.getElementById("counselor-student-filter") ? document.getElementById("counselor-student-filter").value : "all";
-    var currentUser = getCurrentUser();
+    var currentUser = (typeof getSession === "function" ? getSession() : null) || sess;
 
     var filteredApps = allApps.filter(function (a) {
       if (filterVal === "all") return true;
@@ -2996,7 +3541,7 @@
       btnManage.style.fontSize = "0.75rem";
       btnManage.textContent = "Manage";
       btnManage.addEventListener("click", function () {
-        openModal(a);
+        openModal(a.id);
       });
 
       actionsTd.appendChild(btnJourney);
@@ -3375,10 +3920,9 @@
     });
   }
 
-  function initSuperDocsTab() {
+  function populateSuperDocsSelect() {
     var select = document.getElementById("asgn-student-select");
     if (!select) return;
-
     select.innerHTML = '<option value="">-- Choose target student / user --</option>';
     allUsers.forEach(function (u) {
       var opt = document.createElement("option");
@@ -3386,6 +3930,22 @@
       opt.textContent = (u.fullName || u.email) + " (" + (u.role || "user") + " — " + u.email + ")";
       select.appendChild(opt);
     });
+  }
+
+  function initSuperDocsTab() {
+    var select = document.getElementById("asgn-student-select");
+    if (!select) return;
+
+    if (!allUsers.length) {
+      api("adminListUsers").then(function (res) {
+        allUsers = res.users || [];
+        populateSuperDocsSelect();
+      }).catch(function (err) {
+        console.warn("Could not load users for superdocs:", err);
+      });
+    } else {
+      populateSuperDocsSelect();
+    }
 
     loadAllDocumentsRepository();
 
