@@ -85,7 +85,7 @@
     </div>
 
     <!-- Tab: Universities & Country Database -->
-    <div class="panel admin-tab-panel" id="panel-unidb">
+    <div class="panel admin-tab-panel hidden" id="panel-unidb">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
         <div>
           <h2 style="margin: 0; color: var(--blue-900);">🏛️ Global Universities &amp; Country Database</h2>
@@ -132,7 +132,7 @@
     </div>
 
     <!-- Tab: Video Testimonials Management -->
-    <div class="panel admin-tab-panel" id="panel-testimonials">
+    <div class="panel admin-tab-panel hidden" id="panel-testimonials">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
         <div>
           <h2 style="margin: 0; color: #be185d;">🎥 Video Testimonials Management</h2>
@@ -1262,15 +1262,20 @@
 
     <!-- Top Fee Settings & Deposit Assignment Form -->
     <div style="background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:1rem; margin-bottom:1.25rem;">
-      <h3 style="margin-top:0; margin-bottom:0.75rem; font-size:0.95rem; color:var(--blue-900);">⚙️ Contract Package, Deposit Assignment &amp; Payment Due Settings</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+        <h3 style="margin:0; font-size:0.95rem; color:var(--blue-900);">⚙️ Contract Package, Deposit Assignment &amp; Payment Due Settings</h3>
+        <button type="button" class="btn btn-sm" id="btn-quick-verify-50k" style="background:#16a34a; color:#ffffff; font-weight:800; font-size:0.8rem; border:none; padding:0.35rem 0.75rem; border-radius:6px; box-shadow:0 2px 6px rgba(22,163,74,0.3);">
+          ⚡ Verify 50,000 Deposit &amp; Unlock Process
+        </button>
+      </div>
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:1rem; margin-bottom:0.75rem;">
         <div class="field">
           <label style="font-weight:700; font-size:0.82rem;">Agreed Contract Fee (€)</label>
           <input type="number" id="fin-input-service-fee" placeholder="1200" style="padding:0.4rem; border-radius:6px; border:1px solid var(--line);">
         </div>
         <div class="field">
-          <label style="font-weight:700; font-size:0.82rem; color:#15803d;">Required Deposit (€)</label>
-          <input type="number" id="fin-input-required-deposit" placeholder="500" value="500" style="padding:0.4rem; border-radius:6px; border:1px solid #bbf7d0; background:#f0fdf4; font-weight:700;">
+          <label style="font-weight:700; font-size:0.82rem; color:#15803d;">Required Deposit (Min 50,000 / €500)</label>
+          <input type="number" id="fin-input-required-deposit" placeholder="50000" value="50000" style="padding:0.4rem; border-radius:6px; border:1px solid #bbf7d0; background:#f0fdf4; font-weight:700;">
         </div>
         <div class="field">
           <label style="font-weight:700; font-size:0.82rem; color:#b91c1c;">Assigned Due Amount (€)</label>
@@ -1286,10 +1291,10 @@
         <div class="field">
           <label style="font-weight:700; font-size:0.82rem;">Deposit / Payment Status</label>
           <select id="fin-input-deposit-status" style="padding:0.4rem; border-radius:6px; border:1px solid var(--line); font-weight:700;">
-            <option value="Pending Deposit">⏳ Pending Deposit</option>
-            <option value="Deposit Paid">✅ Deposit Paid</option>
+            <option value="Pending Deposit">⏳ Pending Deposit (Locked &lt; 50k)</option>
+            <option value="Deposit Paid">✅ Deposit Paid (Unlocked &gt;= 50k)</option>
             <option value="Partially Paid">🟡 Partially Paid</option>
-            <option value="Fully Settled">🟢 Fully Settled</option>
+            <option value="Fully Settled">🟢 Fully Settled (Unlocked)</option>
           </select>
         </div>
         <div class="field">

@@ -1,6 +1,6 @@
 # Backend — Firebase
 
-The backend of Study With Czech Bridge is **Firebase** (Google's app platform, free Spark plan):
+The backend of StudyCzechBridge is **Firebase** (Google's app platform, free Spark plan):
 
 | Piece | Service | What it stores |
 |---|---|---|

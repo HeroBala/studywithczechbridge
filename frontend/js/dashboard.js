@@ -65,6 +65,22 @@
     if (helloEl) {
       helloEl.textContent = "Welcome, " + (sess.fullName || "Student") + " 👋";
     }
+
+    var jumpUploadBtn = document.getElementById("btn-jump-upload-deposit");
+    if (jumpUploadBtn) {
+      jumpUploadBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        var docTypeSel = document.getElementById("doc-type");
+        if (docTypeSel) {
+          docTypeSel.value = "Deposit Payment Receipt";
+        }
+        var target = document.getElementById("vault-upload-anchor");
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    }
+
     loadApplication();
     loadDocuments();
     loadTasks();
@@ -133,7 +149,8 @@
 
       setupCountrySelector(a);
       renderTracker(a.status);
-      render20StepsGrid(a.status, a);
+      var isUnlocked = renderDepositLockGate(a);
+      render20StepsGrid(a.status, a, isUnlocked);
       renderCounselorCard(a);
       renderStudentFinancialLedger(a);
 
@@ -187,16 +204,216 @@
     }
   }
 
-  function render20StepsGrid(currentStatus, appObj) {
+  function isDepositUnlocked(appObj) {
+    if (!appObj) return false;
+    if (appObj.isProcessUnlocked === true) return true;
+    var stat = (appObj.depositStatus || "").toLowerCase();
+    if (stat === "deposit paid" || stat === "fully settled" || stat === "verified") return true;
+
+    var deposits = Array.isArray(appObj.deposits) ? appObj.deposits : [];
+    var totalVerified = deposits.reduce(function (sum, d) {
+      var isV = !d.status || d.status === "Verified";
+      return isV ? sum + (parseFloat(d.amount) || 0) : sum;
+    }, 0);
+
+    // Minimum 50k deposit requirement (or custom required deposit if specified)
+    var reqAmt = 50000;
+    if (appObj.requiredDepositAmount && parseFloat(appObj.requiredDepositAmount) > 0) {
+      reqAmt = parseFloat(appObj.requiredDepositAmount);
+    }
+
+    if (totalVerified >= reqAmt || totalVerified >= 50000) return true;
+    return false;
+  }
+
+  function renderDepositLockGate(appObj) {
+    var lockBanner = document.getElementById("deposit-lock-banner");
+    var unlockBanner = document.getElementById("deposit-unlocked-banner");
+    var isUnlocked = isDepositUnlocked(appObj);
+
+    var deposits = (appObj && Array.isArray(appObj.deposits)) ? appObj.deposits : [];
+    var totalVerified = deposits.reduce(function (sum, d) {
+      var isV = !d.status || d.status === "Verified";
+      return isV ? sum + (parseFloat(d.amount) || 0) : sum;
+    }, 0);
+
+    var reqAmt = 50000;
+    if (appObj && appObj.requiredDepositAmount && parseFloat(appObj.requiredDepositAmount) > 0) {
+      reqAmt = parseFloat(appObj.requiredDepositAmount);
+    }
+
+    if (isUnlocked) {
+      if (lockBanner) lockBanner.style.display = "none";
+      if (unlockBanner) unlockBanner.style.display = "block";
+    } else {
+      if (lockBanner) lockBanner.style.display = "block";
+      if (unlockBanner) unlockBanner.style.display = "none";
+      
+      var progText = document.getElementById("deposit-lock-progress-text");
+      var progBar = document.getElementById("deposit-lock-progress-bar");
+      if (progText) {
+        progText.textContent = totalVerified.toLocaleString() + " / " + reqAmt.toLocaleString() + " Paid (Pending Verification)";
+      }
+      if (progBar) {
+        var pct = Math.min(100, Math.round((totalVerified / reqAmt) * 100));
+        progBar.style.width = pct + "%";
+      }
+    }
+
+    return isUnlocked;
+  }
+
+  function renderPersonalizedProcessTracker(appObj, steps, isUnlocked) {
+    var totalSteps = steps.length;
+    var customStepData = appObj && appObj.stepCustomData ? appObj.stepCustomData : {};
+    var completionTrail = appObj && Array.isArray(appObj.stepCompletionTrail) ? appObj.stepCompletionTrail : [];
+
+    var completedSteps = [];
+    var pendingOrActiveSteps = [];
+
+    steps.forEach(function (sObj) {
+      var sNum = Number(sObj.step);
+      var custom = customStepData[sNum] || customStepData[String(sNum)] || {};
+      var status = custom.status || "Pending";
+      if (status === "Done") {
+        completedSteps.push({ stepObj: sObj, stepNum: sNum, custom: custom });
+      } else {
+        pendingOrActiveSteps.push({ stepObj: sObj, stepNum: sNum, custom: custom, status: status });
+      }
+    });
+
+    var completedCount = completedSteps.length;
+    var percentage = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
+
+    var statsBadge = document.getElementById("process-stats-badge");
+    var pctLabel = document.getElementById("process-percentage-label");
+    var progressBar = document.getElementById("process-progress-bar-fill");
+
+    if (statsBadge) statsBadge.textContent = completedCount + " / " + totalSteps + " Milestones Completed";
+    if (pctLabel) pctLabel.textContent = percentage + "% Completed";
+    if (progressBar) progressBar.style.width = percentage + "%";
+
+    // 1. Render Steps Done List
+    var doneListEl = document.getElementById("steps-done-list");
+    var doneCountBadge = document.getElementById("steps-done-count-badge");
+    if (doneCountBadge) doneCountBadge.textContent = completedCount + " Done";
+
+    if (doneListEl) {
+      if (!completedSteps.length) {
+        doneListEl.innerHTML = '<div class="muted" style="font-size:0.85rem; padding:0.75rem; text-align:center; background:#ffffff; border-radius:6px; border:1px dashed #bbf7d0;">' +
+          'No milestones marked as done yet. Once your 50k deposit is verified, your counselor will begin executing your university submission steps!' +
+        '</div>';
+      } else {
+        doneListEl.innerHTML = completedSteps.map(function (item) {
+          var trailIdx = completionTrail.indexOf(item.stepNum);
+          var rankText = trailIdx !== -1 ? 'Rank #' + (trailIdx + 1) : 'Done';
+          return '<div style="background:#ffffff; border:1px solid #86efac; border-radius:6px; padding:0.55rem 0.75rem; display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">' +
+            '<div>' +
+              '<div style="font-weight:700; font-size:0.85rem; color:#166534;">' +
+                '✓ Step ' + item.stepNum + ': ' + escapeHtml(item.stepObj.title) +
+              '</div>' +
+              (item.custom.notes ? '<div style="font-size:0.75rem; color:#65a30d; margin-top:2px;">' + escapeHtml(item.custom.notes) + '</div>' : '') +
+            '</div>' +
+            '<span class="badge st-approved" style="font-size:0.7rem; font-weight:800; white-space:nowrap;">' + rankText + '</span>' +
+          '</div>';
+        }).join("");
+      }
+    }
+
+    // 2. Render Active / Next Step Card
+    var activeCardEl = document.getElementById("current-active-step-card");
+    if (activeCardEl) {
+      if (!isUnlocked) {
+        activeCardEl.innerHTML =
+          '<div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:0.85rem; margin-bottom:0.5rem;">' +
+            '<div style="font-weight:800; color:#92400e; font-size:0.92rem; margin-bottom:0.3rem;">🔒 Step Tracking Locked</div>' +
+            '<div style="font-size:0.82rem; color:#78350f; line-height:1.4;">' +
+              'Your official admission progression is awaiting verification of your <strong>minimum 50,000 initial deposit</strong>.' +
+            '</div>' +
+          '</div>' +
+          '<a href="#vault-upload-anchor" class="btn btn-primary btn-sm" style="background:#d97706; border-color:#d97706; text-align:center; font-weight:700; padding:0.45rem;">' +
+            '📤 Upload Deposit Slip to Unlock' +
+          '</a>';
+      } else if (!pendingOrActiveSteps.length) {
+        activeCardEl.innerHTML =
+          '<div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:1rem; text-align:center;">' +
+            '<div style="font-size:1.5rem; margin-bottom:0.3rem;">🎉</div>' +
+            '<div style="font-weight:800; color:#166534; font-size:0.95rem;">All Milestones Completed!</div>' +
+            '<div style="font-size:0.82rem; color:#15803d; margin-top:0.25rem;">Congratulations! You have successfully completed all admission and visa steps.</div>' +
+          '</div>';
+      } else {
+        var nextItem = pendingOrActiveSteps[0];
+        activeCardEl.innerHTML =
+          '<div>' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">' +
+              '<span style="font-weight:800; font-size:0.82rem; color:#1d4ed8; background:#dbeafe; padding:2px 8px; border-radius:12px;">' +
+                'Step ' + nextItem.stepNum + ' of ' + totalSteps +
+              '</span>' +
+              '<span class="badge" style="background:#2563eb; color:#ffffff; font-size:0.72rem; font-weight:700;">' +
+                (nextItem.status === "In Progress" ? "In Progress" : "Next In Line") +
+              '</span>' +
+            '</div>' +
+            '<div style="font-weight:800; font-size:0.98rem; color:#1e3a8a; margin-bottom:0.3rem;">' +
+              escapeHtml(nextItem.stepObj.title) +
+            '</div>' +
+            '<div style="font-size:0.82rem; color:#3b82f6; line-height:1.4; margin-bottom:0.6rem;">' +
+              escapeHtml(nextItem.stepObj.desc) +
+            '</div>' +
+            (nextItem.custom.notes ? '<div style="background:#fffbeb; border-left:3px solid #f59e0b; padding:0.4rem; border-radius:4px; font-size:0.78rem; color:#92400e; margin-bottom:0.6rem;"><strong>Brno Advisor Note:</strong> ' + escapeHtml(nextItem.custom.notes) + '</div>' : '') +
+          '</div>' +
+          '<div style="display:flex; gap:0.5rem; justify-content:space-between; align-items:center; padding-top:0.5rem; border-top:1px solid #bfdbfe;">' +
+            '<button type="button" class="btn btn-primary btn-sm btn-quick-complete-step" data-step="' + nextItem.stepNum + '" style="flex:1; background:#16a34a; border-color:#16a34a; font-weight:700; font-size:0.8rem; padding:0.45rem;">' +
+              '✅ Mark Step ' + nextItem.stepNum + ' Completed' +
+            '</button>' +
+          '</div>';
+
+        var quickBtn = activeCardEl.querySelector(".btn-quick-complete-step");
+        if (quickBtn) {
+          quickBtn.onclick = function () {
+            var stepNum = Number(this.getAttribute("data-step"));
+            updateStudentStepStatus(appObj, steps, stepNum, "Done");
+          };
+        }
+      }
+    }
+
+    // 3. Render Upcoming Steps List
+    var upcomingListEl = document.getElementById("steps-upcoming-list");
+    var upcomingCountBadge = document.getElementById("steps-upcoming-count-badge");
+    var remainingCount = pendingOrActiveSteps.length;
+    if (upcomingCountBadge) upcomingCountBadge.textContent = remainingCount + " Remaining";
+
+    if (upcomingListEl) {
+      if (!pendingOrActiveSteps.length) {
+        upcomingListEl.innerHTML = '<div class="muted" style="font-size:0.85rem; padding:0.5rem; text-align:center;">No upcoming steps — complete!</div>';
+      } else {
+        upcomingListEl.innerHTML = pendingOrActiveSteps.map(function (item, idx) {
+          var isNext = idx === 0;
+          return '<div style="background:' + (isNext ? '#ffffff' : 'rgba(255,255,255,0.7)') + '; border:1px solid ' + (isNext ? '#93c5fd' : '#e2e8f0') + '; border-radius:6px; padding:0.45rem 0.65rem; display:flex; justify-content:space-between; align-items:center;">' +
+            '<div style="font-size:0.82rem; font-weight:' + (isNext ? '700' : '600') + '; color:' + (isNext ? '#1e40af' : '#475569') + ';">' +
+              'Step ' + item.stepNum + ': ' + escapeHtml(item.stepObj.title) +
+            '</div>' +
+            '<span style="font-size:0.72rem; color:' + (isNext ? '#2563eb' : '#94a3b8') + '; font-weight:700;">' + (isNext ? 'Next ➔' : 'Pending') + '</span>' +
+          '</div>';
+        }).join("");
+      }
+    }
+  }
+
+  function render20StepsGrid(currentStatus, appObj, isUnlockedParam) {
     var grid = document.getElementById("student-20-steps-grid");
     if (!grid) return;
 
     var steps = typeof getStudentTrackSteps === "function" ? getStudentTrackSteps(appObj) : (typeof ADMISSION_20_STEPS !== "undefined" ? ADMISSION_20_STEPS : []);
     if (!steps.length) return;
 
+    var isUnlocked = typeof isUnlockedParam === "boolean" ? isUnlockedParam : isDepositUnlocked(appObj);
     var totalSteps = steps.length;
     var customStepData = appObj && appObj.stepCustomData ? appObj.stepCustomData : {};
     var completionTrail = appObj && Array.isArray(appObj.stepCompletionTrail) ? appObj.stepCompletionTrail : [];
+
+    // Render the Personalized Process Tracker (Done vs Next vs Upcoming)
+    renderPersonalizedProcessTracker(appObj, steps, isUnlocked);
 
     // Render the Sequential Tracing Trail Box
     renderStepTracingTrail(steps, completionTrail, customStepData);
@@ -224,6 +441,8 @@
         "; border-radius:8px; padding:0.85rem; display:flex; flex-direction:column; justify-content:space-between;" +
         (isCurrent ? "box-shadow: 0 4px 12px rgba(20,49,94,0.12);" : "");
 
+      var selectDisabledAttr = !isUnlocked ? 'disabled title="Complete minimum 50,000 deposit to unlock status editing"' : '';
+
       card.innerHTML =
         '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem; flex-wrap:wrap; gap:0.2rem;">' +
           '<div>' +
@@ -236,8 +455,8 @@
         '<div style="font-size:0.8rem; color:var(--muted); line-height:1.35; margin-bottom:0.5rem;">' + escapeHtml(sObj.desc) + '</div>' +
         (custom.notes ? '<div style="margin-top:auto; margin-bottom:0.5rem; background:#fffbeb; border-left:3px solid #f59e0b; padding:0.4rem; border-radius:4px; font-size:0.78rem; color:#92400e;"><strong>Brno Advisor Note:</strong> ' + escapeHtml(custom.notes) + '</div>' : '') +
         '<div style="margin-top:auto; padding-top:0.4rem; border-top:1px dashed #e2e8f0; display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">' +
-          '<span style="font-size:0.72rem; font-weight:700; color:var(--muted);">Update Status:</span>' +
-          '<select class="student-step-status-select" data-step="' + sNum + '" style="font-size:0.78rem; padding:0.2rem 0.4rem; border-radius:4px; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer;">' +
+          '<span style="font-size:0.72rem; font-weight:700; color:var(--muted);">' + (isUnlocked ? 'Update Status:' : '🔒 Locked (Deposit Req):') + '</span>' +
+          '<select class="student-step-status-select" data-step="' + sNum + '" ' + selectDisabledAttr + ' style="font-size:0.78rem; padding:0.2rem 0.4rem; border-radius:4px; border:1px solid #cbd5e1; background:' + (isUnlocked ? '#f8fafc' : '#f1f5f9') + '; cursor:' + (isUnlocked ? 'pointer' : 'not-allowed') + ';">' +
             '<option value="Pending" ' + (curStatus === "Pending" ? "selected" : "") + '>⏳ Pending</option>' +
             '<option value="In Progress" ' + (curStatus === "In Progress" ? "selected" : "") + '>🔄 In Progress</option>' +
             '<option value="Done" ' + (curStatus === "Done" ? "selected" : "") + '>✅ Mark Done</option>' +
@@ -247,13 +466,15 @@
       grid.appendChild(card);
     });
 
-    grid.querySelectorAll(".student-step-status-select").forEach(function (select) {
-      select.addEventListener("change", function () {
-        var stepNum = Number(this.getAttribute("data-step"));
-        var newStatus = this.value;
-        updateStudentStepStatus(appObj, steps, stepNum, newStatus);
+    if (isUnlocked) {
+      grid.querySelectorAll(".student-step-status-select").forEach(function (select) {
+        select.addEventListener("change", function () {
+          var stepNum = Number(this.getAttribute("data-step"));
+          var newStatus = this.value;
+          updateStudentStepStatus(appObj, steps, stepNum, newStatus);
+        });
       });
-    });
+    }
   }
 
   function renderStepTracingTrail(steps, completionTrail, customStepData) {

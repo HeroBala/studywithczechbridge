@@ -67,13 +67,13 @@
 
   function normalizeRole(role) {
     var r = String(role || "").toLowerCase().trim();
-    if (r === "super_admin") return "super_admin";
-    if (r === "admin") return "admin";
-    if (r === "counselor" || r === "councilor" || r === "agent" || r === "staff") return "counselor";
-    if (r === "admission_officer" || r === "officer") return "admission_officer";
+    if (r === "super_admin" || r === "superadmin" || r === "super admin") return "super_admin";
+    if (r === "admin" || r === "administrator") return "admin";
+    if (r === "counselor" || r === "councilor" || r === "agent" || r === "staff" || r === "advisor") return "counselor";
+    if (r === "admission_officer" || r === "officer" || r === "admissions") return "admission_officer";
     if (r === "finance_manager" || r === "finance") return "finance_manager";
-    if (r === "student" || r === "user") return "student";
-    return "admin";
+    if (r === "student" || r === "user" || r === "client" || r === "applicant") return "student";
+    return "student";
   }
 
   function getRoleLabel(role) {
@@ -1542,6 +1542,7 @@
         '<td>' + agentInfo + '</td>' +
         '<td style="text-align:right; white-space:nowrap;">' +
           '<button class="btn btn-dark btn-sm btn-manage-app" data-id="' + a.id + '" style="font-size:0.75rem; padding:0.25rem 0.55rem; margin-right:0.3rem;">⚡ Manage</button>' +
+          '<button class="btn btn-outline btn-sm btn-finance-app" data-id="' + a.id + '" style="font-size:0.75rem; padding:0.25rem 0.45rem; margin-right:0.3rem; border-color:#16a34a; color:#15803d; font-weight:700;">💳 Finance</button>' +
           '<button class="btn btn-outline btn-sm btn-email-app" data-email="' + a.email + '" style="font-size:0.75rem; padding:0.25rem 0.4rem; border-color:var(--teal-600); color:var(--teal-700);">✉️ Email</button>' +
         '</td>';
 
@@ -1555,6 +1556,12 @@
     body.querySelectorAll(".btn-manage-app").forEach(function (btn) {
       btn.addEventListener("click", function () {
         openModal(this.getAttribute("data-id"));
+      });
+    });
+
+    body.querySelectorAll(".btn-finance-app").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openFinancialLedgerModal(this.getAttribute("data-id"));
       });
     });
 
@@ -1917,8 +1924,13 @@
   /* ---------- User & Agent Assignment Panel ---------- */
 
   function loadUsers() {
+    var body = document.getElementById("users-body");
+    if (body && (!allUsers || allUsers.length === 0)) {
+      body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center; padding: 2rem 1rem;">Loading users...</td></tr>';
+    }
+
     api("adminListUsers").then(function (res) {
-      allUsers = res.users || [];
+      allUsers = (res && res.users) ? res.users : [];
       renderUsers();
       populateBulkAgentDropdown();
       if (activeTab === "counselor") {
@@ -1929,6 +1941,9 @@
       }
     }).catch(function (err) {
       console.error("Users list fail:", err);
+      if (body) {
+        body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center; color:#ef4444; padding: 2rem 1rem;">Could not load users: ' + esc(err && err.message ? err.message : "Error") + '</td></tr>';
+      }
     });
   }
 
@@ -1943,14 +1958,17 @@
     var roleVal = roleFilter ? roleFilter.value : "all";
 
     var filteredUsers = allUsers.filter(function (u) {
+      if (!u) return false;
       var matchesSearch = !searchVal || 
         (u.fullName && u.fullName.toLowerCase().includes(searchVal)) ||
-        (u.email && u.email.toLowerCase().includes(searchVal));
+        (u.email && u.email.toLowerCase().includes(searchVal)) ||
+        (u.phone && String(u.phone).toLowerCase().includes(searchVal)) ||
+        (u.assignedAgentName && u.assignedAgentName.toLowerCase().includes(searchVal));
       
       var uNormRole = normalizeRole(u.role);
-      var filterNormRole = (roleVal === "all") ? "all" : normalizeRole(roleVal);
+      var filterNormRole = (roleVal === "all" || !roleVal) ? "all" : normalizeRole(roleVal);
 
-      var matchesRole = (roleVal === "all") || (uNormRole === filterNormRole) || (u.role === roleVal);
+      var matchesRole = (filterNormRole === "all") || (uNormRole === filterNormRole) || (u.role === roleVal);
       return matchesSearch && matchesRole;
     });
 
@@ -2862,6 +2880,37 @@
       mFinBtn.onclick = function () {
         if (currentApp) {
           openFinancialLedgerModal(currentApp.id);
+        }
+      };
+    }
+
+    // Quick 50k deposit verify & unlock button
+    var quick50kBtn = document.getElementById("btn-quick-verify-50k");
+    if (quick50kBtn) {
+      quick50kBtn.onclick = function () {
+        if (!activeFinApp) return;
+        var today = new Date().toISOString().split("T")[0];
+        // Check if 50k deposit already exists
+        var has50k = activeFinDeposits.some(function (d) { return (parseFloat(d.amount) || 0) >= 50000 && d.status === "Verified"; });
+        if (!has50k) {
+          activeFinDeposits.push({
+            id: "dep_" + Date.now(),
+            date: today,
+            description: "Initial Mandatory Deposit (50k Process Unlock)",
+            amount: 50000,
+            method: "Bank Transfer",
+            ref: "DEP50K-" + Math.random().toString(36).substring(2, 7).toUpperCase(),
+            status: "Verified"
+          });
+        }
+        var reqDepEl = document.getElementById("fin-input-required-deposit");
+        if (reqDepEl) reqDepEl.value = "50000";
+        var depStatEl = document.getElementById("fin-input-deposit-status");
+        if (depStatEl) depStatEl.value = "Deposit Paid";
+        
+        renderFinModalTables();
+        if (typeof showToast === "function") {
+          showToast("⚡ 50,000 Deposit applied! Click 'Save Financial Ledger' to persist changes.");
         }
       };
     }
