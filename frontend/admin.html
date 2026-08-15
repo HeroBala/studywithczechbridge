@@ -444,11 +444,11 @@
       </div>
 
       <!-- Create / Edit Template Modal -->
-      <div id="template-editor-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; padding:1rem;">
+      <div id="template-editor-modal" class="modal-back" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; padding:1rem;">
         <div style="background:white; width:100%; max-width:550px; border-radius:12px; padding:1.5rem; box-shadow:var(--shadow-lg);">
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:0.75rem; margin-bottom:1rem;">
             <h3 id="tpl-modal-title" style="margin:0; color:var(--blue-900);">Create Email Template</h3>
-            <button id="tpl-modal-close" class="btn btn-outline btn-sm" style="border:none; font-size:1.2rem; cursor:pointer;">✕</button>
+            <button id="tpl-modal-close" type="button" class="btn btn-outline btn-sm modal-close" style="border:none; font-size:1.2rem; cursor:pointer;" aria-label="Close">✕</button>
           </div>
           <input type="hidden" id="tpl-edit-id">
           <div class="field mb-2">
@@ -468,8 +468,8 @@
             <textarea id="tpl-edit-body" rows="6" placeholder="Body with tokens {student_name}, {notes}, {country}, {counselor_name}..." style="font-family:inherit; line-height:1.5;"></textarea>
           </div>
           <div style="display:flex; justify-content:flex-end; gap:0.5rem; border-top:1px solid var(--line); padding-top:1rem;">
-            <button class="btn btn-outline btn-sm" id="tpl-modal-cancel">Cancel</button>
-            <button class="btn btn-primary btn-sm" id="tpl-modal-save">Save Template</button>
+            <button type="button" class="btn btn-outline btn-sm" id="tpl-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary btn-sm" id="tpl-modal-save">Save Template</button>
           </div>
         </div>
       </div>
@@ -685,11 +685,11 @@
       </div>
 
       <!-- Add/Edit Package Modal -->
-      <div id="package-editor-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 1rem;">
+      <div id="package-editor-modal" class="modal-back" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 1rem;">
         <div style="background: white; width: 100%; max-width: 550px; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-lg);">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1rem;">
             <h3 id="pkg-modal-title" style="margin: 0; color: var(--blue-900);">Add New Service Package</h3>
-            <button id="pkg-modal-close" class="btn btn-outline btn-sm" style="border: none; font-size: 1.2rem; cursor: pointer;">✕</button>
+            <button id="pkg-modal-close" type="button" class="btn btn-outline btn-sm modal-close" style="border: none; font-size: 1.2rem; cursor: pointer;" aria-label="Close">✕</button>
           </div>
           <input type="hidden" id="pkg-edit-id">
           <div class="field mb-2">
@@ -719,8 +719,8 @@
             <textarea id="pkg-inclusions" rows="4" placeholder="University Selection &amp; Application&#10;Sworn Czech Translation&#10;Nostrification Handling"></textarea>
           </div>
           <div style="display: flex; justify-content: flex-end; gap: 0.5rem; border-top: 1px solid var(--line); padding-top: 1rem;">
-            <button class="btn btn-outline btn-sm" id="pkg-modal-cancel">Cancel</button>
-            <button class="btn btn-primary btn-sm" id="pkg-modal-save">Save Package</button>
+            <button type="button" class="btn btn-outline btn-sm" id="pkg-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary btn-sm" id="pkg-modal-save">Save Package</button>
           </div>
         </div>
       </div>
@@ -1051,7 +1051,7 @@
 <!-- Application detail modal -->
 <div class="modal-back" id="modal-back">
   <div class="modal" style="max-width: 780px;">
-    <button class="modal-close" id="modal-close">✕</button>
+    <button class="modal-close" id="modal-close" type="button" aria-label="Close">✕</button>
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; border-bottom:2px solid var(--line); padding-bottom:0.75rem; margin-bottom:1rem;">
       <h2 id="m-title" style="margin:0; color:var(--blue-900);">Application</h2>
       <div id="m-quick-actions-bar" style="display:flex; gap:0.4rem; flex-wrap:wrap;">
@@ -1174,7 +1174,7 @@
 <!-- Create User Modal -->
 <div class="modal-back" id="modal-create-user">
   <div class="modal" style="max-width: 520px;">
-    <button class="modal-close" id="btn-close-create-user-modal">✕</button>
+    <button class="modal-close" id="btn-close-create-user-modal" type="button" aria-label="Close">✕</button>
     <h2 id="create-user-modal-title">➕ Create New User / Staff Account</h2>
     <p class="muted" style="margin-top: -0.25rem; margin-bottom: 1rem; font-size: 0.85rem;">Register a new student, counselor, officer, or admin in Czech Bridge platform.</p>
     
@@ -1227,7 +1227,7 @@
 <!-- User Document Vault Modal -->
 <div class="modal-back" id="user-docs-modal">
   <div class="modal" style="max-width: 680px;">
-    <button class="modal-close" id="user-docs-close">✕</button>
+    <button class="modal-close" id="user-docs-close" type="button" aria-label="Close">✕</button>
     <h2 id="ud-title">📄 User Document Vault</h2>
     <p id="ud-subtitle" class="muted" style="margin-top:-0.3rem; margin-bottom:1.2rem; font-size:0.88rem;"></p>
 
@@ -1249,7 +1249,7 @@
 <!-- Candidate Financial Ledger & Expense Management Modal -->
 <div class="modal-back" id="financial-ledger-modal" style="display:none; z-index: 2100;">
   <div class="modal" style="max-width: 860px; width: 95%; max-height: 90vh; overflow-y: auto;">
-    <button class="modal-close" id="fin-modal-close">✕</button>
+    <button class="modal-close" id="fin-modal-close" type="button" aria-label="Close">✕</button>
     <div style="border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
       <div>
         <h2 id="fin-modal-student-name" style="margin:0; color:var(--blue-900);">💳 Candidate Financial Ledger &amp; Deposit Management</h2>
@@ -1432,8 +1432,8 @@
     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:1rem;">
       <span id="fin-modal-save-status" class="muted" style="font-size:0.85rem; font-weight:700;"></span>
       <div style="display:flex; gap:0.5rem;">
-        <button class="btn btn-outline btn-sm" id="btn-close-fin-modal">Cancel</button>
-        <button class="btn btn-primary btn-sm" id="btn-save-fin-ledger" style="font-weight:800; padding:0.5rem 1.25rem;">💾 Save Financial Ledger</button>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-close-fin-modal">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btn-save-fin-ledger" style="font-weight:800; padding:0.5rem 1.25rem;">💾 Save Financial Ledger</button>
       </div>
     </div>
   </div>
@@ -1446,7 +1446,7 @@
   <div class="modal-box" style="background:#ffffff; border-radius:12px; width:100%; max-width:580px; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.2); border:1px solid var(--line);">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:0.75rem; margin-bottom:1.25rem;">
       <h3 style="margin:0; color:var(--blue-900); font-size:1.2rem; font-weight:800;" id="counselor-modal-title">👨‍💼 Register / Edit Counselor</h3>
-      <button type="button" class="btn btn-outline btn-sm" id="btn-close-counselor-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem;">✕</button>
+      <button type="button" class="btn btn-outline btn-sm modal-close" id="btn-close-counselor-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem; cursor:pointer;" aria-label="Close">✕</button>
     </div>
 
     <form id="form-counselor-profile">
@@ -1522,7 +1522,7 @@
   <div class="modal-box" style="background:#ffffff; border-radius:12px; width:100%; max-width:600px; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.2); border:1px solid var(--line);">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:0.75rem; margin-bottom:1.25rem;">
       <h3 style="margin:0; color:var(--blue-900); font-size:1.2rem; font-weight:800;">📢 Broadcast Email to Counselors</h3>
-      <button type="button" class="btn btn-outline btn-sm" id="btn-close-broadcast-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem;">✕</button>
+      <button type="button" class="btn btn-outline btn-sm modal-close" id="btn-close-broadcast-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem; cursor:pointer;" aria-label="Close">✕</button>
     </div>
 
     <form id="form-counselor-broadcast">
@@ -1565,7 +1565,7 @@
   <div class="modal-box" style="background:#ffffff; border-radius:12px; width:100%; max-width:620px; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.2); border:1px solid var(--line);">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:0.75rem; margin-bottom:1.25rem;">
       <h3 id="modal-uni-title" style="margin:0; color:var(--blue-900); font-size:1.2rem; font-weight:800;">➕ Add University Record</h3>
-      <button type="button" class="btn btn-outline btn-sm" id="btn-close-uni-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem;">✕</button>
+      <button type="button" class="btn btn-outline btn-sm modal-close" id="btn-close-uni-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem; cursor:pointer;" aria-label="Close">✕</button>
     </div>
 
     <form id="form-uni-editor">
@@ -1641,7 +1641,7 @@
   <div class="modal-box" style="background:#ffffff; border-radius:12px; width:100%; max-width:600px; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.2); border:1px solid var(--line); max-height:90vh; overflow-y:auto;">
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:0.75rem; margin-bottom:1.25rem;">
       <h3 id="modal-vt-title" style="margin:0; color:#be185d; font-size:1.2rem; font-weight:800;">🎥 Add Video Testimonial</h3>
-      <button type="button" class="btn btn-outline btn-sm" id="btn-close-vt-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem;">✕</button>
+      <button type="button" class="btn btn-outline btn-sm modal-close" id="btn-close-vt-modal" style="border:none; font-size:1.2rem; padding:0 0.4rem; cursor:pointer;" aria-label="Close">✕</button>
     </div>
 
     <form id="form-vt-editor">

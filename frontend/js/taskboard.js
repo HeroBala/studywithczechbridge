@@ -963,6 +963,7 @@ var TaskBoardComponent = (function () {
     assignTaskToUser: function (userId) {
       _editingTask = null;
       renderModal(userId);
-    }
+    },
+    closeModal: closeModal
   };
 })();

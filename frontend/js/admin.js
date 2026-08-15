@@ -536,18 +536,168 @@
       });
     }
 
-    var userDocsClose = document.getElementById("user-docs-close");
-    if (userDocsClose) {
-      userDocsClose.addEventListener("click", function () {
-        document.getElementById("user-docs-modal").classList.remove("show");
-      });
-    }
-
     var refreshDocsBtn = document.getElementById("btn-refresh-all-docs");
     if (refreshDocsBtn) {
       refreshDocsBtn.addEventListener("click", loadAllDocumentsRepository);
     }
+
+    initGlobalModalListeners();
   });
+
+  /* ============================================================
+     GLOBAL MODAL SYSTEM & CANCEL / CROSS EVENT LISTENERS
+     ============================================================ */
+
+  function openTemplateEditorModal() {
+    var modal = document.getElementById("template-editor-modal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.classList.add("show");
+      modal.style.display = "flex";
+    }
+  }
+
+  function closeTemplateEditorModal() {
+    var modal = document.getElementById("template-editor-modal");
+    if (modal) {
+      modal.classList.remove("show");
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function openPackageEditorModal() {
+    var modal = document.getElementById("package-editor-modal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.classList.add("show");
+      modal.style.display = "flex";
+    }
+  }
+
+  function closePackageEditorModal() {
+    var modal = document.getElementById("package-editor-modal");
+    if (modal) {
+      modal.classList.remove("show");
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function closeAllModals() {
+    if (typeof closeModal === "function") closeModal();
+    if (typeof closeCreateUserModal === "function") closeCreateUserModal();
+    if (typeof closeUserDocsModal === "function") closeUserDocsModal();
+    if (typeof closeFinModal === "function") closeFinModal();
+    if (typeof closeCounselorProfileModal === "function") closeCounselorProfileModal();
+    if (typeof closeCounselorBroadcastModal === "function") closeCounselorBroadcastModal();
+    if (typeof closeUniEditorModal === "function") closeUniEditorModal();
+    if (typeof closeTestimonialEditorModal === "function") closeTestimonialEditorModal();
+    if (typeof closePackageEditorModal === "function") closePackageEditorModal();
+    if (typeof closeTemplateEditorModal === "function") closeTemplateEditorModal();
+    if (typeof TaskBoardComponent !== "undefined" && TaskBoardComponent.closeModal) {
+      TaskBoardComponent.closeModal();
+    }
+  }
+
+  function initGlobalModalListeners() {
+    var bindClick = function (id, fn) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.onclick = fn;
+      }
+    };
+
+    // 1. Specific modal close ('X') and cancel button bindings
+    bindClick("modal-close", closeModal);
+    bindClick("btn-close-create-user-modal", closeCreateUserModal);
+    bindClick("btn-cancel-create-user", closeCreateUserModal);
+    bindClick("user-docs-close", closeUserDocsModal);
+    bindClick("fin-modal-close", function () {
+      var m = document.getElementById("financial-ledger-modal");
+      if (m) { m.classList.remove("show"); m.classList.add("hidden"); m.style.display = "none"; }
+      activeFinApp = null;
+    });
+    bindClick("btn-close-fin-modal", function () {
+      var m = document.getElementById("financial-ledger-modal");
+      if (m) { m.classList.remove("show"); m.classList.add("hidden"); m.style.display = "none"; }
+      activeFinApp = null;
+    });
+    bindClick("btn-cancel-add-deposit", function () {
+      var b = document.getElementById("fin-add-deposit-box");
+      if (b) b.style.display = "none";
+    });
+    bindClick("btn-cancel-add-expense", function () {
+      var b = document.getElementById("fin-add-expense-box");
+      if (b) b.style.display = "none";
+    });
+    bindClick("btn-close-counselor-modal", closeCounselorProfileModal);
+    bindClick("btn-cancel-counselor-modal", closeCounselorProfileModal);
+    bindClick("btn-close-broadcast-modal", closeCounselorBroadcastModal);
+    bindClick("btn-cancel-broadcast-modal", closeCounselorBroadcastModal);
+    bindClick("btn-close-uni-modal", closeUniEditorModal);
+    bindClick("btn-cancel-uni-modal", closeUniEditorModal);
+    bindClick("btn-close-vt-modal", closeTestimonialEditorModal);
+    bindClick("btn-cancel-vt-modal", closeTestimonialEditorModal);
+    bindClick("pkg-modal-close", closePackageEditorModal);
+    bindClick("pkg-modal-cancel", closePackageEditorModal);
+    bindClick("tpl-modal-close", closeTemplateEditorModal);
+    bindClick("tpl-modal-cancel", closeTemplateEditorModal);
+
+    // 2. Backdrop click to close on all modal overlays
+    [
+      "modal-back",
+      "modal-create-user",
+      "user-docs-modal",
+      "financial-ledger-modal",
+      "modal-counselor-profile",
+      "modal-counselor-broadcast",
+      "modal-uni-editor",
+      "modal-testimonial-editor",
+      "package-editor-modal",
+      "template-editor-modal"
+    ].forEach(function (mId) {
+      var mEl = document.getElementById(mId);
+      if (mEl) {
+        mEl.addEventListener("click", function (e) {
+          if (e.target === mEl) {
+            mEl.classList.remove("show");
+            mEl.classList.add("hidden");
+            mEl.style.display = "none";
+          }
+        });
+      }
+    });
+
+    // 3. Document-wide Event Delegation for any modal-close or cancel button
+    document.addEventListener("click", function (e) {
+      var target = e.target;
+      if (!target) return;
+
+      var isCloseOrCancel = 
+        target.classList.contains("modal-close") || 
+        (target.closest && target.closest(".modal-close")) ||
+        target.getAttribute("aria-label") === "Close" ||
+        target.textContent.trim() === "✕" ||
+        (target.tagName === "BUTTON" && target.textContent.trim().toLowerCase() === "cancel");
+
+      if (isCloseOrCancel) {
+        var parentModal = target.closest(".modal-back, .modal-backdrop, [id$='-modal'], [id^='modal-']");
+        if (parentModal) {
+          parentModal.classList.remove("show");
+          parentModal.classList.add("hidden");
+          parentModal.style.display = "none";
+        }
+      }
+    });
+
+    // 4. Keyboard Escape key to dismiss active modals
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" || e.keyCode === 27) {
+        closeAllModals();
+      }
+    });
+  }
 
   function switchTab(tabName) {
     if (!tabName) return;
@@ -1027,7 +1177,7 @@
         document.getElementById("tpl-edit-category").value = tpl.category || "General";
         document.getElementById("tpl-edit-subject").value = tpl.subject;
         document.getElementById("tpl-edit-body").value = tpl.body;
-        document.getElementById("template-editor-modal").style.display = "flex";
+        openTemplateEditorModal();
       };
     });
 
@@ -1092,12 +1242,12 @@
         document.getElementById("tpl-edit-category").value = "General";
         document.getElementById("tpl-edit-subject").value = "";
         document.getElementById("tpl-edit-body").value = "";
-        modal.style.display = "flex";
+        openTemplateEditorModal();
       };
     }
 
-    if (closeBtn) closeBtn.onclick = function () { modal.style.display = "none"; };
-    if (cancelBtn) cancelBtn.onclick = function () { modal.style.display = "none"; };
+    if (closeBtn) closeBtn.onclick = closeTemplateEditorModal;
+    if (cancelBtn) cancelBtn.onclick = closeTemplateEditorModal;
 
     if (saveBtn) {
       saveBtn.onclick = function () {
@@ -1125,7 +1275,7 @@
           .then(function (res) {
             saveBtn.disabled = false;
             if (res.ok) {
-              modal.style.display = "none";
+              closeTemplateEditorModal();
               loadEmailTemplatesStudio();
             } else {
               alert("Save template failed: " + (res.error || "Unknown error"));
@@ -1646,7 +1796,12 @@
   /* ---------- Detail modal ---------- */
 
   function openModal(appId) {
-    document.getElementById("modal-back").classList.add("show");
+    var mBack = document.getElementById("modal-back");
+    if (mBack) {
+      mBack.classList.remove("hidden");
+      mBack.classList.add("show");
+      mBack.style.display = "flex";
+    }
     document.getElementById("m-title").textContent = "Loading...";
     document.getElementById("m-details").innerHTML = "";
     document.getElementById("m-docs").innerHTML = '<li class="muted">Loading...</li>';
@@ -1911,7 +2066,12 @@
   }
 
   function closeModal() {
-    document.getElementById("modal-back").classList.remove("show");
+    var mBack = document.getElementById("modal-back");
+    if (mBack) {
+      mBack.classList.remove("show");
+      mBack.classList.add("hidden");
+      mBack.style.display = "none";
+    }
     currentApp = null;
   }
 
@@ -2194,7 +2354,9 @@
     var modal = document.getElementById("user-docs-modal");
     if (!modal) return;
 
+    modal.classList.remove("hidden");
     modal.classList.add("show");
+    modal.style.display = "flex";
     document.getElementById("ud-title").textContent = "📄 User Document Vault: " + (u.fullName || u.email);
     document.getElementById("ud-subtitle").textContent = "Email: " + u.email + " | Role: " + (u.role || "student") + " | ID: " + u.id;
 
@@ -2225,6 +2387,15 @@
     }).catch(function (err) {
       body.innerHTML = '<tr><td colspan="5" class="muted error">Error loading documents: ' + esc(err.message) + '</td></tr>';
     });
+  }
+
+  function closeUserDocsModal() {
+    var modal = document.getElementById("user-docs-modal");
+    if (modal) {
+      modal.classList.remove("show");
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
   }
 
   function openCreateUserModal(userObj) {
@@ -2272,12 +2443,18 @@
       });
     }
 
+    modal.classList.remove("hidden");
     modal.classList.add("show");
+    modal.style.display = "flex";
   }
 
   function closeCreateUserModal() {
     var modal = document.getElementById("modal-create-user");
-    if (modal) modal.classList.remove("show");
+    if (modal) {
+      modal.classList.remove("show");
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
   }
 
   /* ---------- Messages ---------- */
@@ -2573,7 +2750,12 @@
 
     renderFinModalTables();
 
-    document.getElementById("financial-ledger-modal").style.display = "flex";
+    var finModal = document.getElementById("financial-ledger-modal");
+    if (finModal) {
+      finModal.classList.remove("hidden");
+      finModal.classList.add("show");
+      finModal.style.display = "flex";
+    }
   }
 
   function renderFinModalTables() {
@@ -2862,7 +3044,15 @@
     var cancelBtn = document.getElementById("btn-close-fin-modal");
 
     function closeFinModal() {
-      if (modal) modal.style.display = "none";
+      if (modal) {
+        modal.classList.remove("show");
+        modal.classList.add("hidden");
+        modal.style.display = "none";
+      }
+      var depBox = document.getElementById("fin-add-deposit-box");
+      if (depBox) depBox.style.display = "none";
+      var expBox = document.getElementById("fin-add-expense-box");
+      if (expBox) expBox.style.display = "none";
       activeFinApp = null;
     }
 
@@ -3647,11 +3837,17 @@
     }
 
     m.classList.remove("hidden");
+    m.classList.add("show");
+    m.style.display = "flex";
   }
 
   function closeCounselorProfileModal() {
     var m = document.getElementById("modal-counselor-profile");
-    if (m) m.classList.add("hidden");
+    if (m) {
+      m.classList.remove("show");
+      m.classList.add("hidden");
+      m.style.display = "none";
+    }
   }
 
   function handleSaveCounselorProfile(e) {
@@ -3691,11 +3887,17 @@
     document.getElementById("broadcast-subject").value = "";
     document.getElementById("broadcast-body").value = "";
     m.classList.remove("hidden");
+    m.classList.add("show");
+    m.style.display = "flex";
   }
 
   function closeCounselorBroadcastModal() {
     var m = document.getElementById("modal-counselor-broadcast");
-    if (m) m.classList.add("hidden");
+    if (m) {
+      m.classList.remove("show");
+      m.classList.add("hidden");
+      m.style.display = "none";
+    }
   }
 
   function handleDispatchBroadcastEmail(e) {
@@ -3784,12 +3986,12 @@
         document.getElementById("pkg-program").value = "All Degrees (Bachelor & Master)";
         document.getElementById("pkg-desc").value = "";
         document.getElementById("pkg-inclusions").value = "";
-        modal.style.display = "flex";
+        openPackageEditorModal();
       };
     }
 
-    if (closeBtn) closeBtn.onclick = function () { modal.style.display = "none"; };
-    if (cancelBtn) cancelBtn.onclick = function () { modal.style.display = "none"; };
+    if (closeBtn) closeBtn.onclick = closePackageEditorModal;
+    if (cancelBtn) cancelBtn.onclick = closePackageEditorModal;
 
     if (saveBtn) {
       saveBtn.onclick = function () {
@@ -3806,7 +4008,7 @@
 
         api("adminSavePackage", pkgData).then(function () {
           saveBtn.disabled = false;
-          modal.style.display = "none";
+          closePackageEditorModal();
           renderPackagesCards();
           renderCounselorPackagesSummary();
         }).catch(function (err) {
@@ -3871,7 +4073,7 @@
           document.getElementById("pkg-program").value = pkg.targetProgram;
           document.getElementById("pkg-desc").value = pkg.description;
           document.getElementById("pkg-inclusions").value = Array.isArray(pkg.inclusions) ? pkg.inclusions.join("\n") : pkg.inclusions;
-          document.getElementById("package-editor-modal").style.display = "flex";
+          openPackageEditorModal();
         };
       });
 
@@ -4219,12 +4421,14 @@
     }
 
     modal.classList.remove("hidden");
+    modal.classList.add("show");
     modal.style.display = "flex";
   }
 
   function closeUniEditorModal() {
     var modal = document.getElementById("modal-uni-editor");
     if (modal) {
+      modal.classList.remove("show");
       modal.classList.add("hidden");
       modal.style.display = "none";
     }
@@ -4448,12 +4652,14 @@
     }
 
     modal.classList.remove("hidden");
+    modal.classList.add("show");
     modal.style.display = "flex";
   }
 
   function closeTestimonialEditorModal() {
     var modal = document.getElementById("modal-testimonial-editor");
     if (modal) {
+      modal.classList.remove("show");
       modal.classList.add("hidden");
       modal.style.display = "none";
     }
