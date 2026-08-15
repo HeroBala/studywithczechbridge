@@ -5,8 +5,3 @@ firebase-debug.log
 .DS_Store
 Thumbs.db
 screenshots/
-
-# Environment variables / secrets
-.env
-.env.*
-!.env.example
