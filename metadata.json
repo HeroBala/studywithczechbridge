@@ -1,8 +1,0 @@
-{
-  "name": "StudyWithCzechBridge",
-  "description": "Comprehensive university admission support, visa guidance, paperwork preparation (legalization, superlegalization, and nostrification), and student relocation assistance for international applicants worldwide planning to study in the Czech Republic and Europe.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
