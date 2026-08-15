@@ -2,8 +2,6 @@ rules_version = '2';
 
 // ============================================================
 // StudyWithCzechBridge — Role-Based Firestore Security Rules
-// Supports new structure with assignedAgentId, assignedAgentName,
-// super_admin hierarchy, and safe document property getters.
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -12,42 +10,27 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function userDocExists() {
-      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
-    }
-
     function getUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    function getUserRole() {
-      return userDocExists() ? getUserData().get('role', 'student') : 'student';
-    }
-
-    function isSuperAdmin() {
-      return signedIn() && getUserRole() == 'super_admin';
+    function isStaff() {
+      return signedIn() && (
+        getUserData().role == 'admin' ||
+        getUserData().role == 'super_admin' ||
+        getUserData().role == 'staff' ||
+        getUserData().role == 'agent' ||
+        getUserData().role == 'counselor' ||
+        getUserData().role == 'councilor' ||
+        getUserData().role == 'admission_officer' ||
+        getUserData().role == 'finance_manager'
+      );
     }
 
     function isAdmin() {
       return signedIn() && (
-        getUserRole() == 'super_admin' ||
-        getUserRole() == 'admin' ||
-        getUserRole() == 'administrator'
-      );
-    }
-
-    function isStaff() {
-      return signedIn() && (
-        getUserRole() == 'super_admin' ||
-        getUserRole() == 'admin' ||
-        getUserRole() == 'administrator' ||
-        getUserRole() == 'agent' ||
-        getUserRole() == 'counselor' ||
-        getUserRole() == 'councilor' ||
-        getUserRole() == 'staff' ||
-        getUserRole() == 'advisor' ||
-        getUserRole() == 'admission_officer' ||
-        getUserRole() == 'finance_manager'
+        getUserData().role == 'admin' ||
+        getUserData().role == 'super_admin'
       );
     }
 
@@ -55,14 +38,7 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == userId;
     }
 
-    // ------------------------------------------------------------
-    // Public directories & University Catalogs (MENDELU, etc.)
-    // ------------------------------------------------------------
-    match /MENDELU/{id} {
-      allow read: if true;
-      allow write: if isStaff();
-    }
-
+    // Public directories (Universities, Testimonials, Packages, MENDELU)
     match /universities/{id} {
       allow read: if true;
       allow write: if isStaff();
@@ -78,92 +54,42 @@ service cloud.firestore {
       allow write: if isStaff();
     }
 
-    // ------------------------------------------------------------
-    // Contact & Message Inquiries
-    // ------------------------------------------------------------
+    match /MENDELU/{id} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
+    // Contact form submissions: public create, staff read/write
     match /messages/{id} {
       allow create: if true;
       allow read, update, delete: if isStaff();
     }
 
-    // ------------------------------------------------------------
-    // Users profile collection (Includes assignedAgentId & role)
-    // ------------------------------------------------------------
+    // Users profile collection
     match /users/{userId} {
-      // Students can read their own profile; staff can read all student profiles
       allow read: if isOwner(userId) || isStaff();
-      
-      // New user registration creates their own document
-      allow create: if signedIn() && (
-        request.auth.uid == userId ||
-        isStaff()
-      );
-      
-      // Users can update their own details, but non-admins cannot elevate their own role
-      allow update: if (
-        isOwner(userId) && (
-          !('role' in request.resource.data) ||
-          request.resource.data.role == resource.data.get('role', 'student')
-        )
-      ) || isAdmin();
-      
-      // Only super_admin or admin can delete user profiles
+      allow create: if signedIn();
+      allow update: if isOwner(userId) || isStaff();
       allow delete: if isAdmin();
     }
 
-    // ------------------------------------------------------------
     // Applications collection
-    // ------------------------------------------------------------
     match /applications/{appId} {
-      allow read: if (
-        isOwner(appId) ||
-        (signedIn() && resource.data.get('userId', '') == request.auth.uid) ||
-        isStaff()
-      );
-      
-      allow create: if signedIn() && (
-        request.resource.data.get('userId', '') == request.auth.uid ||
-        request.auth.uid == appId ||
-        isStaff()
-      );
-      
-      allow update: if (
-        isOwner(appId) ||
-        (signedIn() && resource.data.get('userId', '') == request.auth.uid) ||
-        isStaff()
-      );
-      
+      allow read: if isOwner(appId) || (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
+      allow create: if signedIn();
+      allow update: if isOwner(appId) || (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
       allow delete: if isAdmin();
     }
 
-    // ------------------------------------------------------------
     // Documents collection
-    // ------------------------------------------------------------
     match /documents/{docId} {
-      allow read: if (
-        (signedIn() && resource.data.get('userId', '') == request.auth.uid) ||
-        isStaff()
-      );
-      
-      allow create: if signedIn() && (
-        request.resource.data.get('userId', '') == request.auth.uid ||
-        isStaff()
-      );
-      
-      allow update: if (
-        (signedIn() && resource.data.get('userId', '') == request.auth.uid) ||
-        isStaff()
-      );
-      
-      allow delete: if (
-        (signedIn() && resource.data.get('userId', '') == request.auth.uid) ||
-        isStaff()
-      );
+      allow read: if (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
+      allow delete: if (signedIn() && resource.data.userId == request.auth.uid) || isStaff();
     }
 
-    // ------------------------------------------------------------
-    // Tasks, Alerts, & Operations
-    // ------------------------------------------------------------
+    // Tasks & Alerts
     match /tasks/{taskId} {
       allow read, write: if signedIn();
     }
@@ -172,12 +98,9 @@ service cloud.firestore {
       allow read, write: if isStaff();
     }
 
-    // ------------------------------------------------------------
     // Fallback rule for any other collection
-    // ------------------------------------------------------------
     match /{document=**} {
       allow read, write: if isStaff();
     }
   }
 }
-

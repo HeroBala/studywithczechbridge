@@ -1542,7 +1542,6 @@
         '<td>' + agentInfo + '</td>' +
         '<td style="text-align:right; white-space:nowrap;">' +
           '<button class="btn btn-dark btn-sm btn-manage-app" data-id="' + a.id + '" style="font-size:0.75rem; padding:0.25rem 0.55rem; margin-right:0.3rem;">⚡ Manage</button>' +
-          '<button class="btn btn-outline btn-sm btn-finance-app" data-id="' + a.id + '" style="font-size:0.75rem; padding:0.25rem 0.45rem; margin-right:0.3rem; border-color:#16a34a; color:#15803d; font-weight:700;">💳 Finance</button>' +
           '<button class="btn btn-outline btn-sm btn-email-app" data-email="' + a.email + '" style="font-size:0.75rem; padding:0.25rem 0.4rem; border-color:var(--teal-600); color:var(--teal-700);">✉️ Email</button>' +
         '</td>';
 
@@ -1556,12 +1555,6 @@
     body.querySelectorAll(".btn-manage-app").forEach(function (btn) {
       btn.addEventListener("click", function () {
         openModal(this.getAttribute("data-id"));
-      });
-    });
-
-    body.querySelectorAll(".btn-finance-app").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        openFinancialLedgerModal(this.getAttribute("data-id"));
       });
     });
 
@@ -2869,37 +2862,6 @@
       mFinBtn.onclick = function () {
         if (currentApp) {
           openFinancialLedgerModal(currentApp.id);
-        }
-      };
-    }
-
-    // Quick 50k deposit verify & unlock button
-    var quick50kBtn = document.getElementById("btn-quick-verify-50k");
-    if (quick50kBtn) {
-      quick50kBtn.onclick = function () {
-        if (!activeFinApp) return;
-        var today = new Date().toISOString().split("T")[0];
-        // Check if 50k deposit already exists
-        var has50k = activeFinDeposits.some(function (d) { return (parseFloat(d.amount) || 0) >= 50000 && d.status === "Verified"; });
-        if (!has50k) {
-          activeFinDeposits.push({
-            id: "dep_" + Date.now(),
-            date: today,
-            description: "Initial Mandatory Deposit (50k Process Unlock)",
-            amount: 50000,
-            method: "Bank Transfer",
-            ref: "DEP50K-" + Math.random().toString(36).substring(2, 7).toUpperCase(),
-            status: "Verified"
-          });
-        }
-        var reqDepEl = document.getElementById("fin-input-required-deposit");
-        if (reqDepEl) reqDepEl.value = "50000";
-        var depStatEl = document.getElementById("fin-input-deposit-status");
-        if (depStatEl) depStatEl.value = "Deposit Paid";
-        
-        renderFinModalTables();
-        if (typeof showToast === "function") {
-          showToast("⚡ 50,000 Deposit applied! Click 'Save Financial Ledger' to persist changes.");
         }
       };
     }
