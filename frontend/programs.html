@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Programs — StudyCzechBridge</title>
+  <meta name="description" content="Popular English-taught study programs in the Czech Republic: Business, Computer Science, Engineering, Agriculture, Medicine and Social Sciences.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header"></header>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Study Programs & Academic Database</h1>
+    <p>Search accredited Bachelor's, Master's & Doctorate degree programs across all top destination countries with direct application links and portal registration.</p>
+  </div>
+</section>
+
+<!-- SECTION 1: GLOBAL STUDY PROGRAMS DATABASE (WITH APPLICATION LINKS) -->
+<section class="section" id="programs-database-section" style="padding-top: 2.5rem; padding-bottom: 2.5rem;">
+  <div class="container">
+    <div class="section-head" style="text-align: left; margin-bottom: 1.5rem;">
+      <div class="kicker">Live Admissions Directory</div>
+      <h2>🎓 Global Study Programs Database</h2>
+      <p class="muted">Search top English-taught programs across 18+ destination countries. Click <strong>Apply Now</strong> to submit your application directly or visit the official university portal.</p>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="card" style="margin-bottom: 1.5rem; background: #ffffff; border: 1px solid var(--line); padding: 1.25rem; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; flex: 1; min-width: 280px;">
+          <input type="text" id="prog-search" placeholder="🔍 Search degree, field, university, or country..." style="flex: 1.5; min-width: 220px; padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem;">
+          
+          <select id="prog-country-filter" style="padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 160px; background: white;">
+            <option value="">🌍 All Countries</option>
+          </select>
+
+          <select id="prog-level-filter" style="padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 150px; background: white;">
+            <option value="">🎓 All Degree Levels</option>
+            <option value="Bachelor's">Bachelor's Degree</option>
+            <option value="Master's">Master's Degree</option>
+            <option value="Doctorate">PhD / Doctorate</option>
+          </select>
+
+          <select id="prog-field-filter" style="padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 170px; background: white;">
+            <option value="">📚 All Fields / Streams</option>
+            <option value="Computer Science & IT">Computer Science &amp; IT</option>
+            <option value="Business & Economics">Business &amp; Economics</option>
+            <option value="Engineering & Technology">Engineering &amp; Technology</option>
+            <option value="Medicine & Health Sciences">Medicine &amp; Health</option>
+            <option value="Agriculture & Food Science">Agriculture &amp; Food</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button type="button" id="prog-reset-btn" class="btn btn-outline" style="padding: 0.45rem 0.8rem; font-size: 0.82rem; border-radius: 8px;">🔄 Reset</button>
+          <span class="badge" id="prog-count-badge" style="background: #2563eb; color: white; font-size: 0.88rem; padding: 0.5rem 0.9rem; border-radius: 20px; font-weight: 700;">Loading Programs...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Programs Data Table -->
+    <div style="overflow-x: auto; background: white; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.04);">
+      <table class="table" style="width: 100%; border-collapse: collapse; min-width: 1050px; font-size: 0.88rem;">
+        <thead>
+          <tr style="background: #1e293b; color: white; text-align: left;">
+            <th style="padding: 0.9rem 1rem; font-weight: 700; width: 14%;">Country &amp; Location</th>
+            <th style="padding: 0.9rem 1rem; font-weight: 700; width: 25%;">Program Name &amp; Field</th>
+            <th style="padding: 0.9rem 1rem; font-weight: 700; width: 20%;">University Name</th>
+            <th style="padding: 0.9rem 1rem; font-weight: 700; width: 12%; text-align: center;">Level &amp; Duration</th>
+            <th style="padding: 0.9rem 1rem; font-weight: 700; width: 13%;">Tuition Fees</th>
+            <th style="padding: 0.9rem 1rem; font-weight: 700; width: 16%; text-align: center;">Application Links</th>
+          </tr>
+        </thead>
+        <tbody id="prog-table-body">
+          <tr><td colspan="6" style="text-align: center; padding: 2.5rem;" class="muted">Loading global programs database...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-head" style="text-align: left; margin-bottom: 1.5rem;">
+      <div class="kicker">Study Disciplines</div>
+      <h2>Popular Academic Fields</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="icon">📊</div>
+        <h3>Business &amp; Economics</h3>
+        <p>Business administration, international trade, finance, marketing and economics programs at leading
+        Czech business faculties. Ideal for students aiming at Europe's corporate job market.</p>
+        <p class="mt-1"><strong>Levels:</strong> Bachelor's · Master's &nbsp;|&nbsp; <strong>Language:</strong> English</p>
+      </div>
+      <div class="card">
+        <div class="icon">💻</div>
+        <h3>Computer Science &amp; IT</h3>
+        <p>Software engineering, artificial intelligence, data science, cybersecurity and informatics. Brno
+        and Prague are major European tech hubs with strong internship opportunities.</p>
+        <p class="mt-1"><strong>Levels:</strong> Bachelor's · Master's &nbsp;|&nbsp; <strong>Language:</strong> English</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚙️</div>
+        <h3>Engineering &amp; Technology</h3>
+        <p>Mechanical, civil, electrical, automotive and industrial engineering. The Czech Republic's strong
+        manufacturing sector (Škoda, Siemens, Bosch) offers excellent career pathways.</p>
+        <p class="mt-1"><strong>Levels:</strong> Bachelor's · Master's &nbsp;|&nbsp; <strong>Language:</strong> English</p>
+      </div>
+      <div class="card">
+        <div class="icon">🌾</div>
+        <h3>Agriculture &amp; Food Science</h3>
+        <p>Agribusiness, food technology, sustainable agriculture and forestry — practical programs with
+        modern research farms and affordable tuition.</p>
+        <p class="mt-1"><strong>Levels:</strong> Bachelor's · Master's &nbsp;|&nbsp; <strong>Language:</strong> English</p>
+      </div>
+      <div class="card">
+        <div class="icon">🩺</div>
+        <h3>Medicine &amp; Health Sciences</h3>
+        <p>General medicine, dentistry, pharmacy and nursing at internationally recognized faculties.
+        Degrees valid across the EU and widely respected worldwide.</p>
+        <p class="mt-1"><strong>Levels:</strong> Master's (long-cycle) &nbsp;|&nbsp; <strong>Language:</strong> English</p>
+      </div>
+      <div class="card">
+        <div class="icon">🌍</div>
+        <h3>Social Sciences &amp; Humanities</h3>
+        <p>International relations, political science, psychology, media studies and European studies —
+        perfect for careers in NGOs, diplomacy and international organizations.</p>
+        <p class="mt-1"><strong>Levels:</strong> Bachelor's · Master's &nbsp;|&nbsp; <strong>Language:</strong> English</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="university-database-section">
+  <div class="container">
+    <div class="section-head" style="text-align: left; margin-bottom: 1.5rem;">
+      <div class="kicker">Comprehensive Directory</div>
+      <h2>🏛️ Global Universities &amp; Country Database</h2>
+      <p class="muted">Explore accredited public and private universities across destination countries. View official website links, department subject counts, and tuition fee ranges.</p>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card" style="margin-bottom: 1.5rem; background: #ffffff; border: 1px solid var(--line); padding: 1rem 1.25rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; flex: 1; min-width: 280px;">
+          <input type="text" id="uni-search" placeholder="🔍 Search university name, country, website, tuition fees..." style="flex: 1; min-width: 220px; padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem;">
+          
+          <select id="uni-country-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 170px;">
+            <option value="">🌍 All Countries</option>
+          </select>
+
+          <select id="uni-type-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 140px;">
+            <option value="">🏛️ All Types</option>
+            <option value="Public">Public University</option>
+            <option value="Private">Private University</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button type="button" id="uni-reset-btn" class="btn btn-outline" style="padding: 0.45rem 0.8rem; font-size: 0.82rem; border-radius: 8px;">🔄 Reset</button>
+          <span class="badge" id="uni-count-badge" style="background: var(--blue-900); color: white; font-size: 0.85rem; padding: 0.45rem 0.85rem; border-radius: 20px;">Loading Database...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8-Column Data Table Container -->
+    <div style="overflow-x: auto; background: white; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+      <table class="table" style="width: 100%; border-collapse: collapse; min-width: 1000px; font-size: 0.88rem;">
+        <thead>
+          <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid var(--line);">
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 12%;">1. Country</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 22%;">2. University &amp; Website</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">3. Total Univ.</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">4. Type</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 8%; text-align: center;">5. Science</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">6. Commerce</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">7. Arts / Eng</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 20%; background: #eef2ff;">8. Tuition Fees Range</th>
+          </tr>
+        </thead>
+        <tbody id="uni-table-body">
+          <tr><td colspan="8" style="text-align: center; padding: 2.5rem;" class="muted">Loading global university database...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Good to Know</div>
+      <h2>Intakes &amp; Requirements</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card"><div class="icon">🗓️</div><h3>Intakes</h3><p>Main intake in <strong>September</strong>; several universities also offer a <strong>February</strong> intake. Applications typically open 6–10 months ahead.</p></div>
+      <div class="card"><div class="icon">🇬🇧</div><h3>English Requirement</h3><p>Most programs accept <strong>IELTS 6.0–6.5</strong> or equivalent. Some universities offer their own English tests — we'll advise what fits you.</p></div>
+      <div class="card"><div class="icon">📜</div><h3>Academic Documents</h3><p>SSC &amp; HSC certificates (or bachelor's degree for master's programs), transcripts, and a valid passport. We handle the nostrification guidance.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta-band">
+      <h2>Not Sure Which Program Fits You?</h2>
+      <p>Tell us your background in a free consultation and we'll shortlist the right programs for you.</p>
+      <a class="btn btn-primary" href="register.html">Apply &amp; Get Matched</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer"></footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/programs.js"></script>
+</body>
+</html>

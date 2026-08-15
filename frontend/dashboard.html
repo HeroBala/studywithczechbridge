@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard — StudyCzechBridge</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header"></header>
+
+<div class="app-page">
+  <div class="container">
+
+    <div class="app-head">
+      <div>
+        <h1 id="hello">My Dashboard</h1>
+        <p>Track your application and manage your documents.</p>
+      </div>
+      <a class="btn btn-outline btn-sm" href="index.html">← Back to Website</a>
+    </div>
+
+    <div class="notice" id="dash-notice"></div>
+
+    <!-- Country & Regional Preference Bar -->
+    <div class="panel" style="background: linear-gradient(135deg, #0d2344 0%, #1a3a68 100%); color: #ffffff; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 16px rgba(13,35,68,0.25);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">🌍 Target Destination & Track Roadmap</div>
+          <h2 style="margin: 0.2rem 0; color: #ffffff; font-size: 1.35rem;">Destination: <span id="dash-active-country-label" style="color:#60a5fa;">Czech Republic</span></h2>
+          <p style="margin: 0; color: #cbd5e1; font-size: 0.85rem;">Select your target destination country to automatically view the exact step-by-step roadmap, required documents, and embassy milestones for that specific country.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <select id="dash-country-select" style="padding: 0.65rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.92rem; border: 1px solid rgba(255,255,255,0.3); background: #1e293b; color: #ffffff; cursor: pointer; min-width: 260px;">
+            <option value="Czech Republic">🇨🇿 Czech Republic (Higher Education, Nostrification & Degree)</option>
+            <option value="Germany">🇩🇪 Germany (Uni-Assist / VPD / Blocked Account €11,904)</option>
+            <option value="Austria">🇦🇹 Austria (Study Permit / OeAD Dormitories / Vienna)</option>
+            <option value="Italy">🇮🇹 Italy (Universitaly / CIMEA / Permesso di Soggiorno)</option>
+            <option value="United Kingdom">🇬🇧 United Kingdom (Study Visa / CAS / BRP / eVisa)</option>
+            <option value="Sweden">🇸🇪 Sweden (University Admissions Sweden / Skatteverket)</option>
+            <option value="Netherlands">🇳🇱 Netherlands (Studielink / IND Recognized Sponsor / BSN)</option>
+            <option value="France">🇫🇷 France (Campus France / France-Visas / VLS-TS)</option>
+            <option value="Spain">🇪🇸 Spain (Estancia por Estudios / UNEDasiss / TIE Card)</option>
+            <option value="Ireland">🇮🇪 Ireland (Stamp 2 Student Visa / CAO / IRP Card)</option>
+            <option value="Canada">🇨🇦 Canada (DLI LOA / PAL / GIC $20,635 / Study Permit)</option>
+            <option value="Australia">🇦🇺 Australia (CRICOS Offer / OSHC / Genuine Student / Subclass 500)</option>
+            <option value="Poland">🇵🇱 Poland (University Admissions & Polish Sworn Translation)</option>
+            <option value="Estonia">🇪🇪 Estonia (DreamApply Estonia / Study D-Visa)</option>
+            <option value="Hungary">🇭🇺 Hungary (Higher Education & Study Visa D)</option>
+            <option value="Slovakia">🇸🇰 Slovakia (Higher Education & Study Visa D)</option>
+            <option value="Iceland">🇮🇸 Iceland (Higher Education / Útlendingastofnun)</option>
+            <option value="Serbia">🇷🇸 Serbia (NES Labour Test / Type D Work Visa / Single Permit)</option>
+            <option value="Malaysia">🇲🇾 Malaysia (ESD Work Permit / VDR Calling Visa / i-Kad)</option>
+            <option value="Moldova">🇲🇩 Moldova (Employment Authorization / Long-Stay Work Visa)</option>
+            <option value="Europe General">🇪🇺 Europe General (Schengen Higher Education Pathway)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deposit Lock Notification Banner (Displayed when first deposit < 50k) -->
+    <div id="deposit-lock-banner" class="panel" style="display: none; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; box-shadow: 0 6px 20px rgba(245,158,11,0.15);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div style="flex: 1; min-width: 280px;">
+          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #b45309; color: #ffffff; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+            🔒 Process Tracking Locked
+          </div>
+          <h2 style="margin: 0 0 0.4rem 0; color: #78350f; font-size: 1.3rem; font-weight: 800;">
+            Initial Minimum Deposit of 50,000 Required to Track Process
+          </h2>
+          <p style="margin: 0 0 0.75rem 0; color: #92400e; font-size: 0.9rem; line-height: 1.5;">
+            Welcome to CzechBridge! To initiate your university application filing, sworn document legalization, and activate live step-by-step milestone tracking, a <strong>minimum initial deposit of 50,000</strong> (or €500 equivalent) is required.
+          </p>
+          <div style="background: rgba(255,255,255,0.7); border: 1px solid #fde68a; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #78350f; margin-bottom: 0.3rem;">
+              <span>Deposit Verification Progress:</span>
+              <span id="deposit-lock-progress-text">0 / 50,000 Paid</span>
+            </div>
+            <div style="background: #e2e8f0; border-radius: 10px; height: 10px; overflow: hidden;">
+              <div id="deposit-lock-progress-bar" style="background: #16a34a; width: 0%; height: 100%; transition: width 0.4s ease;"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 220px;">
+          <a href="#vault-upload-anchor" id="btn-jump-upload-deposit" class="btn btn-primary btn-sm" style="background: #d97706; border-color: #d97706; font-weight: 700; text-align: center; padding: 0.6rem 1rem;">
+            📤 Upload Payment Proof / Slip
+          </a>
+          <a id="btn-whatsapp-counselor" href="https://wa.me/420776829474" target="_blank" class="btn btn-outline btn-sm" style="border-color: #128c7e; color: #128c7e; font-weight: 700; text-align: center;">
+            💬 Contact Counselor on WhatsApp
+          </a>
+        </div>
+      </div>
+      <!-- Bank Account Quick Wire Box -->
+      <div style="margin-top: 0.85rem; background: #ffffff; border: 1px solid #fde68a; padding: 0.85rem; border-radius: 8px; font-size: 0.82rem; color: #451a03; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.6rem;">
+        <div><strong>Beneficiary:</strong> StudyCzechBridge s.r.o.</div>
+        <div><strong>Bank:</strong> Fio banka a.s. (Brno, Czech Republic)</div>
+        <div><strong>IBAN:</strong> CZ23 2010 0000 0029 0188 3912</div>
+        <div><strong>SWIFT / BIC:</strong> FIOBCZPPXXX</div>
+      </div>
+    </div>
+
+    <!-- Deposit Unlocked Confirmation Banner (Displayed when deposit >= 50k) -->
+    <div id="deposit-unlocked-banner" class="panel" style="display: none; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1.5px solid #86efac; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.5rem;">🟢</span>
+          <div>
+            <div style="font-weight: 800; color: #166534; font-size: 0.98rem;">
+              Initial Deposit Verified (50,000+ Completed) · Real-Time Tracking Active
+            </div>
+            <div class="muted" style="font-size: 0.82rem; color: #15803d;">
+              Your admission processing is active. You can track all completed steps and next actionable milestones below.
+            </div>
+          </div>
+        </div>
+        <span class="badge st-approved" style="font-size: 0.82rem; padding: 0.35rem 0.75rem; font-weight: 800;">
+          ✓ Process Unlocked
+        </span>
+      </div>
+    </div>
+
+    <!-- Application status -->
+    <div class="panel">
+      <h2>📋 My Application & Status</h2>
+      <div id="app-loading" class="muted"><span class="spinner dark"></span> Loading your application...</div>
+
+      <div id="app-none" class="hidden">
+        <p class="muted">You haven't submitted an application yet. It takes about 10 minutes — and it's free.</p>
+        <p class="mt-2"><a class="btn btn-primary" href="apply.html">Start My Application</a></p>
+      </div>
+
+      <div id="app-view" class="hidden">
+        <p>Current status:&nbsp; <span id="app-status" class="badge">—</span></p>
+        <div class="tracker" id="tracker"></div>
+        <div id="admin-note-box" class="notice info" style="display:none;"></div>
+        <dl class="kv mt-2">
+          <dt>Program</dt><dd id="v-program">—</dd>
+          <dt>Level</dt><dd id="v-level">—</dd>
+          <dt>Intake</dt><dd id="v-intake">—</dd>
+          <dt>Submitted</dt><dd id="v-submitted">—</dd>
+          <dt>Last update</dt><dd id="v-updated">—</dd>
+        </dl>
+        <p class="mt-2" id="edit-wrap" style="display:none;">
+          <a class="btn btn-outline btn-sm" href="apply.html">Edit My Application</a>
+          <span class="muted" style="font-size:.82rem;"> (editing is possible while status is "Pending Review")</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Personalized Process Overview: Steps Done vs Next Steps To Complete -->
+    <div class="panel" id="student-process-overview-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h2 style="margin: 0; color: var(--blue-900);">🎯 My Personalized Process Tracking</h2>
+          <p class="muted" style="margin: 0.2rem 0 0 0; font-size: 0.88rem;">
+            Easily see the steps you have completed, your current actionable milestone, and upcoming stages.
+          </p>
+        </div>
+        <div id="process-stats-badge" style="font-size: 0.85rem; font-weight: 800; background: var(--blue-50); color: var(--blue-800); padding: 0.35rem 0.85rem; border-radius: 20px; border: 1px solid var(--blue-200);">
+          0 / 20 Milestones Completed
+        </div>
+      </div>
+
+      <!-- Overall Progress Bar -->
+      <div style="margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 700; color: var(--blue-900); margin-bottom: 0.35rem;">
+          <span>Journey Progress</span>
+          <span id="process-percentage-label">0% Completed</span>
+        </div>
+        <div style="background: #e2e8f0; border-radius: 12px; height: 12px; overflow: hidden;">
+          <div id="process-progress-bar-fill" style="background: linear-gradient(90deg, #10b981 0%, #0284c7 100%); width: 0%; height: 100%; transition: width 0.4s ease;"></div>
+        </div>
+      </div>
+
+      <!-- 3 Categorized Milestone Blocks Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+        <!-- Block 1: Steps Done By You -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1.1rem; display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="margin: 0; color: #166534; font-size: 1rem; font-weight: 800;">✅ Steps Done by You</h3>
+            <span id="steps-done-count-badge" class="badge st-approved" style="font-size: 0.75rem;">0 Done</span>
+          </div>
+          <div id="steps-done-list" style="flex: 1; max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div class="muted" style="font-size: 0.85rem; padding: 0.5rem; text-align: center;">No steps completed yet. Complete your first deposit and initial document checks to get started!</div>
+          </div>
+        </div>
+
+        <!-- Block 2: Current Active Step (Next To Be Completed) -->
+        <div style="background: #eff6ff; border: 2px solid #60a5fa; border-radius: 10px; padding: 1.1rem; display: flex; flex-direction: column; box-shadow: 0 4px 14px rgba(37,99,235,0.1);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="margin: 0; color: #1e40af; font-size: 1rem; font-weight: 800;">🔄 Next Step To Be Completed</h3>
+            <span class="badge" style="background: #2563eb; color: #ffffff; font-size: 0.75rem; font-weight: 700;">Active Focus</span>
+          </div>
+          <div id="current-active-step-card" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="muted" style="font-size: 0.85rem;">Loading current actionable step...</div>
+          </div>
+        </div>
+
+        <!-- Block 3: Upcoming Steps -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.1rem; display: flex; flex-direction: column;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h3 style="margin: 0; color: #334155; font-size: 1rem; font-weight: 800;">⏳ Upcoming Milestones</h3>
+            <span id="steps-upcoming-count-badge" class="badge" style="background: #e2e8f0; color: #475569; font-size: 0.75rem;">20 Remaining</span>
+          </div>
+          <div id="steps-upcoming-list" style="flex: 1; max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem;">
+            <div class="muted" style="font-size: 0.85rem; padding: 0.5rem; text-align: center;">Loading upcoming roadmap...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assigned Dedicated Counselor Card -->
+    <div class="panel" id="counselor-card" style="border-left: 4px solid var(--blue-700); background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="text-transform: uppercase; font-weight: 800; font-size: 0.75rem; color: var(--blue-700); letter-spacing: 0.5px; margin-bottom: 0.2rem;">🇨🇿 Your Assigned Counselor in Brno</div>
+          <h3 id="counselor-name" style="margin: 0; color: var(--blue-900); font-size: 1.25rem;">Checking counselor assignment...</h3>
+          <p id="counselor-desc" class="muted" style="margin: 0.3rem 0 0 0; font-size: 0.88rem;">Your counselor guides your university submission, nostrification, and Czech visa application.</p>
+        </div>
+        <div id="counselor-contact-box" style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;">
+          <a id="counselor-email-btn" href="mailto:info@studywithczechbridge.com" class="btn btn-primary btn-sm">✉️ Contact My Counselor</a>
+          <span id="counselor-email-text" class="muted" style="font-size: 0.82rem;">info@studywithczechbridge.com</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step-by-Step European & Global Admission Roadmap -->
+    <div class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <h2 style="margin:0; color: var(--blue-900);">🎓 Destination Admission &amp; Visa Roadmap</h2>
+          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.88rem;">Track every single milestone of your journey from initial qualifications &amp; document legalization to university offers, visa, and arrival.</p>
+        </div>
+      </div>
+
+      <!-- Real-time Step Sequence Tracing Trail Box -->
+      <div id="student-step-tracing-box" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: 10px; padding: 1.1rem; margin-bottom: 1.25rem; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 14px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <div>
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">⚡ Real-time Execution Tracing</div>
+            <h3 style="margin: 0.1rem 0 0 0; color: #ffffff; font-size: 1.1rem; font-weight: 800;">🔗 Milestone Completion Sequence Trail</h3>
+          </div>
+          <div style="font-size: 0.78rem; background: rgba(56,189,248,0.15); color: #38bdf8; padding: 3px 10px; border-radius: 20px; font-weight: 700; border: 1px solid rgba(56,189,248,0.3);">
+            Flexi-Order Tracking Active
+          </div>
+        </div>
+        <p style="margin: 0 0 0.75rem 0; font-size: 0.82rem; color: #cbd5e1; line-height: 1.4;">
+          Steps can be completed in any flexible order based on your university deadlines and document readiness. Below is your exact completion trail (e.g., Step 1 ➔ Step 3 ➔ Step 2):
+        </p>
+        <div id="student-step-tracing-trail" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; background: rgba(0,0,0,0.35); padding: 0.75rem; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.2); min-height: 48px;">
+          <span style="color:#94a3b8; font-size:0.85rem; font-style:italic;">No milestones completed yet. Update any step below to begin your sequence tracing trail!</span>
+        </div>
+      </div>
+
+      <div id="student-20-steps-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.85rem;">
+        <div class="muted center py-2">Loading your admission timeline...</div>
+      </div>
+    </div>
+
+    <!-- My Tasks/Steps Checklist -->
+    <div class="panel">
+      <div id="role-taskboard-container"></div>
+    </div>
+
+    <!-- Student Financial Ledger & Expense Statement -->
+    <div class="panel" id="student-financial-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h2 style="margin:0; color: var(--blue-900);">💳 Financial Statement &amp; Managed Expenses</h2>
+          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.88rem;">Track your package charges, deposit payments received by CzechBridge, and official managed expenses (university fees, legalizations, visa).</p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="download-student-statement-btn" style="border-color: var(--blue-700); color: var(--blue-700); font-weight: 700;">
+          📄 Download Official Statement
+        </button>
+      </div>
+
+      <!-- Financial Metric Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--blue-800); margin-bottom: 0.3rem;">Contract Fee</div>
+          <div id="st-fin-service-fee" style="font-size: 1.3rem; font-weight: 800; color: var(--blue-900);">€0.00</div>
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #166534; margin-bottom: 0.3rem;">Required Deposit</div>
+          <div id="st-fin-req-deposit" style="font-size: 1.3rem; font-weight: 800; color: #15803d;">€500.00</div>
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #166534; margin-bottom: 0.3rem;">Deposits Paid</div>
+          <div id="st-fin-deposits-paid" style="font-size: 1.3rem; font-weight: 800; color: #15803d;">€0.00</div>
+        </div>
+        <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #9a3412; margin-bottom: 0.3rem;">Managed Expenses</div>
+          <div id="st-fin-total-expenses" style="font-size: 1.3rem; font-weight: 800; color: #c2410c;">€0.00</div>
+        </div>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #991b1b; margin-bottom: 0.3rem;">Outstanding Due</div>
+          <div id="st-fin-balance-due" style="font-size: 1.3rem; font-weight: 800; color: #dc2626;">€0.00</div>
+        </div>
+        <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #9a3412; margin-bottom: 0.3rem;">Payment Due Date</div>
+          <div id="st-fin-due-date" style="font-size: 1rem; font-weight: 800; color: #c2410c;">As per schedule</div>
+        </div>
+      </div>
+
+      <!-- Deposit & Wire Transfer Action Banner -->
+      <div id="st-payment-action-banner" style="background: #fffbebf5; border: 1px solid #fde68a; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3 style="margin: 0; color: #92400e; font-size: 0.95rem;">⚠️ Assigned Deposit &amp; Due Payment Notice</h3>
+            <p id="st-payment-banner-text" style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #78350f;">
+              Your initial deposit payment of <strong>€500.00</strong> is required to proceed with your university application and document translation.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="#vault" class="btn btn-primary btn-sm" style="font-size: 0.8rem; background: #d97706; border-color: #d97706;">📤 Upload Payment Proof</a>
+            <a href="mailto:info@studywithczechbridge.com" class="btn btn-outline btn-sm" style="font-size: 0.8rem; color: #78350f; border-color: #f59e0b;">✉️ Request Invoice</a>
+          </div>
+        </div>
+        <!-- Wire Transfer Bank Account Box -->
+        <div style="margin-top: 0.75rem; background: #ffffff; border: 1px solid #fef3c7; padding: 0.75rem; border-radius: 6px; font-size: 0.82rem; color: #451a03; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
+          <div><strong>Beneficiary:</strong> StudyCzechBridge s.r.o.</div>
+          <div><strong>Bank:</strong> Fio banka a.s. (Brno, Czech Republic)</div>
+          <div><strong>IBAN (EUR):</strong> CZ23 2010 0000 0029 0188 3912</div>
+          <div><strong>BIC / SWIFT:</strong> FIOBCZPPXXX</div>
+        </div>
+      </div>
+
+      <!-- Tables Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+        <!-- Deposits Received Table -->
+        <div style="border: 1px solid var(--line); border-radius: 8px; padding: 1rem; background: var(--white);">
+          <h3 style="margin-top: 0; margin-bottom: 0.75rem; font-size: 1rem; color: var(--blue-900); border-bottom: 1px solid var(--line); padding-bottom: 0.5rem;">
+            📥 Deposit Payments Received
+          </h3>
+          <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Method</th>
+                  <th style="text-align: right;">Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="st-deposits-tbody">
+                <tr><td colspan="5" class="muted center py-2">No deposit payment records found.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Managed Expenses Table -->
+        <div style="border: 1px solid var(--line); border-radius: 8px; padding: 1rem; background: var(--white);">
+          <h3 style="margin-top: 0; margin-bottom: 0.75rem; font-size: 1rem; color: var(--blue-900); border-bottom: 1px solid var(--line); padding-bottom: 0.5rem;">
+            📤 Managed Expenses &amp; Legalization Fees
+          </h3>
+          <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Category / Note</th>
+                  <th>Paid By</th>
+                  <th style="text-align: right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="st-expenses-tbody">
+                <tr><td colspan="4" class="muted center py-2">No managed expenses recorded.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="panel" id="vault-upload-anchor">
+      <h2>📁 My Documents &amp; Payment Proof Vault</h2>
+      <p class="muted" style="font-size:.9rem;">Upload clear scans (PDF or images, max 10 MB each):
+        Deposit Payment Slip, passport, academic certificates, transcripts, IELTS result and passport-size photo.</p>
+
+      <div class="form-row mt-2">
+        <div class="field">
+          <label for="doc-type">Document Type</label>
+          <select id="doc-type">
+            <option value="Deposit Payment Receipt">💳 Deposit Payment Receipt / Wire Slip</option>
+            <option value="Passport">Passport</option>
+            <option value="SSC Certificate">SSC Certificate / High School</option>
+            <option value="HSC Certificate">HSC Certificate / 12th Grade</option>
+            <option value="Academic Transcript">Academic Transcript</option>
+            <option value="IELTS / English Test">IELTS / English Test</option>
+            <option value="Bachelor Certificate">Bachelor Certificate / Degree</option>
+            <option value="Photo">Photo</option>
+            <option value="Other">Other Document</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <input type="file" id="doc-file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+        </div>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <div class="dz-icon">📤</div>
+        <div><strong>Click to choose a file</strong> or drag &amp; drop it here</div>
+        <div style="font-size:.8rem;">PDF, JPG or PNG — up to 10 MB</div>
+      </div>
+      <p class="mt-1"><button class="btn btn-dark btn-sm" id="upload-btn">Upload Document</button>
+        <span id="upload-state" class="muted" style="font-size:.85rem;"></span></p>
+
+      <ul class="doc-list mt-2" id="doc-list">
+        <li class="muted">Loading documents...</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer"></footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/taskboard.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
