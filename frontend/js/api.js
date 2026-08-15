@@ -583,6 +583,207 @@ function clearSession() { localStorage.removeItem("cb_session"); }
 
 function fail(code) { throw new Error(ERROR_TEXT[code] || code); }
 
+/* ============================================================
+   DATA STRUCTURE NORMALIZERS (Handles schema variances)
+   ============================================================ */
+
+function normalizeTimestamp(val) {
+  if (!val) return new Date().toISOString();
+  if (typeof val === "string") {
+    var d = new Date(val);
+    if (!isNaN(d.getTime())) return d.toISOString();
+    return val;
+  }
+  if (typeof val === "number") {
+    return new Date(val).toISOString();
+  }
+  if (typeof val.toDate === "function") {
+    try { return val.toDate().toISOString(); } catch (e) {}
+  }
+  if (val.seconds !== undefined) {
+    return new Date(val.seconds * 1000).toISOString();
+  }
+  if (val._seconds !== undefined) {
+    return new Date(val._seconds * 1000).toISOString();
+  }
+  return new Date().toISOString();
+}
+
+function normalizeUser(u, fallbackId) {
+  if (!u || typeof u !== "object") return null;
+  var id = u.id || u.uid || u._id || fallbackId || ("user-" + Math.random().toString(36).substring(2, 9));
+  var fullName = u.fullName || u.full_name || u.displayName || u.name || u.studentName || u.applicantName || "Student";
+  var email = (u.email || u.userEmail || u.applicantEmail || "").trim();
+  var phone = u.phone || u.phoneNumber || u.phone_number || u.tel || "";
+  
+  var rawRole = String(u.role || u.userRole || u.accountType || "").toLowerCase().trim();
+  var role = "student";
+  if (rawRole === "super_admin" || rawRole === "superadmin" || rawRole === "super admin") role = "super_admin";
+  else if (rawRole === "admin" || rawRole === "administrator") role = "admin";
+  else if (rawRole === "agent" || rawRole === "counselor" || rawRole === "councilor" || rawRole === "staff" || rawRole === "advisor") role = "agent";
+  else if (rawRole === "admission_officer" || rawRole === "admissions") role = "admission_officer";
+  else if (rawRole === "finance_manager" || rawRole === "finance") role = "finance_manager";
+  else if (rawRole === "student" || rawRole === "client" || rawRole === "applicant" || rawRole === "user") role = "student";
+
+  var assignedAgentId = u.assignedAgentId || u.assigned_agent_id || u.agentId || u.counselorId || "";
+  var assignedAgentName = u.assignedAgentName || u.assigned_agent_name || u.agentName || u.counselorName || "";
+  var assignedAgentEmail = u.assignedAgentEmail || u.assigned_agent_email || u.agentEmail || u.counselorEmail || "";
+  var assignedAgentPhone = u.assignedAgentPhone || u.assigned_agent_phone || u.agentPhone || u.counselorPhone || "";
+
+  return Object.assign({}, u, {
+    id: id,
+    uid: id,
+    fullName: fullName,
+    email: email,
+    phone: phone,
+    role: role,
+    assignedAgentId: assignedAgentId,
+    assignedAgentName: assignedAgentName,
+    assignedAgentEmail: assignedAgentEmail,
+    assignedAgentPhone: assignedAgentPhone,
+    createdAt: normalizeTimestamp(u.createdAt || u.created_at || u.timestamp)
+  });
+}
+
+function normalizeApplication(a, fallbackId) {
+  if (!a || typeof a !== "object") return null;
+  var id = a.id || a.appId || a._id || fallbackId || ("app-" + Math.random().toString(36).substring(2, 9));
+  var userId = a.userId || a.user_id || a.studentId || a.student_id || a.applicantId || id;
+  var fullName = a.fullName || a.full_name || a.applicantName || a.applicant_name || a.name || a.studentName || "Applicant";
+  var email = (a.email || a.applicantEmail || a.applicant_email || a.userEmail || "").trim();
+  var phone = a.phone || a.phoneNumber || a.phone_number || a.tel || "";
+  var level = a.level || a.targetDegree || a.target_degree || a.degree || a.studyLevel || "Bachelor's";
+  var program = a.program || a.targetField || a.target_field || a.field || a.fieldOfStudy || a.programName || a.course || "General Studies";
+  var targetCountry = a.targetCountry || a.country || a.destinationCountry || a.destination_country || "Czech Republic";
+  var intake = a.intake || a.targetIntake || a.target_intake || a.startTerm || "Flexible / Next Intake";
+  var serviceTrack = a.serviceTrack || a.service_track || a.track || "🇨🇿 Czech Republic (20 Steps)";
+
+  var rawStatus = String(a.status || a.appStatus || "").trim();
+  var status = "Pending Review";
+  var match = CB_STATUSES.filter(function (s) { return s.toLowerCase() === rawStatus.toLowerCase(); })[0];
+  if (match) {
+    status = match;
+  } else if (rawStatus.toLowerCase() === "submitted" || rawStatus.toLowerCase() === "new" || rawStatus.toLowerCase() === "pending") {
+    status = "Pending Review";
+  } else if (rawStatus.toLowerCase() === "reviewing" || rawStatus.toLowerCase() === "in_review" || rawStatus.toLowerCase() === "under review") {
+    status = "Under Review";
+  } else if (rawStatus.toLowerCase() === "approved" || rawStatus.toLowerCase() === "accepted") {
+    status = "Accepted";
+  } else if (rawStatus.toLowerCase() === "visa" || rawStatus.toLowerCase() === "visa_processing") {
+    status = "Visa Processing";
+  }
+
+  var assignedAgentId = a.assignedAgentId || a.assigned_agent_id || a.agentId || a.counselorId || "";
+  var assignedAgentName = a.assignedAgentName || a.assigned_agent_name || a.agentName || a.counselorName || "";
+  var assignedAgentEmail = a.assignedAgentEmail || a.assigned_agent_email || a.agentEmail || a.counselorEmail || "";
+  var assignedAgentPhone = a.assignedAgentPhone || a.assigned_agent_phone || a.agentPhone || a.counselorPhone || "";
+
+  return Object.assign({}, a, {
+    id: id,
+    userId: userId,
+    fullName: fullName,
+    email: email,
+    phone: phone,
+    level: level,
+    targetDegree: level,
+    program: program,
+    targetField: program,
+    country: targetCountry,
+    targetCountry: targetCountry,
+    intake: intake,
+    targetIntake: intake,
+    serviceTrack: serviceTrack,
+    status: status,
+    assignedAgentId: assignedAgentId,
+    assignedAgentName: assignedAgentName,
+    assignedAgentEmail: assignedAgentEmail,
+    assignedAgentPhone: assignedAgentPhone,
+    createdAt: normalizeTimestamp(a.createdAt || a.created_at || a.submittedAt || a.appliedAt || a.submissionDate || a.date),
+    submittedAt: normalizeTimestamp(a.submittedAt || a.createdAt || a.created_at || a.appliedAt),
+    updatedAt: normalizeTimestamp(a.updatedAt || a.updated_at || a.lastUpdated || a.createdAt || a.created_at)
+  });
+}
+
+function normalizeDocument(d, fallbackId) {
+  if (!d || typeof d !== "object") return null;
+  var id = d.id || d.docId || d._id || fallbackId || ("doc-" + Math.random().toString(36).substring(2, 9));
+  var userId = d.userId || d.user_id || d.studentId || d.student_id || "";
+  var fileName = d.fileName || d.file_name || d.name || d.title || d.documentName || "Document.pdf";
+  var fileUrl = d.fileUrl || d.file_url || d.url || d.downloadURL || d.downloadUrl || d.link || "";
+  var docType = d.docType || d.doc_type || d.type || d.category || "Other";
+  var rawStatus = String(d.status || d.docStatus || "pending").toLowerCase().trim();
+  var status = "pending";
+  if (rawStatus === "verified" || rawStatus === "approved" || rawStatus === "received") status = "verified";
+  else if (rawStatus === "rejected" || rawStatus === "declined") status = "rejected";
+  else status = "pending";
+
+  return Object.assign({}, d, {
+    id: id,
+    userId: userId,
+    fileName: fileName,
+    fileUrl: fileUrl,
+    docType: docType,
+    status: status,
+    uploadedAt: normalizeTimestamp(d.uploadedAt || d.createdAt || d.created_at || d.timestamp || d.date)
+  });
+}
+
+function normalizeMessage(m, fallbackId) {
+  if (!m || typeof m !== "object") return null;
+  var id = m.id || m.messageId || m._id || fallbackId || ("msg-" + Math.random().toString(36).substring(2, 9));
+  var senderId = m.senderId || m.sender_id || m.from || m.sender || "";
+  var senderName = m.senderName || m.sender_name || m.fromName || m.name || "User";
+  var email = m.email || m.senderEmail || m.sender_email || "";
+  var phone = m.phone || m.senderPhone || "";
+  var receiverId = m.receiverId || m.receiver_id || m.to || m.recipientId || "";
+  var body = m.body || m.message || m.text || m.content || "";
+  var senderRole = m.senderRole || m.sender_role || m.role || "student";
+
+  return Object.assign({}, m, {
+    id: id,
+    name: senderName,
+    senderName: senderName,
+    senderId: senderId,
+    email: email,
+    phone: phone,
+    receiverId: receiverId,
+    body: body,
+    message: body,
+    senderRole: senderRole,
+    createdAt: normalizeTimestamp(m.createdAt || m.created_at || m.timestamp || m.sentAt)
+  });
+}
+
+function normalizeTask(t, fallbackId) {
+  if (!t || typeof t !== "object") return null;
+  var id = t.id || t.taskId || t._id || fallbackId || ("task-" + Math.random().toString(36).substring(2, 9));
+  var title = t.title || t.name || t.taskTitle || "Task";
+  var description = t.description || t.details || t.desc || "";
+  var assignedTo = t.assignedTo || t.assigned_to || t.assignedUserId || t.assignee || "";
+  var assignedName = t.assignedName || t.assigned_name || t.assigneeName || "";
+  var dueDate = t.dueDate || t.due_date || t.deadline || "";
+  var rawStatus = String(t.status || t.taskStatus || "todo").toLowerCase().trim();
+  var status = "todo";
+  if (rawStatus === "in_progress" || rawStatus === "in-progress" || rawStatus === "doing") status = "in_progress";
+  else if (rawStatus === "completed" || rawStatus === "done" || rawStatus === "finished") status = "completed";
+  else status = "todo";
+
+  var priority = String(t.priority || "medium").toLowerCase();
+  if (priority !== "low" && priority !== "medium" && priority !== "high") priority = "medium";
+
+  return Object.assign({}, t, {
+    id: id,
+    title: title,
+    description: description,
+    assignedTo: assignedTo,
+    assignedName: assignedName,
+    dueDate: dueDate,
+    status: status,
+    priority: priority,
+    createdAt: normalizeTimestamp(t.createdAt || t.created_at || t.timestamp)
+  });
+}
+
 function api(action, data) {
   if (typeof MOCK_MODE !== "undefined" && MOCK_MODE) {
     return mockApi(action, data || {});
@@ -840,13 +1041,14 @@ function fbHandle(fb, action, d) {
           return db.collection("users").where("email", "==", String(u0.email || "").toLowerCase().trim()).get().then(function (q) {
             p = !q.empty ? q.docs[0].data() : null;
             var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
-            var userData = { uid: u0.uid, email: (p && p.email) || u0.email, fullName: (p && p.fullName) || u0.email, phone: (p && p.phone) || "", role: role, assignedAgentId: (p && p.assignedAgentId) || "", assignedAgentName: (p && p.assignedAgentName) || "" };
+            var userData = normalizeUser({ uid: u0.uid, id: u0.uid, email: (p && p.email) || u0.email, fullName: (p && p.fullName) || u0.email, phone: (p && p.phone) || "", role: role, assignedAgentId: (p && p.assignedAgentId) || "", assignedAgentName: (p && p.assignedAgentName) || "" }, u0.uid);
             db.collection("users").doc(u0.uid).set({ email: userData.email, fullName: userData.fullName, role: userData.role }, { merge: true }).catch(function() {});
             return { ok: true, user: userData };
           });
         }
         var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
-        return { ok: true, user: { uid: u0.uid, email: p.email || u0.email, fullName: p.fullName || u0.email, phone: p.phone || "", role: role, assignedAgentId: p.assignedAgentId || "", assignedAgentName: p.assignedAgentName || "" } };
+        var normalized = normalizeUser(Object.assign({}, p, { uid: u0.uid, id: u0.uid, role: role, email: p.email || u0.email, fullName: p.fullName || u0.email }), u0.uid);
+        return { ok: true, user: normalized };
       });
     }
 
@@ -887,8 +1089,8 @@ function fbHandle(fb, action, d) {
       var u2 = fbUser(fb);
       return db.collection("applications").doc(u2.uid).get().then(function (snap) {
         if (!snap.exists) return { ok: true, application: null };
-        var a = snap.data(); a.id = snap.id;
-        return { ok: true, application: a };
+        var a = snap.data();
+        return { ok: true, application: normalizeApplication(a, snap.id) };
       });
     }
 
@@ -1102,21 +1304,21 @@ function fbHandle(fb, action, d) {
           return { docs: [] };
         });
       }).then(function (q) {
-        var apps = (q.docs || []).map(function (s) { var x = s.data(); x.id = s.id; return x; });
+        var apps = (q.docs || []).map(function (s) { return normalizeApplication(s.data(), s.id); });
         if (apps.length === 0) {
           try {
             var mdb = JSON.parse(localStorage.getItem("cb_mock_db") || "{}");
             if (mdb.applications && mdb.applications.length) {
-              apps = mdb.applications;
+              apps = mdb.applications.map(function (a) { return normalizeApplication(a, a.id); });
             } else if (typeof mockDb !== "undefined" && mockDb.applications) {
-              apps = mockDb.applications;
+              apps = mockDb.applications.map(function (a) { return normalizeApplication(a, a.id); });
             }
           } catch (e) {}
         }
         return { ok: true, applications: apps, statuses: CB_STATUSES };
       }).catch(function (err) {
         console.warn("adminListApplications fallback error:", err);
-        var fallbackApps = (typeof mockDb !== "undefined" && mockDb.applications) ? mockDb.applications : [];
+        var fallbackApps = (typeof mockDb !== "undefined" && mockDb.applications) ? mockDb.applications.map(function (a) { return normalizeApplication(a, a.id); }) : [];
         return { ok: true, applications: fallbackApps, statuses: CB_STATUSES };
       });
     }
@@ -1139,10 +1341,10 @@ function fbHandle(fb, action, d) {
           } catch (e) {}
         }
         if (!a) fail("NOT_FOUND");
-        if (!a.id) a.id = d.appId;
-        return db.collection("documents").where("userId", "==", a.userId).get().catch(function () { return { docs: [] }; }).then(function (q) {
-          var docs = (q.docs || []).map(function (s) { var x = s.data(); x.id = s.id; return x; });
-          return { ok: true, application: a, documents: docs, statuses: CB_STATUSES };
+        var normApp = normalizeApplication(a, snap && snap.id ? snap.id : d.appId);
+        return db.collection("documents").where("userId", "==", normApp.userId).get().catch(function () { return { docs: [] }; }).then(function (q) {
+          var docs = (q.docs || []).map(function (s) { return normalizeDocument(s.data(), s.id); });
+          return { ok: true, application: normApp, documents: docs, statuses: CB_STATUSES };
         });
       });
     }
@@ -1174,7 +1376,7 @@ function fbHandle(fb, action, d) {
           return { docs: [] };
         });
       }).then(function (q) {
-        return { ok: true, documents: (q.docs || []).map(function (s) { var x = s.data(); x.id = s.id; return x; }) };
+        return { ok: true, documents: (q.docs || []).map(function (s) { return normalizeDocument(s.data(), s.id); }) };
       }).catch(function () {
         return { ok: true, documents: [] };
       });
@@ -1184,10 +1386,10 @@ function fbHandle(fb, action, d) {
       return fbRequireStaff(fb).then(function () {
         return db.collection("documents").get();
       }).then(function (q) {
-        return { ok: true, documents: q.docs.map(function (s) { var x = s.data(); x.id = s.id; return x; }) };
+        return { ok: true, documents: q.docs.map(function (s) { return normalizeDocument(s.data(), s.id); }) };
       }).catch(function (err) {
         console.warn("adminListAllDocuments error:", err);
-        var docs = (typeof mockDb !== "undefined" && mockDb.documents) ? mockDb.documents : [];
+        var docs = (typeof mockDb !== "undefined" && mockDb.documents) ? mockDb.documents.map(function (x) { return normalizeDocument(x, x.id); }) : [];
         return { ok: true, documents: docs };
       });
     }
@@ -1199,15 +1401,15 @@ function fbHandle(fb, action, d) {
           return { docs: [] };
         });
       }).then(function (q) {
-        var msgs = (q.docs || []).map(function (s) { var x = s.data(); x.id = s.id; return x; });
+        var msgs = (q.docs || []).map(function (s) { return normalizeMessage(s.data(), s.id); });
         if (msgs.length === 0 && typeof mockDb !== "undefined" && mockDb.messages) {
-          msgs = mockDb.messages;
+          msgs = mockDb.messages.map(function (m) { return normalizeMessage(m, m.id); });
         }
         msgs.sort(function (a, b) { return String(b.createdAt).localeCompare(String(a.createdAt)); });
         return { ok: true, messages: msgs };
       }).catch(function (err) {
         console.warn("adminListMessages fallback error:", err);
-        var msgs = (typeof mockDb !== "undefined" && mockDb.messages) ? mockDb.messages : [];
+        var msgs = (typeof mockDb !== "undefined" && mockDb.messages) ? mockDb.messages.map(function (m) { return normalizeMessage(m, m.id); }) : [];
         return { ok: true, messages: msgs };
       });
     }
@@ -1270,13 +1472,13 @@ function fbHandle(fb, action, d) {
               });
             } catch (e) {}
 
-            var usersList = Object.keys(userMap).map(function (k) { return userMap[k]; });
+            var usersList = Object.keys(userMap).map(function (k) { return normalizeUser(userMap[k], k); });
             return { ok: true, users: usersList };
           });
         });
       }).catch(function (err) {
         console.warn("adminListUsers fallback error:", err);
-        var fallbackUsers = (typeof mockDb !== "undefined") ? mockDb().users : [];
+        var fallbackUsers = (typeof mockDb !== "undefined") ? mockDb().users.map(function (u) { return normalizeUser(u, u.id); }) : [];
         return { ok: true, users: fallbackUsers };
       });
     }
@@ -2246,16 +2448,7 @@ function mockHandle(action, data) {
       var me = db.users.filter(function (x) { return x.id === sess.userId; })[0];
       return {
         ok: true,
-        user: {
-          email: me.email,
-          fullName: me.fullName,
-          phone: me.phone,
-          role: me.role,
-          assignedAgentId: me.assignedAgentId || "",
-          assignedAgentName: me.assignedAgentName || "",
-          assignedAgentEmail: me.assignedAgentEmail || "",
-          assignedAgentPhone: me.assignedAgentPhone || ""
-        }
+        user: normalizeUser(me, sess.userId)
       };
     }
     case "submitApplication": {
@@ -2284,7 +2477,7 @@ function mockHandle(action, data) {
     case "getMyApplication": {
       needSession();
       var a2 = db.applications.filter(function (a) { return a.userId === sess.userId; })[0] || null;
-      return { ok: true, application: a2 };
+      return { ok: true, application: a2 ? normalizeApplication(a2, a2.id) : null };
     }
     case "uploadDocument": {
       needSession();
@@ -2296,11 +2489,11 @@ function mockHandle(action, data) {
       db.documents.push(doc);
       mockSave(db);
       mockTriggerAlert(db, sess.userId, "document_uploaded", "Uploaded a new document: " + doc.docType + " (" + doc.fileName + ")");
-      return { ok: true, document: doc };
+      return { ok: true, document: normalizeDocument(doc, doc.id) };
     }
     case "listMyDocuments":
       needSession();
-      return { ok: true, documents: userDocs(sess.userId) };
+      return { ok: true, documents: userDocs(sess.userId).map(function (d) { return normalizeDocument(d, d.id); }) };
     case "downloadDocument": {
       needSession();
       var dd = db.documents.filter(function (x) { return x.id === data.docId; })[0];
@@ -2332,12 +2525,12 @@ function mockHandle(action, data) {
     }
     case "adminListApplications":
       needStaff();
-      return { ok: true, applications: db.applications, statuses: CB_STATUSES };
+      return { ok: true, applications: db.applications.map(function (a) { return normalizeApplication(a, a.id); }), statuses: CB_STATUSES };
     case "adminGetApplication": {
       needStaff();
       var a3 = db.applications.filter(function (a) { return a.id === data.appId; })[0];
       if (!a3) fail("NOT_FOUND");
-      return { ok: true, application: a3, documents: userDocs(a3.userId), statuses: CB_STATUSES };
+      return { ok: true, application: normalizeApplication(a3, a3.id), documents: userDocs(a3.userId).map(function (d) { return normalizeDocument(d, d.id); }), statuses: CB_STATUSES };
     }
     case "adminSetStatus": {
       needStaff();
@@ -2378,7 +2571,7 @@ function mockHandle(action, data) {
     }
     case "adminListUserDocuments":
       needStaff();
-      return { ok: true, documents: userDocs(data.userId) };
+      return { ok: true, documents: userDocs(data.userId).map(function (d) { return normalizeDocument(d, d.id); }) };
     case "adminDeleteDocument": {
       needStaff();
       db.documents = db.documents.filter(function (d) { return d.id !== data.docId; });
@@ -2387,22 +2580,11 @@ function mockHandle(action, data) {
     }
     case "adminListMessages":
       needStaff();
-      return { ok: true, messages: db.messages };
+      return { ok: true, messages: db.messages.map(function (m) { return normalizeMessage(m, m.id); }) };
     case "adminListUsers":
       needStaff();
       return { ok: true, users: db.users.map(function (u4) {
-        return {
-          id: u4.id,
-          email: u4.email,
-          fullName: u4.fullName,
-          phone: u4.phone,
-          role: u4.role,
-          createdAt: u4.createdAt,
-          assignedAgentId: u4.assignedAgentId || "",
-          assignedAgentName: u4.assignedAgentName || "",
-          assignedAgentEmail: u4.assignedAgentEmail || "",
-          assignedAgentPhone: u4.assignedAgentPhone || ""
-        };
+        return normalizeUser(u4, u4.id);
       }) };
     case "adminUpdateUserRole": {
       needAdminOrSuper();

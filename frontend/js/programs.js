@@ -12,20 +12,39 @@ runOnReady(function () {
   var progCountrySelect = document.getElementById("prog-country-filter");
   var progLevelSelect = document.getElementById("prog-level-filter");
   var progFieldSelect = document.getElementById("prog-field-filter");
+  var progResetBtn = document.getElementById("prog-reset-btn");
 
   if (progSearchInput) progSearchInput.addEventListener("input", debounce(loadPrograms, 300));
   if (progCountrySelect) progCountrySelect.addEventListener("change", loadPrograms);
   if (progLevelSelect) progLevelSelect.addEventListener("change", loadPrograms);
   if (progFieldSelect) progFieldSelect.addEventListener("change", loadPrograms);
+  if (progResetBtn) {
+    progResetBtn.addEventListener("click", function () {
+      if (progSearchInput) progSearchInput.value = "";
+      if (progCountrySelect) progCountrySelect.value = "";
+      if (progLevelSelect) progLevelSelect.value = "";
+      if (progFieldSelect) progFieldSelect.value = "";
+      loadPrograms();
+    });
+  }
 
   // University Directory Controls
   var uniSearchInput = document.getElementById("uni-search");
   var uniCountrySelect = document.getElementById("uni-country-filter");
   var uniTypeSelect = document.getElementById("uni-type-filter");
+  var uniResetBtn = document.getElementById("uni-reset-btn");
 
   if (uniSearchInput) uniSearchInput.addEventListener("input", debounce(loadUniversities, 300));
   if (uniCountrySelect) uniCountrySelect.addEventListener("change", loadUniversities);
   if (uniTypeSelect) uniTypeSelect.addEventListener("change", loadUniversities);
+  if (uniResetBtn) {
+    uniResetBtn.addEventListener("click", function () {
+      if (uniSearchInput) uniSearchInput.value = "";
+      if (uniCountrySelect) uniCountrySelect.value = "";
+      if (uniTypeSelect) uniTypeSelect.value = "";
+      loadUniversities();
+    });
+  }
 
   // Initial loads
   loadPrograms();
