@@ -12,47 +12,148 @@
 
 <header class="site-header"></header>
 
-<!-- 1. Process & Track Selector Section -->
-<section class="section alt" id="process-section" style="padding-top: 1.75rem;">
+<!-- 1. Top Section: Country Filtering & Global Universities Directory -->
+<section class="section" id="university-database-section" style="padding-top: 1.5rem; padding-bottom: 2rem;">
   <div class="container">
     
-    <!-- Top Filter Header Bar with Interactive Process Roadmap & Non-Linear Tracing Info -->
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 12px; padding: 0.9rem 1.2rem; margin-bottom: 0.85rem; border: 1px solid rgba(56,189,248,0.25); box-shadow: var(--shadow-sm);">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+    <!-- Top Header Banner -->
+    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; border: 1px solid rgba(56,189,248,0.25); box-shadow: var(--shadow-md);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.15rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
+            <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">🏛️ European &amp; International Database</span>
+            <span style="background: rgba(56,189,248,0.15); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.3); font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 999px;">Direct University Directory &amp; Fees</span>
+          </div>
+          <h1 style="margin: 0; color: #ffffff; font-size: 1.45rem; font-weight: 800; line-height: 1.25;">Explore Universities by Destination Country</h1>
+          <p style="margin: 0.25rem 0 0 0; font-size: 0.88rem; color: #cbd5e1;">Select your target country below to filter accredited universities, tuition fees, faculty subjects, and admission tracks.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="register.html" class="btn btn-primary" style="background: #0284c7; border-color: #0284c7; font-weight: 700; font-size: 0.85rem; padding: 0.45rem 0.9rem; white-space: nowrap;">
+            🚀 Apply to University
+          </a>
+          <a href="#process-section" class="btn btn-outline" style="color: #ffffff; border-color: rgba(255,255,255,0.3); font-weight: 700; font-size: 0.85rem; padding: 0.45rem 0.9rem; white-space: nowrap;">
+            ⬇ View Process Steps
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Country Filtering Control Bar (Top Filter Pills) -->
+    <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+        <div style="font-weight: 800; font-size: 0.88rem; color: var(--blue-900); display: flex; align-items: center; gap: 0.4rem;">
+          <span>🎯 Select Destination Country Filter:</span>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;" id="active-country-filter-label">Showing: All Countries</div>
+      </div>
+
+      <!-- Country Filter Buttons -->
+      <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="uni-country-tabs">
+        <button class="btn btn-dark uni-country-btn active" data-country="" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🌍 All Countries</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Czech Republic" data-track="czech" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇨🇿 Czech Republic</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Germany" data-track="germany" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇩🇪 Germany</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Poland" data-track="poland" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇵🇱 Poland</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Austria" data-track="austria" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇦🇹 Austria</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Italy" data-track="italy" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇮🇹 Italy</button>
+        <button class="btn btn-outline uni-country-btn" data-country="United Kingdom" data-track="uk" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇬🇧 United Kingdom</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Ireland" data-track="ireland" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇮🇪 Ireland</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Canada" data-track="canada" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇨🇦 Canada</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Australia" data-track="australia" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇦🇺 Australia</button>
+        <button class="btn btn-outline uni-country-btn" data-country="France" data-track="france" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇫🇷 France</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Spain" data-track="spain" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇪🇸 Spain</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Sweden" data-track="sweden" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇸🇪 Sweden</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Netherlands" data-track="netherlands" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇳🇱 Netherlands</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Hungary" data-track="czech" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇭🇺 Hungary</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Serbia" data-track="serbia" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇷🇸 Serbia (Work &amp; Study)</button>
+        <button class="btn btn-outline uni-country-btn" data-country="Malaysia" data-track="malaysia" style="border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700;">🇲🇾 Malaysia (Work &amp; Study)</button>
+      </div>
+
+      <!-- Quick Search & Type Selectors -->
+      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dashed var(--line);">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; flex: 1; min-width: 280px;">
+          <input type="text" id="uni-search" placeholder="🔍 Search university name, country, degrees, tuition fees..." style="flex: 1; min-width: 220px; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.88rem;">
+          
+          <select id="uni-country-filter" style="padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.88rem; font-weight: 600; min-width: 170px;">
+            <option value="">🌍 All Countries</option>
+          </select>
+
+          <select id="uni-type-filter" style="padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.88rem; font-weight: 600; min-width: 130px;">
+            <option value="">🏛️ All Types</option>
+            <option value="Public">Public University</option>
+            <option value="Private">Private University</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <span class="badge" id="uni-count-badge" style="background: var(--blue-900); color: white; font-size: 0.85rem; padding: 0.4rem 0.8rem; border-radius: 20px;">Loading Database...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8-Column Data Table Container (Universities List Based on Country) -->
+    <div style="overflow-x: auto; background: white; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 2.5rem;">
+      <table class="table" style="width: 100%; border-collapse: collapse; min-width: 1000px; font-size: 0.88rem;">
+        <thead>
+          <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid var(--line);">
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 13%;">1. Country</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 22%;">2. University &amp; Website</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">3. Total Univ.</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">4. Type</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 8%; text-align: center;">5. Science</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">6. Commerce</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">7. Arts / Eng</th>
+            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 19%; background: #eef2ff;">8. Tuition Fees Range</th>
+          </tr>
+        </thead>
+        <tbody id="uni-table-body">
+          <tr><td colspan="8" style="text-align: center; padding: 2.5rem;" class="muted">Loading global university database...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- 2. Step-by-Step Process Roadmap Section -->
+<section class="section alt" id="process-section" style="padding-top: 2rem; border-top: 1px solid var(--line);">
+  <div class="container">
+    
+    <!-- Process Roadmap Header -->
+    <div style="background: linear-gradient(135deg, #0d2344 0%, #173866 100%); color: #ffffff; border-radius: 12px; padding: 1.1rem 1.4rem; margin-bottom: 1.25rem; border: 1px solid rgba(56,189,248,0.25); box-shadow: var(--shadow-sm);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.2rem;">
             <span style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8; font-weight: 800;">Interactive Process Roadmap</span>
             <span style="background: rgba(56,189,248,0.15); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.3); font-size: 0.72rem; font-weight: 700; padding: 0.1rem 0.5rem; border-radius: 999px;">⚡ Non-Linear Flexible Execution &amp; Tracing</span>
           </div>
-          <h2 style="margin: 0; color: #ffffff; font-size: 1.15rem; font-weight: 800; line-height: 1.25;">End-to-End European Study &amp; Work Visa Roadmap</h2>
-          <p style="margin: 0.15rem 0 0 0; font-size: 0.83rem; color: #cbd5e1;">Select destination country filter below to view step-by-step requirements from profile screening to visa issuance &amp; airport arrival.</p>
+          <h2 style="margin: 0; color: #ffffff; font-size: 1.3rem; font-weight: 800; line-height: 1.25;">Step-by-Step Admission &amp; Visa Roadmap</h2>
+          <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #cbd5e1;">Review the exact sequential milestone steps from eligibility profile screening to visa issuance and campus arrival.</p>
         </div>
-        <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-          <button id="toggle-nonlinear-info" class="btn btn-sm" style="background: rgba(255,255,255,0.1); color: #f1f5f9; border: 1px solid rgba(255,255,255,0.2); font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.65rem; cursor: pointer;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <button id="toggle-nonlinear-info" class="btn btn-sm" style="background: rgba(255,255,255,0.1); color: #f1f5f9; border: 1px solid rgba(255,255,255,0.2); font-size: 0.78rem; font-weight: 700; padding: 0.35rem 0.7rem; cursor: pointer;">
             ⚡ Flexible Order Info
           </button>
-          <a href="register.html" class="btn btn-primary btn-sm" style="background: #0284c7; border-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.8rem; padding: 0.3rem 0.75rem; white-space: nowrap;">
+          <a href="register.html" class="btn btn-primary btn-sm" style="background: #0284c7; border-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 0.82rem; padding: 0.35rem 0.85rem; white-space: nowrap;">
             🚀 Start Your Track
           </a>
         </div>
       </div>
 
-      <!-- Minimized Expandable Non-Linear Execution Drawer -->
-      <div id="nonlinear-info-box" style="display: none; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.2); font-size: 0.82rem; color: #e2e8f0; line-height: 1.45;">
+      <!-- Expandable Non-Linear Execution Drawer -->
+      <div id="nonlinear-info-box" style="display: none; margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed rgba(255,255,255,0.2); font-size: 0.84rem; color: #e2e8f0; line-height: 1.5;">
         <strong style="color: #38bdf8;">Complete Any Milestone in Your Preferred Order:</strong> Every student's journey is unique. Any milestone can be completed earlier or later depending on your document readiness and university deadlines. Your personal dashboard automatically traces your exact sequence trail (e.g., <strong>Step 1 ➔ Step 3 ➔ Step 2</strong>).
       </div>
     </div>
 
-    <!-- Filter Control Bar (Top Destination Country Filter) -->
+    <!-- Process Country Track Selector Tabs -->
     <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm);">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
         <div style="font-weight: 800; font-size: 0.85rem; color: var(--blue-900); display: flex; align-items: center; gap: 0.4rem;">
-          <span>🎯 Select Destination Country Filter:</span>
+          <span>🎯 Select Process Roadmap Country Track:</span>
         </div>
-        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">15 Country Tracks</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">15 Country Tracks Available</div>
       </div>
       
-      <!-- Country Track Selector Tabs (FILTER AT THE TOP) -->
       <div style="display:flex; gap:0.35rem; flex-wrap:wrap;" id="home-process-track-tabs">
         <button class="btn btn-dark home-track-btn active" data-track="czech" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇨🇿 Czech Republic (20 Steps)</button>
         <button class="btn btn-outline home-track-btn" data-track="germany" style="border-radius:20px; padding:0.3rem 0.75rem; font-size:0.8rem; font-weight:700;">🇩🇪 Germany (10 Steps)</button>
@@ -72,72 +173,17 @@
       </div>
     </div>
 
-    <!-- Dynamic Steps Container -->
+    <!-- Dynamic Process Steps Container -->
     <div id="home-process-steps-container"></div>
   </div>
 </section>
 
-<!-- 2. 8-Column Global Universities & Country Database Section -->
-<section class="section" id="university-database-section">
-  <div class="container">
-    <div class="section-head" style="text-align: left; margin-bottom: 1.5rem;">
-      <div class="kicker">Comprehensive Directory</div>
-      <h2>🏛️ European &amp; International Universities Database</h2>
-      <p class="muted">Search accredited public and private universities across destination countries. Compare total universities per country, type, subject departments, and tuition fee ranges.</p>
-    </div>
-
-    <!-- Search & Filter Bar -->
-    <div class="card" style="margin-bottom: 1.5rem; background: #ffffff; border: 1px solid var(--line); padding: 1rem 1.25rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between;">
-        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; flex: 1; min-width: 280px;">
-          <input type="text" id="uni-search" placeholder="🔍 Search university name, country, website, tuition fees..." style="flex: 1; min-width: 220px; padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem;">
-          
-          <select id="uni-country-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 170px;">
-            <option value="">🌍 All Countries</option>
-          </select>
-
-          <select id="uni-type-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 140px;">
-            <option value="">🏛️ All Types</option>
-            <option value="Public">Public University</option>
-            <option value="Private">Private University</option>
-          </select>
-        </div>
-
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <span class="badge" id="uni-count-badge" style="background: var(--blue-900); color: white; font-size: 0.85rem; padding: 0.45rem 0.85rem; border-radius: 20px;">Loading Database...</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 8-Column Data Table Container -->
-    <div style="overflow-x: auto; background: white; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-      <table class="table" style="width: 100%; border-collapse: collapse; min-width: 1000px; font-size: 0.88rem;">
-        <thead>
-          <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid var(--line);">
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 12%;">1. Country</th>
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 22%;">2. University &amp; Website</th>
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">3. Total Univ.</th>
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">4. Type</th>
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 8%; text-align: center;">5. Science</th>
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 9%; text-align: center;">6. Commerce</th>
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 10%; text-align: center;">7. Arts / Eng</th>
-            <th style="padding: 0.85rem 1rem; color: var(--blue-900); font-weight: 800; width: 20%; background: #eef2ff;">8. Tuition Fees Range</th>
-          </tr>
-        </thead>
-        <tbody id="uni-table-body">
-          <tr><td colspan="8" style="text-align: center; padding: 2.5rem;" class="muted">Loading global university database...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
 <!-- CTA Band -->
-<section class="section">
+<section class="section" style="padding: 3rem 0;">
   <div class="container">
     <div class="cta-band">
       <h2>Ready to Start Your European Journey?</h2>
-      <p>Create your free account, submit your application online, and track its status every step of the way.</p>
+      <p>Create your free account, submit your application online, and track every milestone with our team in Brno.</p>
       <a class="btn btn-primary" href="register.html">Apply Online Now</a>
       &nbsp;
       <a class="btn btn-light-outline" href="contact.html">Get a Free Consultation</a>
@@ -234,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     html += '<div class="grid-2" style="gap:1.2rem;">';
     stepsData.forEach(function(s) {
-      html += '<div class="card" style="border:1px solid var(--line); border-left:4px solid var(--red-500); padding:1.2rem; background:#fff; border-radius:8px;">' +
+      html += '<div class="card" style="border:1px solid var(--line); border-left:4px solid var(--red-500); padding:1.2rem; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">' +
         '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">' +
           '<span style="background:var(--blue-900); color:white; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:12px;">Step ' + s.step + '</span>' +
           '<span style="color:var(--red-500); font-size:0.75rem; font-weight:700; background:#fff0f2; padding:2px 8px; border-radius:12px;">' + s.category + '</span>' +
@@ -248,17 +294,71 @@ document.addEventListener("DOMContentLoaded", function() {
     if (container) container.innerHTML = html;
   }
 
-  trackTabs.forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      trackTabs.forEach(function(b) {
+  function setActiveProcessTrack(trackName) {
+    trackTabs.forEach(function(b) {
+      if (b.getAttribute("data-track") === trackName) {
+        b.classList.add("active", "btn-dark");
+        b.classList.remove("btn-outline");
+      } else {
         b.classList.remove("active", "btn-dark");
         b.classList.add("btn-outline");
+      }
+    });
+    renderTrack(trackName);
+  }
+
+  trackTabs.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      setActiveProcessTrack(this.getAttribute("data-track"));
+    });
+  });
+
+  // Country Top Pills Selector (Coordinates university table AND process roadmap)
+  var countryPills = document.querySelectorAll("#uni-country-tabs .uni-country-btn");
+  var countryDropdown = document.getElementById("uni-country-filter");
+  var countryLabel = document.getElementById("active-country-filter-label");
+
+  countryPills.forEach(function(pill) {
+    pill.addEventListener("click", function() {
+      countryPills.forEach(function(p) {
+        p.classList.remove("active", "btn-dark");
+        p.classList.add("btn-outline");
       });
       this.classList.add("active", "btn-dark");
       this.classList.remove("btn-outline");
-      renderTrack(this.getAttribute("data-track"));
+
+      var country = this.getAttribute("data-country") || "";
+      if (countryDropdown) countryDropdown.value = country;
+      if (countryLabel) countryLabel.textContent = "Showing: " + (country || "All Countries");
+
+      if (typeof loadUniversities === "function") {
+        loadUniversities();
+      }
+
+      var track = this.getAttribute("data-track");
+      if (track) {
+        setActiveProcessTrack(track);
+      }
     });
   });
+
+  if (countryDropdown) {
+    countryDropdown.addEventListener("change", function() {
+      var val = this.value;
+      if (countryLabel) countryLabel.textContent = "Showing: " + (val || "All Countries");
+      countryPills.forEach(function(p) {
+        if (p.getAttribute("data-country") === val) {
+          p.classList.add("active", "btn-dark");
+          p.classList.remove("btn-outline");
+          var track = p.getAttribute("data-track");
+          if (track) setActiveProcessTrack(track);
+        } else {
+          p.classList.remove("active", "btn-dark");
+          p.classList.add("btn-outline");
+        }
+      });
+    });
+  }
 
   var toggleBtn = document.getElementById("toggle-nonlinear-info");
   var infoBox = document.getElementById("nonlinear-info-box");

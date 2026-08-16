@@ -2,14 +2,23 @@ rules_version = '2';
 
 // ============================================================
 // StudyWithCzechBridge — Role-Based Firestore Security Rules
-// Supports new structure with assignedAgentId, assignedAgentName,
-// super_admin hierarchy, and safe document property getters.
+// Supports assignedAgentId, assignedAgentName, super_admin hierarchy,
+// automatic known admin email authorization, and safe document property getters.
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function signedIn() {
       return request.auth != null;
+    }
+
+    function isKnownAdminEmail() {
+      return signedIn() && (
+        request.auth.token.email == "admin@studywithczechbridge.com" ||
+        request.auth.token.email == "superadmin@studywithczechbridge.com" ||
+        request.auth.token.email == "joya99sarkar66@gmail.com" ||
+        request.auth.token.email == "admin@czechbridge.cz"
+      );
     }
 
     function userDocExists() {
@@ -25,19 +34,19 @@ service cloud.firestore {
     }
 
     function isSuperAdmin() {
-      return signedIn() && getUserRole() == 'super_admin';
+      return isKnownAdminEmail() || (signedIn() && getUserRole() == 'super_admin');
     }
 
     function isAdmin() {
-      return signedIn() && (
+      return isKnownAdminEmail() || (signedIn() && (
         getUserRole() == 'super_admin' ||
         getUserRole() == 'admin' ||
         getUserRole() == 'administrator'
-      );
+      ));
     }
 
     function isStaff() {
-      return signedIn() && (
+      return isKnownAdminEmail() || (signedIn() && (
         getUserRole() == 'super_admin' ||
         getUserRole() == 'admin' ||
         getUserRole() == 'administrator' ||
@@ -48,7 +57,7 @@ service cloud.firestore {
         getUserRole() == 'advisor' ||
         getUserRole() == 'admission_officer' ||
         getUserRole() == 'finance_manager'
-      );
+      ));
     }
 
     function isOwner(userId) {
@@ -68,6 +77,11 @@ service cloud.firestore {
       allow write: if isStaff();
     }
 
+    match /programs/{id} {
+      allow read: if true;
+      allow write: if isStaff();
+    }
+
     match /testimonials/{id} {
       allow read: if true;
       allow write: if isStaff();
@@ -76,6 +90,11 @@ service cloud.firestore {
     match /packages/{id} {
       allow read: if true;
       allow write: if isStaff();
+    }
+
+    match /config/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     // ------------------------------------------------------------
@@ -137,7 +156,7 @@ service cloud.firestore {
     }
 
     // ------------------------------------------------------------
-    // Documents collection
+    // Documents collection and chunk subcollections
     // ------------------------------------------------------------
     match /documents/{docId} {
       allow read: if (
@@ -159,6 +178,10 @@ service cloud.firestore {
         (signedIn() && resource.data.get('userId', '') == request.auth.uid) ||
         isStaff()
       );
+
+      match /chunks/{chunkId} {
+        allow read, write: if signedIn();
+      }
     }
 
     // ------------------------------------------------------------
@@ -180,4 +203,3 @@ service cloud.firestore {
     }
   }
 }
-
