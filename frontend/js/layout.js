@@ -128,6 +128,7 @@
             '<ul>' +
               '<li>📍 Brno, Czech Republic</li>' +
               '<li>🗺️ <a href="' + mapUrl + '" target="_blank" rel="noopener" style="text-decoration:underline; font-weight:600;">Google Maps Location</a></li>' +
+              '<li>💬 <a href="https://wa.me/420608147604?text=Hello%20StudyCzechBridge%2C%20I%20would%20like%20information%20about%20university%20admission%20and%20visas." target="_blank" rel="noopener" style="color:#25D366; font-weight:700;">WhatsApp: +420 608 147 604</a></li>' +
               '<li>✉️ <a href="mailto:info@studywithczechbridge.com">info@studywithczechbridge.com</a></li>' +
               '<li>✉️ <a href="mailto:admission@studywithczechbridge.com">admission@studywithczechbridge.com</a></li>' +
               '<li>✉️ <a href="mailto:support@studywithczechbridge.com">support@studywithczechbridge.com</a></li>' +
@@ -197,5 +198,24 @@
         location.href = "index.html";
       });
     });
+
+    // Inject Floating WhatsApp Button if not already present
+    if (!document.getElementById("floating-whatsapp-btn")) {
+      var waBtn = document.createElement("a");
+      waBtn.id = "floating-whatsapp-btn";
+      waBtn.className = "floating-whatsapp";
+      waBtn.href = "https://wa.me/420608147604?text=Hello%20StudyCzechBridge%2C%20I%20would%20like%20information%20about%20university%20admission%20and%20visas.";
+      waBtn.target = "_blank";
+      waBtn.rel = "noopener noreferrer";
+      waBtn.setAttribute("aria-label", "Chat on WhatsApp at +420608147604");
+      waBtn.innerHTML = 
+        '<div class="floating-whatsapp-content">' +
+          '<svg class="floating-whatsapp-icon" viewBox="0 0 32 32" width="28" height="28" fill="currentColor">' +
+            '<path d="M16 2a13.9 13.9 0 0 0-12 21L2 30l7.2-1.9A13.9 13.9 0 1 0 16 2zm0 25.5a11.5 11.5 0 0 1-5.9-1.6l-.4-.3-4.4 1.2 1.2-4.3-.3-.4A11.6 11.6 0 1 1 16 27.5zm6.4-8.6c-.3-.2-2-.1-2.3-1.1-.3-.2-.5-.3-.7.1-.2.3-.8 1-.9 1.2-.2.2-.4.2-.7.1a9.2 9.2 0 0 1-5.6-4.9c-.3-.4 0-.6.2-.8l.5-.6c.2-.2.2-.4.1-.6l-1-2.4c-.3-.6-.6-.5-.8-.5h-.7c-.2 0-.7.1-1.1.5-.4.4-1.5 1.5-1.5 3.6 0 2.2 1.6 4.3 1.8 4.6.2.3 3.1 4.8 7.7 6.7 1.1.4 2 .7 2.6.9 1.1.3 2.1.3 2.9.2.9-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/>' +
+          '</svg>' +
+          '<span class="floating-whatsapp-label">WhatsApp Us</span>' +
+        '</div>';
+      document.body.appendChild(waBtn);
+    }
   });
 })();
