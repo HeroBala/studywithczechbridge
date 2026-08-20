@@ -1446,7 +1446,7 @@
         return row;
       });
     } else if (dataType === "docs") {
-      api("adminListUserDocuments", { userId: "" }).then(function (res) {
+      api("adminListAllDocuments").then(function (res) {
         var docs = res.documents || [];
         var docExport = docs.map(function (d) {
           return {
@@ -2371,19 +2371,34 @@
       }
 
       body.innerHTML = docs.map(function (d) {
-        var fileLink = d.fileUrl || d.url || "#";
         var fileName = d.fileName ? esc(d.fileName) : "View File";
         var dateStr = fmtDate(d.uploadedAt || d.createdAt);
         var legState = d.legalizationState || "None";
 
         return '<tr>' +
           '<td><strong>' + esc(d.docType || "Official Document") + '</strong></td>' +
-          '<td><a href="' + esc(fileLink) + '" target="_blank" style="color:var(--blue-700); font-weight:600;">📄 ' + fileName + '</a></td>' +
+          '<td><button type="button" class="btn btn-outline btn-sm btn-open-user-doc" data-doc-id="' + esc(d.id) + '" style="color:var(--blue-700); font-weight:600; text-align:left; border:none; background:none; cursor:pointer; padding:0; text-decoration:underline;">📄 ' + fileName + '</button></td>' +
           '<td>' + dateStr + '</td>' +
           '<td><span class="badge" style="font-size:0.75rem;">' + esc(legState) + '</span></td>' +
-          '<td><a href="' + esc(fileLink) + '" target="_blank" class="btn btn-dark btn-sm" style="padding:0.2rem 0.5rem; font-size:0.75rem;">⬇ Download / View</a></td>' +
+          '<td><button type="button" class="btn btn-dark btn-sm btn-open-user-doc" data-doc-id="' + esc(d.id) + '" style="padding:0.2rem 0.55rem; font-size:0.75rem;">⬇ Download / View</button></td>' +
         '</tr>';
       }).join("");
+
+      body.querySelectorAll(".btn-open-user-doc").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          var docId = this.getAttribute("data-doc-id");
+          if (!docId) return;
+          var originalText = this.textContent;
+          this.textContent = "⏳ Opening...";
+          var self = this;
+          cbOpenDocument(docId).catch(function (err) {
+            alert("Could not open document: " + (err ? err.message : "File not found"));
+          }).finally(function () {
+            self.textContent = originalText;
+          });
+        });
+      });
     }).catch(function (err) {
       body.innerHTML = '<tr><td colspan="5" class="muted error">Error loading documents: ' + esc(err.message) + '</td></tr>';
     });
@@ -4114,7 +4129,6 @@
 
       tbody.innerHTML = docs.map(function (d) {
         var u = userMap[d.userId] || { fullName: d.userName || "Student User", email: d.userEmail || d.userId || "", role: "student" };
-        var fileLink = d.fileUrl || d.url || "#";
         var fileName = d.fileName ? esc(d.fileName) : "View Document";
         var dateStr = fmtDate(d.uploadedAt || d.createdAt);
 
@@ -4123,11 +4137,27 @@
           '<td><span class="muted" style="font-size:0.8rem;">' + esc(u.email) + '</span></td>' +
           '<td><span class="badge-role ' + esc(u.role) + '" style="font-size:0.7rem;">' + esc(u.role) + '</span></td>' +
           '<td><strong>' + esc(d.docType || "Official Document") + '</strong></td>' +
-          '<td><a href="' + esc(fileLink) + '" target="_blank" style="color:var(--blue-700); font-weight:600;">📄 ' + fileName + '</a></td>' +
+          '<td><button type="button" class="btn btn-outline btn-sm btn-open-repo-doc" data-doc-id="' + esc(d.id) + '" style="color:var(--blue-700); font-weight:600; text-align:left; border:none; background:none; cursor:pointer; padding:0; text-decoration:underline;">📄 ' + fileName + '</button></td>' +
           '<td>' + dateStr + '</td>' +
           '<td><span class="badge" style="font-size:0.75rem;">' + esc(d.legalizationState || "None") + '</span></td>' +
         '</tr>';
       }).join("");
+
+      tbody.querySelectorAll(".btn-open-repo-doc").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          var docId = this.getAttribute("data-doc-id");
+          if (!docId) return;
+          var originalText = this.textContent;
+          this.textContent = "⏳ Opening...";
+          var self = this;
+          cbOpenDocument(docId).catch(function (err) {
+            alert("Could not open document: " + (err ? err.message : "File not found"));
+          }).finally(function () {
+            self.textContent = originalText;
+          });
+        });
+      });
     }).catch(function (err) {
       tbody.innerHTML = '<tr><td colspan="7" class="muted error">Error loading documents: ' + esc(err.message) + '</td></tr>';
     });

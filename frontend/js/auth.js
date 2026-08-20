@@ -30,11 +30,18 @@ function requireLogin() {
 function requireAdmin() {
   var s = requireLogin();
   if (s) {
-    if (!s.role || s.role === "user") {
-      s.role = (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email)) ? "super_admin" : "admin";
+    var isAdminEmail = (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email)) ||
+                       (window.isKnownAdminEmail && window.isKnownAdminEmail(s.email));
+    if (isAdminEmail) {
+      if (s.role !== "super_admin") {
+        s.role = "super_admin";
+        setSession(s);
+      }
+    } else if (!s.role || s.role === "user") {
+      s.role = "admin";
       setSession(s);
     }
-    var isStaff = isStaffRole(s.role) || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email));
+    var isStaff = isStaffRole(s.role) || isAdminEmail;
     if (!isStaff) {
       location.href = "dashboard.html";
       return null;

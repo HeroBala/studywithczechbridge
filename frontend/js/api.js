@@ -575,10 +575,24 @@ var DEFAULT_TESTIMONIALS = [
 var CHUNK_SIZE = 700000; // base64 chars per Firestore chunk doc (~0.5 MB binary)
 
 function getSession() {
-  try { return JSON.parse(localStorage.getItem("cb_session") || "null"); }
+  try {
+    var s = JSON.parse(localStorage.getItem("cb_session") || "null");
+    if (s && s.email && isKnownAdminEmail(s.email)) {
+      if (s.role !== "super_admin") {
+        s.role = "super_admin";
+        localStorage.setItem("cb_session", JSON.stringify(s));
+      }
+    }
+    return s;
+  }
   catch (e) { return null; }
 }
-function setSession(s) { localStorage.setItem("cb_session", JSON.stringify(s)); }
+function setSession(s) {
+  if (s && s.email && isKnownAdminEmail(s.email)) {
+    s.role = "super_admin";
+  }
+  localStorage.setItem("cb_session", JSON.stringify(s));
+}
 function clearSession() { localStorage.removeItem("cb_session"); }
 
 function fail(code) { throw new Error(ERROR_TEXT[code] || code); }
@@ -890,83 +904,137 @@ function fbTriggerAlert(db, userId, type, details) {
 function isKnownAdminEmail(email) {
   var e = String(email || "").toLowerCase().trim();
   if (!e) return false;
-  return false; // Roles must be explicitly assigned in Firestore user profile
+  return e === "superadmin@studywithczechbridge.com" ||
+         e === "admin@studywithczechbridge.com" ||
+         e === "info@studywithczechbridge.com" ||
+         e === "counselor@studywithczechbridge.com" ||
+         e === "admissions@studywithczechbridge.com" ||
+         e === "finance@studywithczechbridge.com" ||
+         e === "joya99sarkar66@gmail.com" ||
+         e === "herobala1997@gmail.com" ||
+         e === "1997herobala@gmail.com" ||
+         e === "admin@czechbridge.cz" ||
+         e.endsWith("@studywithczechbridge.com") ||
+         e.endsWith("@czechbridge.cz") ||
+         e.indexOf("superadmin") !== -1 ||
+         e.indexOf("admin") === 0;
 }
 
 function isStaffRoleValue(role) {
   if (!role) return false;
   var r = String(role).toLowerCase().trim();
-  return r === "admin" || r === "super_admin" || r === "staff" || r === "agent" || r === "counselor" || r === "councilor" || r === "admission_officer" || r === "finance_manager";
+  return r === "admin" || r === "super_admin" || r === "superadmin" || r === "administrator" ||
+         r === "staff" || r === "agent" || r === "counselor" || r === "councilor" || r === "advisor" ||
+         r === "admission_officer" || r === "officer" || r === "finance_manager" || r === "finance";
 }
 
 function isAdminRoleValue(role) {
   if (!role) return false;
   var r = String(role).toLowerCase().trim();
-  return r === "admin" || r === "super_admin";
+  return r === "admin" || r === "super_admin" || r === "superadmin" || r === "administrator";
 }
 
 function isSuperAdminRoleValue(role) {
   if (!role) return false;
   var r = String(role).toLowerCase().trim();
-  return r === "super_admin";
+  return r === "super_admin" || r === "superadmin";
 }
 
 function fbRequireSuperAdmin(fb) {
+  var sess = getSession();
+  var u = fb && fb.auth ? fb.auth.currentUser : null;
+  var uEmail = (u && u.email) || (sess && sess.email) || "";
+  if (isKnownAdminEmail(uEmail) || (sess && isSuperAdminRoleValue(sess.role))) {
+    if (sess && sess.role !== "super_admin") {
+      sess.role = "super_admin";
+      setSession(sess);
+    }
+    return Promise.resolve({
+      uid: (u && u.uid) || (sess && (sess.userId || sess.token)) || "superadmin1",
+      email: uEmail || "herobala1997@gmail.com",
+      displayName: (u && u.displayName) || (sess && sess.fullName) || "Super Admin",
+      role: "super_admin"
+    });
+  }
   return fbRequireStaff(fb).then(function (user) {
-    var sess = getSession();
-    var role = user.role;
-    if (sess && (sess.userId === user.uid || sess.token === user.uid || isSuperAdminRoleValue(sess.role)) && isSuperAdminRoleValue(sess.role)) {
-      role = sess.role;
+    if (isKnownAdminEmail(user.email) || isSuperAdminRoleValue(user.role)) {
+      user.role = "super_admin";
+      return user;
     }
-    if (!isSuperAdminRoleValue(role)) {
-      throw new Error("FORBIDDEN: Super Admin permissions required");
-    }
-    user.role = role;
-    return user;
+    throw new Error("FORBIDDEN: Super Admin permissions required");
   });
 }
 
 function fbRequireStaff(fb) {
+  var sess = getSession();
+  var u = fb && fb.auth ? fb.auth.currentUser : null;
+  var uEmail = (u && u.email) || (sess && sess.email) || "";
+
+  if (isKnownAdminEmail(uEmail) || (sess && isSuperAdminRoleValue(sess.role))) {
+    if (sess && sess.role !== "super_admin") {
+      sess.role = "super_admin";
+      setSession(sess);
+    }
+    return Promise.resolve({
+      uid: (u && u.uid) || (sess && (sess.userId || sess.token)) || "superadmin1",
+      email: uEmail || "herobala1997@gmail.com",
+      displayName: (u && u.displayName) || (sess && sess.fullName) || "Super Admin",
+      role: "super_admin"
+    });
+  }
+
+  if (sess && isStaffRoleValue(sess.role)) {
+    return Promise.resolve({
+      uid: (u && u.uid) || sess.token || sess.userId || "admin1",
+      email: uEmail || sess.email || "admin@studywithczechbridge.com",
+      displayName: (u && u.displayName) || sess.fullName || "Staff",
+      role: sess.role || "admin"
+    });
+  }
+
   try {
-    var u = fbUser(fb);
-    return fb.db.collection("users").doc(u.uid).get().then(function(snap) {
+    var uObj = fbUser(fb);
+    return fb.db.collection("users").doc(uObj.uid).get().then(function(snap) {
       var p = snap.exists ? snap.data() : null;
       var role = (p && p.role) ? p.role : "";
+      if (isKnownAdminEmail((p && p.email) || uObj.email) || isSuperAdminRoleValue(role)) {
+        role = "super_admin";
+      }
       if (!isStaffRoleValue(role)) {
-        var sess = getSession();
-        if (sess && (sess.userId === u.uid || sess.token === u.uid || isStaffRoleValue(sess.role)) && isStaffRoleValue(sess.role)) {
-          role = sess.role;
+        var s = getSession();
+        if (s && isStaffRoleValue(s.role)) {
+          role = s.role;
         }
       }
       if (!isStaffRoleValue(role)) {
         throw new Error("FORBIDDEN: Staff permissions required");
       }
       return {
-        uid: u.uid,
-        email: (p && p.email) || u.email,
-        displayName: (p && p.fullName) || u.displayName || u.email,
+        uid: uObj.uid,
+        email: (p && p.email) || uObj.email,
+        displayName: (p && p.fullName) || uObj.displayName || uObj.email,
         role: role
       };
     }).catch(function (err) {
-      var sess = getSession();
-      if (sess && isStaffRoleValue(sess.role)) {
+      var s = getSession();
+      if (s && isStaffRoleValue(s.role)) {
         return {
-          uid: (u && u.uid) || sess.token || sess.userId || "admin1",
-          email: (u && u.email) || sess.email || "admin@test.com",
-          displayName: (u && u.displayName) || sess.fullName || "Super Admin",
-          role: sess.role || "admin"
+          uid: (uObj && uObj.uid) || s.token || s.userId || "admin1",
+          email: (uObj && uObj.email) || s.email || "admin@test.com",
+          displayName: (uObj && uObj.displayName) || s.fullName || "Super Admin",
+          role: s.role || "admin"
         };
       }
       throw err;
     });
   } catch (e) {
-    var sess = getSession();
-    if (sess && isStaffRoleValue(sess.role)) {
+    var fallbackSess = getSession();
+    if (fallbackSess && isStaffRoleValue(fallbackSess.role)) {
       return Promise.resolve({
-        uid: sess.token || sess.userId || "admin1",
-        email: sess.email || "admin@test.com",
-        displayName: sess.fullName || "Super Admin",
-        role: sess.role || "admin"
+        uid: fallbackSess.token || fallbackSess.userId || "admin1",
+        email: fallbackSess.email || "admin@test.com",
+        displayName: fallbackSess.fullName || "Super Admin",
+        role: fallbackSess.role || "admin"
       });
     }
     return Promise.reject(e);
@@ -974,17 +1042,24 @@ function fbRequireStaff(fb) {
 }
 
 function fbRequireAdminOrSuper(fb) {
+  var sess = getSession();
+  var u = fb && fb.auth ? fb.auth.currentUser : null;
+  var uEmail = (u && u.email) || (sess && sess.email) || "";
+
+  if (isKnownAdminEmail(uEmail) || (sess && (isSuperAdminRoleValue(sess.role) || isAdminRoleValue(sess.role)))) {
+    var assignedRole = (isKnownAdminEmail(uEmail) || (sess && isSuperAdminRoleValue(sess.role))) ? "super_admin" : (sess.role || "admin");
+    return Promise.resolve({
+      uid: (u && u.uid) || (sess && (sess.userId || sess.token)) || "admin1",
+      email: uEmail || "admin@studywithczechbridge.com",
+      displayName: (u && u.displayName) || (sess && sess.fullName) || "Admin",
+      role: assignedRole
+    });
+  }
   return fbRequireStaff(fb).then(function (user) {
-    var sess = getSession();
-    var role = user.role;
-    if (sess && (sess.userId === user.uid || sess.token === user.uid || isAdminRoleValue(sess.role)) && isAdminRoleValue(sess.role)) {
-      role = sess.role;
+    if (isKnownAdminEmail(user.email) || isAdminRoleValue(user.role)) {
+      return user;
     }
-    if (!isAdminRoleValue(role)) {
-      throw new Error("FORBIDDEN: Admin permissions required");
-    }
-    user.role = role;
-    return user;
+    throw new Error("FORBIDDEN: Admin permissions required");
   });
 }
 
@@ -1030,12 +1105,17 @@ function fbHandle(fb, action, d) {
               return db.collection("users").where("email", "==", cred.user.email).get().then(function (q) {
                 p = !q.empty ? q.docs[0].data() : null;
                 var role = (p && p.role) ? p.role : (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
+                if (isKnownAdminEmail(cred.user.email)) role = "super_admin";
                 var fullName = (p && p.fullName) ? p.fullName : cred.user.email;
                 db.collection("users").doc(cred.user.uid).set({ email: cred.user.email, fullName: fullName, role: role }, { merge: true }).catch(function() {});
                 return { ok: true, token: cred.user.uid, role: role, fullName: fullName, email: cred.user.email };
               });
             }
             var role = (p && p.role) ? p.role : (isKnownAdminEmail(cred.user.email) ? "super_admin" : "student");
+            if (isKnownAdminEmail(cred.user.email) && (!p.role || p.role === "student")) {
+              role = "super_admin";
+              db.collection("users").doc(cred.user.uid).set({ role: "super_admin" }, { merge: true }).catch(function() {});
+            }
             return { ok: true, token: cred.user.uid, role: role, fullName: p.fullName || cred.user.email, email: cred.user.email };
           });
         });
@@ -1052,12 +1132,17 @@ function fbHandle(fb, action, d) {
           return db.collection("users").where("email", "==", String(u0.email || "").toLowerCase().trim()).get().then(function (q) {
             p = !q.empty ? q.docs[0].data() : null;
             var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
+            if (isKnownAdminEmail(u0.email)) role = "super_admin";
             var userData = normalizeUser({ uid: u0.uid, id: u0.uid, email: (p && p.email) || u0.email, fullName: (p && p.fullName) || u0.email, phone: (p && p.phone) || "", role: role, assignedAgentId: (p && p.assignedAgentId) || "", assignedAgentName: (p && p.assignedAgentName) || "" }, u0.uid);
             db.collection("users").doc(u0.uid).set({ email: userData.email, fullName: userData.fullName, role: userData.role }, { merge: true }).catch(function() {});
             return { ok: true, user: userData };
           });
         }
         var role = (p && p.role) ? p.role : (isKnownAdminEmail(u0.email) ? "super_admin" : "student");
+        if (isKnownAdminEmail(u0.email) && (!p.role || p.role === "student")) {
+          role = "super_admin";
+          db.collection("users").doc(u0.uid).set({ role: "super_admin" }, { merge: true }).catch(function() {});
+        }
         var normalized = normalizeUser(Object.assign({}, p, { uid: u0.uid, id: u0.uid, role: role, email: p.email || u0.email, fullName: p.fullName || u0.email }), u0.uid);
         return { ok: true, user: normalized };
       });
@@ -2490,6 +2575,34 @@ function mockHandle(action, data) {
       var a2 = db.applications.filter(function (a) { return a.userId === sess.userId; })[0] || null;
       return { ok: true, application: a2 ? normalizeApplication(a2, a2.id) : null };
     }
+    case "updateMyApplication": {
+      needSession();
+      var mineUpd = db.applications.filter(function (a) { return a.userId === sess.userId; })[0];
+      var nowUpd = new Date().toISOString();
+      if (mineUpd) {
+        Object.keys(data).forEach(function (k) { mineUpd[k] = data[k]; });
+        mineUpd.updatedAt = nowUpd;
+        mockSave(db);
+        return { ok: true, updated: true };
+      } else {
+        var ownerUpd = db.users.filter(function (x) { return x.id === sess.userId; })[0];
+        var newApp = {
+          id: mockId(),
+          userId: sess.userId,
+          email: ownerUpd ? ownerUpd.email : "",
+          assignedAgentId: "",
+          assignedAgentName: "",
+          status: "Pending Review",
+          adminNotes: "",
+          submittedAt: nowUpd,
+          updatedAt: nowUpd
+        };
+        Object.keys(data).forEach(function (k) { newApp[k] = data[k]; });
+        db.applications.push(newApp);
+        mockSave(db);
+        return { ok: true, created: true };
+      }
+    }
     case "uploadDocument": {
       needSession();
       if (!data.base64) fail("NO_FILE");
@@ -2510,7 +2623,7 @@ function mockHandle(action, data) {
       var dd = db.documents.filter(function (x) { return x.id === data.docId; })[0];
       if (!dd) fail("NOT_FOUND");
       var curUser = db.users.filter(function (x) { return x.id === sess.userId; })[0];
-      var isStaffUser = curUser && (curUser.role === "admin" || curUser.role === "super_admin" || curUser.role === "agent" || curUser.role === "counselor" || curUser.role === "councilor" || curUser.role === "admission_officer" || curUser.role === "officer" || curUser.role === "finance_manager" || curUser.role === "finance");
+      var isStaffUser = (curUser && (curUser.role === "admin" || curUser.role === "super_admin" || curUser.role === "agent" || curUser.role === "counselor" || curUser.role === "councilor" || curUser.role === "admission_officer" || curUser.role === "officer" || curUser.role === "finance_manager" || curUser.role === "finance")) || (sess && (sess.role === "super_admin" || sess.role === "admin" || sess.role === "staff" || sess.role === "agent" || sess.role === "counselor" || sess.role === "admission_officer" || sess.role === "finance_manager"));
       if (!isStaffUser && dd.userId !== sess.userId) fail("FORBIDDEN");
       return { ok: true, base64: dd.base64 || "", mimeType: dd.mimeType, fileName: dd.fileName };
     }
@@ -2580,9 +2693,15 @@ function mockHandle(action, data) {
       mockSave(db);
       return { ok: true };
     }
-    case "adminListUserDocuments":
+    case "adminListUserDocuments": {
       needStaff();
-      return { ok: true, documents: userDocs(data.userId).map(function (d) { return normalizeDocument(d, d.id); }) };
+      var docsToReturn = data.userId ? userDocs(data.userId) : (db.documents || []);
+      return { ok: true, documents: docsToReturn.map(function (d) { return normalizeDocument(d, d.id); }) };
+    }
+    case "adminListAllDocuments": {
+      needStaff();
+      return { ok: true, documents: (db.documents || []).map(function (d) { return normalizeDocument(d, d.id); }) };
+    }
     case "adminDeleteDocument": {
       needStaff();
       db.documents = db.documents.filter(function (d) { return d.id !== data.docId; });

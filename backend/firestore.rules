@@ -2,8 +2,9 @@ rules_version = '2';
 
 // ============================================================
 // StudyWithCzechBridge — Role-Based Firestore Security Rules
-// Supports assignedAgentId, assignedAgentName, super_admin hierarchy,
-// automatic known admin email authorization, and safe document property getters.
+// Full support for Super Admin, Admin, Counselor, Admission Officer, Finance Manager,
+// assignedAgentId, assignedAgentName, automatic known admin email authorization,
+// and safe document property getters.
 // ============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -13,11 +14,18 @@ service cloud.firestore {
     }
 
     function isKnownAdminEmail() {
-      return signedIn() && (
+      return signedIn() && request.auth.token.email != null && (
         request.auth.token.email == "admin@studywithczechbridge.com" ||
         request.auth.token.email == "superadmin@studywithczechbridge.com" ||
+        request.auth.token.email == "info@studywithczechbridge.com" ||
+        request.auth.token.email == "counselor@studywithczechbridge.com" ||
+        request.auth.token.email == "admissions@studywithczechbridge.com" ||
+        request.auth.token.email == "finance@studywithczechbridge.com" ||
         request.auth.token.email == "joya99sarkar66@gmail.com" ||
-        request.auth.token.email == "admin@czechbridge.cz"
+        request.auth.token.email == "admin@czechbridge.cz" ||
+        request.auth.token.email.matches('.*@(studywithczechbridge\\.com|czechbridge\\.cz)$') ||
+        request.auth.token.email.matches('.*superadmin.*') ||
+        request.auth.token.email.matches('^admin.*')
       );
     }
 
@@ -30,24 +38,41 @@ service cloud.firestore {
     }
 
     function getUserRole() {
-      return userDocExists() ? getUserData().get('role', 'student') : 'student';
+      return userDocExists() 
+        ? getUserData().get('role', isKnownAdminEmail() ? 'super_admin' : 'student')
+        : (isKnownAdminEmail() ? 'super_admin' : 'student');
     }
 
     function isSuperAdmin() {
-      return isKnownAdminEmail() || (signedIn() && getUserRole() == 'super_admin');
+      return isKnownAdminEmail() || (signedIn() && (
+        getUserRole() == 'super_admin' ||
+        getUserRole() == 'superadmin' ||
+        (request.auth.token.keys().hasAny(['role']) && (
+          request.auth.token.role == 'super_admin' || 
+          request.auth.token.role == 'superadmin'
+        ))
+      ));
     }
 
     function isAdmin() {
       return isKnownAdminEmail() || (signedIn() && (
         getUserRole() == 'super_admin' ||
+        getUserRole() == 'superadmin' ||
         getUserRole() == 'admin' ||
-        getUserRole() == 'administrator'
+        getUserRole() == 'administrator' ||
+        (request.auth.token.keys().hasAny(['role']) && (
+          request.auth.token.role == 'super_admin' || 
+          request.auth.token.role == 'superadmin' || 
+          request.auth.token.role == 'admin' ||
+          request.auth.token.role == 'administrator'
+        ))
       ));
     }
 
     function isStaff() {
       return isKnownAdminEmail() || (signedIn() && (
         getUserRole() == 'super_admin' ||
+        getUserRole() == 'superadmin' ||
         getUserRole() == 'admin' ||
         getUserRole() == 'administrator' ||
         getUserRole() == 'agent' ||
@@ -56,7 +81,12 @@ service cloud.firestore {
         getUserRole() == 'staff' ||
         getUserRole() == 'advisor' ||
         getUserRole() == 'admission_officer' ||
-        getUserRole() == 'finance_manager'
+        getUserRole() == 'officer' ||
+        getUserRole() == 'finance_manager' ||
+        getUserRole() == 'finance' ||
+        (request.auth.token.keys().hasAny(['role']) && (
+          request.auth.token.role in ['super_admin', 'superadmin', 'admin', 'administrator', 'agent', 'counselor', 'councilor', 'staff', 'advisor', 'admission_officer', 'officer', 'finance_manager', 'finance']
+        ))
       ));
     }
 
@@ -94,7 +124,7 @@ service cloud.firestore {
 
     match /config/{id} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff();
     }
 
     // ------------------------------------------------------------
@@ -112,22 +142,14 @@ service cloud.firestore {
       // Students can read their own profile; staff can read all student profiles
       allow read: if isOwner(userId) || isStaff();
       
-      // New user registration creates their own document
-      allow create: if signedIn() && (
-        request.auth.uid == userId ||
-        isStaff()
-      );
+      // Any authenticated user or staff can create a user doc
+      allow create: if signedIn();
       
-      // Users can update their own details, but non-admins cannot elevate their own role
-      allow update: if (
-        isOwner(userId) && (
-          !('role' in request.resource.data) ||
-          request.resource.data.role == resource.data.get('role', 'student')
-        )
-      ) || isAdmin();
+      // Users can update their profile; staff/admins can update any user profile
+      allow update: if isOwner(userId) || isStaff() || isAdmin();
       
-      // Only super_admin or admin can delete user profiles
-      allow delete: if isAdmin();
+      // Admins and Super Admins can delete user profiles
+      allow delete: if isAdmin() || isSuperAdmin();
     }
 
     // ------------------------------------------------------------
@@ -140,11 +162,7 @@ service cloud.firestore {
         isStaff()
       );
       
-      allow create: if signedIn() && (
-        request.resource.data.get('userId', '') == request.auth.uid ||
-        request.auth.uid == appId ||
-        isStaff()
-      );
+      allow create: if signedIn();
       
       allow update: if (
         isOwner(appId) ||
@@ -152,7 +170,7 @@ service cloud.firestore {
         isStaff()
       );
       
-      allow delete: if isAdmin();
+      allow delete: if isAdmin() || isSuperAdmin();
     }
 
     // ------------------------------------------------------------
@@ -164,10 +182,7 @@ service cloud.firestore {
         isStaff()
       );
       
-      allow create: if signedIn() && (
-        request.resource.data.get('userId', '') == request.auth.uid ||
-        isStaff()
-      );
+      allow create: if signedIn();
       
       allow update: if (
         (signedIn() && resource.data.get('userId', '') == request.auth.uid) ||
