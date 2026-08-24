@@ -30,11 +30,24 @@
       return '<li><a href="' + p.href + '"' + cls + ">" + p.label + "</a></li>";
     }).join("");
 
+    var seminarBtnHtml =
+      '<a class="btn btn-sm nav-btn-desktop btn-seminar-nav" href="seminar.html" id="nav-seminar-btn" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border: 1px solid #38bdf8; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; box-shadow: 0 2px 8px rgba(2,132,199,0.25); text-decoration: none;">' +
+        '<span>🎓 GSTU Seminar</span>' +
+        '<span style="background: #fef08a; color: #854d0e; padding: 1px 6px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; line-height: 1.2;">Free Drink 🥤</span>' +
+      '</a>';
+
+    var seminarMobileBtnHtml =
+      '<a class="btn btn-sm btn-block" href="seminar.html" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border: 1px solid #38bdf8; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 700; margin-bottom: 8px; text-decoration: none;">' +
+        '<span>🎓 Special Seminar @ GSTU</span>' +
+        '<span style="background: #fef08a; color: #854d0e; padding: 1px 6px; border-radius: 999px; font-size: 0.72rem; font-weight: 800;">Free Drink 🥤</span>' +
+      '</a>';
+
     var ctaHtml;
     var mobileCtaHtml;
     if (s && s.token) {
       var isStaff = (typeof isStaffRole === "function" && isStaffRole(s.role)) || s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent" || s.role === "counselor" || s.role === "admission_officer" || s.role === "finance_manager";
       ctaHtml =
+        seminarBtnHtml +
         (isStaff
           ? '<a class="btn btn-dark btn-sm nav-btn-desktop" href="admin.html">Admin Panel</a>'
           : '<a class="btn btn-dark btn-sm nav-btn-desktop" href="dashboard.html">My Dashboard</a>') +
@@ -42,6 +55,7 @@
 
       mobileCtaHtml =
         '<div class="mobile-cta-box">' +
+          seminarMobileBtnHtml +
           (isStaff
             ? '<a class="btn btn-dark btn-sm btn-block" href="admin.html">Admin Panel</a>'
             : '<a class="btn btn-dark btn-sm btn-block" href="dashboard.html">My Dashboard</a>') +
@@ -49,11 +63,13 @@
         '</div>';
     } else {
       ctaHtml =
+        seminarBtnHtml +
         '<a class="btn btn-outline btn-sm nav-btn-desktop" href="login.html">Login</a>' +
         '<a class="btn btn-primary btn-sm" href="register.html">Apply Now</a>';
 
       mobileCtaHtml =
         '<div class="mobile-cta-box">' +
+          seminarMobileBtnHtml +
           '<a class="btn btn-outline btn-sm btn-block" href="login.html">Login</a>' +
           '<a class="btn btn-primary btn-sm btn-block" href="register.html">Apply Now</a>' +
         '</div>';

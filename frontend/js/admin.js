@@ -93,7 +93,7 @@
       label: "👑 Super Admin",
       badgeClass: "badge-role super_admin",
       defaultTab: "applications",
-      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
       statLabels: ["Students", "Applications", "Documents", "Messages"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -102,9 +102,9 @@
           '<p style="margin: 0; color: #cbd5e1; font-size: 0.88rem;">Manage applications, assign user roles, configure private SMTP/email, adjust package fees, and manage financial operations.</p>' +
         '</div>' +
         '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
-          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'users\')" style="font-weight:700;">👥 Manage Users & Roles</button>' +
+          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'seminar\')" style="font-weight:700; background:#0284c7; border-color:#0369a1;">🎓 GSTU Seminar & Drinks</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'users\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">👥 Users & Roles</button>' +
           '<button class="btn btn-outline btn-sm" onclick="switchTab(\'ops\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">📈 Finance & Ops</button>' +
-          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'email\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">📧 Private Email</button>' +
         '</div>' +
       '</div>'
     },
@@ -113,7 +113,7 @@
       label: "🛡️ Admin",
       badgeClass: "badge-role admin",
       defaultTab: "applications",
-      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
       statLabels: ["Students", "Applications", "Documents", "Messages"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -122,8 +122,8 @@
           '<p style="margin: 0; color: #cbd5e1; font-size: 0.88rem;">Oversee application reviews, assign counselors to students, track 20-step roadmaps, and manage task boards.</p>' +
         '</div>' +
         '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
-          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'applications\')" style="font-weight:700;">📋 Review Applications</button>' +
-          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'counselor\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">🇨🇿 Counselor Workspace</button>' +
+          '<button class="btn btn-primary btn-sm" onclick="switchTab(\'seminar\')" style="font-weight:700; background:#0284c7; border-color:#0369a1;">🎓 GSTU Seminar</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'applications\')" style="color:white; border-color:rgba(255,255,255,0.4); font-weight:700;">📋 Applications</button>' +
         '</div>' +
       '</div>'
     },
@@ -132,7 +132,7 @@
       label: "🧭 Education Counselor",
       badgeClass: "badge-role agent",
       defaultTab: "counselor",
-      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
       statLabels: ["Assigned Students", "Active Apps", "Pending Tasks", "Messages"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -141,9 +141,8 @@
           '<p style="margin: 0; color: #f0f9ff; font-size: 0.88rem;">Guide your assigned students through nostrification, visa preparation, university submissions, and document updates.</p>' +
         '</div>' +
         '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
-          '<button class="btn btn-light btn-sm" onclick="switchTab(\'counselor\')" style="font-weight:800; color:#0369a1; background:white;">🇨🇿 Counselor Workspace</button>' +
-          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'users\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">👥 Users & Roles</button>' +
-          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'journey\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🎓 20-Step Roadmap</button>' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'seminar\')" style="font-weight:800; color:#0369a1; background:white;">🎓 GSTU Seminar</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'counselor\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🇨🇿 Counselor Desk</button>' +
         '</div>' +
       '</div>'
     },
@@ -152,7 +151,7 @@
       label: "🎓 Admission Officer",
       badgeClass: "badge-role admission_officer",
       defaultTab: "applications",
-      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
       statLabels: ["Total Applications", "Pending Review", "Legalization Apps", "Offer Letters Issued"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -161,9 +160,8 @@
           '<p style="margin: 0; color: #f5f3ff; font-size: 0.88rem;">Verify student transcripts, process nostrification and super-legalization status, and update official university offer stage.</p>' +
         '</div>' +
         '<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">' +
-          '<button class="btn btn-light btn-sm" onclick="switchTab(\'applications\')" style="font-weight:800; color:#5b21b6; background:white;">📋 Applications Queue</button>' +
-          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'users\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">👥 Users Directory</button>' +
-          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'unidb\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">🏛️ Universities DB</button>' +
+          '<button class="btn btn-light btn-sm" onclick="switchTab(\'seminar\')" style="font-weight:800; color:#5b21b6; background:white;">🎓 GSTU Seminar</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="switchTab(\'applications\')" style="color:white; border-color:rgba(255,255,255,0.6); font-weight:700;">📋 Applications Queue</button>' +
         '</div>' +
       '</div>'
     },
@@ -172,7 +170,7 @@
       label: "💳 Finance Manager",
       badgeClass: "badge-role finance_manager",
       defaultTab: "ops",
-      allowedTabs: ["unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
       statLabels: ["Package Revenue (€)", "Tuition Deposits (€)", "Active Packages", "Advisor Commissions (€)"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -639,6 +637,8 @@
     bindClick("btn-cancel-uni-modal", closeUniEditorModal);
     bindClick("btn-close-vt-modal", closeTestimonialEditorModal);
     bindClick("btn-cancel-vt-modal", closeTestimonialEditorModal);
+    bindClick("btn-close-seminar-modal", closeSeminarEditorModal);
+    bindClick("btn-cancel-seminar-modal", closeSeminarEditorModal);
     bindClick("pkg-modal-close", closePackageEditorModal);
     bindClick("pkg-modal-cancel", closePackageEditorModal);
     bindClick("tpl-modal-close", closeTemplateEditorModal);
@@ -654,6 +654,7 @@
       "modal-counselor-broadcast",
       "modal-uni-editor",
       "modal-testimonial-editor",
+      "modal-seminar-editor",
       "package-editor-modal",
       "template-editor-modal"
     ].forEach(function (mId) {
@@ -751,6 +752,8 @@
       initUniDbTab();
     } else if (rawName === "testimonials") {
       initTestimonialsTab();
+    } else if (rawName === "seminar" || rawName === "seminars" || rawName === "gstu") {
+      initSeminarTab();
     }
   }
 
@@ -1533,6 +1536,7 @@
     loadUsers();
     loadAdminUniversities();
     loadAdminTestimonials();
+    loadAdminSeminarRegistrations();
   }
 
   function loadStats() {
@@ -4724,6 +4728,365 @@
     }).catch(function (err) {
       if (msgEl) msgEl.textContent = "Server error saving video testimonial.";
     });
+  }
+
+  /* ============================================================
+     GSTU Seminar & Free Drink Registrations Management
+     ============================================================ */
+  var allSeminarList = [];
+  var _seminarEventsBound = false;
+
+  function initSeminarTab() {
+    if (!_seminarEventsBound) {
+      _seminarEventsBound = true;
+
+      var searchInp = document.getElementById("admin-seminar-search");
+      if (searchInp) searchInp.addEventListener("input", renderAdminSeminarRegistrations);
+
+      var deptFilter = document.getElementById("admin-seminar-dept");
+      if (deptFilter) deptFilter.addEventListener("change", renderAdminSeminarRegistrations);
+
+      var drinkFilter = document.getElementById("admin-seminar-drink");
+      if (drinkFilter) drinkFilter.addEventListener("change", renderAdminSeminarRegistrations);
+
+      var statusFilter = document.getElementById("admin-seminar-status");
+      if (statusFilter) statusFilter.addEventListener("change", renderAdminSeminarRegistrations);
+
+      var refreshBtn = document.getElementById("btn-seminar-refresh");
+      if (refreshBtn) refreshBtn.addEventListener("click", loadAdminSeminarRegistrations);
+
+      var addBtn = document.getElementById("btn-add-seminar-walkin");
+      if (addBtn) addBtn.onclick = function () { openSeminarEditorModal(null); };
+
+      var exportBtn = document.getElementById("btn-export-seminar-csv");
+      if (exportBtn) exportBtn.onclick = exportSeminarCSV;
+
+      var form = document.getElementById("form-seminar-editor");
+      if (form) {
+        form.onsubmit = function (e) {
+          e.preventDefault();
+          saveSeminarEntry();
+        };
+      }
+    }
+
+    loadAdminSeminarRegistrations();
+  }
+
+  function loadAdminSeminarRegistrations() {
+    api("adminListSeminarRegistrations", {}).then(function (res) {
+      if (!res || !res.registrations) return;
+      allSeminarList = res.registrations;
+      updateSeminarStats();
+      populateSeminarDeptDropdown();
+      renderAdminSeminarRegistrations();
+    }).catch(function (err) {
+      console.error("Failed to load seminar registrations:", err);
+    });
+  }
+
+  function updateSeminarStats() {
+    var total = allSeminarList.length;
+    var claimed = allSeminarList.filter(function (x) { return x.freeDrinkClaimed === true; }).length;
+    var pending = total - claimed;
+
+    // Determine top department
+    var deptCounts = {};
+    allSeminarList.forEach(function (x) {
+      var d = (x.department || "Other").trim().toUpperCase();
+      deptCounts[d] = (deptCounts[d] || 0) + 1;
+    });
+    var topDept = "—";
+    var maxCount = 0;
+    Object.keys(deptCounts).forEach(function (d) {
+      if (deptCounts[d] > maxCount) {
+        maxCount = deptCounts[d];
+        topDept = d + " (" + maxCount + ")";
+      }
+    });
+
+    var tEl = document.getElementById("sem-stat-total"); if (tEl) tEl.textContent = total;
+    var cEl = document.getElementById("sem-stat-claimed"); if (cEl) cEl.textContent = claimed;
+    var pEl = document.getElementById("sem-stat-pending"); if (pEl) pEl.textContent = pending;
+    var dEl = document.getElementById("sem-stat-topdept"); if (dEl) dEl.textContent = topDept;
+
+    var badge = document.getElementById("admin-seminar-tab-badge");
+    if (badge) badge.textContent = total;
+  }
+
+  function populateSeminarDeptDropdown() {
+    var deptSel = document.getElementById("admin-seminar-dept");
+    if (!deptSel) return;
+    var curVal = deptSel.value;
+
+    var depts = {};
+    allSeminarList.forEach(function (x) {
+      if (x.department) depts[x.department.trim()] = true;
+    });
+
+    var optsHtml = '<option value="">🏛️ All Departments</option>';
+    Object.keys(depts).sort().forEach(function (d) {
+      optsHtml += '<option value="' + esc(d) + '">' + esc(d) + '</option>';
+    });
+    deptSel.innerHTML = optsHtml;
+    deptSel.value = curVal;
+  }
+
+  function renderAdminSeminarRegistrations() {
+    var tbody = document.getElementById("admin-seminar-tbody");
+    if (!tbody) return;
+
+    var searchVal = (document.getElementById("admin-seminar-search") ? document.getElementById("admin-seminar-search").value : "").toLowerCase().trim();
+    var deptVal = document.getElementById("admin-seminar-dept") ? document.getElementById("admin-seminar-dept").value : "";
+    var drinkVal = document.getElementById("admin-seminar-drink") ? document.getElementById("admin-seminar-drink").value : "";
+    var statusVal = document.getElementById("admin-seminar-status") ? document.getElementById("admin-seminar-status").value : "";
+
+    var filtered = allSeminarList.filter(function (item) {
+      if (deptVal && item.department !== deptVal) return false;
+      if (drinkVal && String(item.freeDrinkChoice || "").toLowerCase().indexOf(drinkVal.toLowerCase()) === -1) return false;
+      if (statusVal === "claimed" && !item.freeDrinkClaimed) return false;
+      if (statusVal === "pending" && item.freeDrinkClaimed) return false;
+
+      if (searchVal) {
+        var str = [
+          item.fullName,
+          item.studentId,
+          item.email,
+          item.phone,
+          item.ticketCode,
+          item.department,
+          item.targetCountry
+        ].join(" ").toLowerCase();
+        if (str.indexOf(searchVal) === -1) return false;
+      }
+      return true;
+    });
+
+    var countBadge = document.getElementById("admin-seminar-count-badge");
+    if (countBadge) {
+      countBadge.textContent = filtered.length + " / " + allSeminarList.length + " Attendees";
+    }
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2.5rem;" class="muted">No seminar registrations found matching the filters.</td></tr>';
+      return;
+    }
+
+    var html = filtered.map(function (item) {
+      var isClaimed = item.freeDrinkClaimed === true;
+      var drinkPill = isClaimed
+        ? '<button class="btn btn-xs btn-toggle-drink" data-id="' + esc(item.id) + '" data-claimed="true" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:800; border-radius:999px; padding:3px 10px; cursor:pointer;" title="Click to unmark as claimed">🥤 CLAIMED ✓</button>'
+        : '<button class="btn btn-xs btn-toggle-drink" data-id="' + esc(item.id) + '" data-claimed="false" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:800; border-radius:999px; padding:3px 10px; cursor:pointer;" title="Click to mark as claimed">⏳ PENDING (Claim)</button>';
+
+      var cleanPhone = String(item.phone || "").replace(/[^0-9+]/g, "");
+      var waLink = cleanPhone ? 'https://wa.me/' + cleanPhone.replace("+", "") + '?text=' + encodeURIComponent("Hello " + item.fullName + ", confirming your Special Seminar Registration & Free Drink Pass at GSTU (Ticket: " + (item.ticketCode || item.id) + ").") : "#";
+
+      return '<tr style="border-bottom: 1px solid var(--line);">' +
+        '<td style="padding: 0.75rem 0.85rem; vertical-align: top;">' +
+          '<div style="font-weight: 800; color: #0369a1; font-family: monospace; font-size: 0.92rem;">' + esc(item.ticketCode || item.id) + '</div>' +
+          '<div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">' + fmtDate(item.createdAt || item.registeredAt) + '</div>' +
+        '</td>' +
+        '<td style="padding: 0.75rem 0.85rem; vertical-align: top;">' +
+          '<div style="font-weight: 800; color: var(--blue-900);">' + esc(item.fullName) + '</div>' +
+          '<div style="font-size: 0.78rem; color: #475569; font-weight: 600;">ID: ' + esc(item.studentId || "N/A") + '</div>' +
+        '</td>' +
+        '<td style="padding: 0.75rem 0.85rem; vertical-align: top;">' +
+          '<span class="badge" style="background:#f1f5f9; color:#1e293b; font-weight:700; font-size:0.78rem;">' + esc(item.department) + '</span>' +
+          '<div style="font-size: 0.78rem; color: var(--muted); margin-top: 2px;">' + esc(item.academicYear || "4th Year") + '</div>' +
+        '</td>' +
+        '<td style="padding: 0.75rem 0.85rem; vertical-align: top;">' +
+          '<div style="font-size: 0.82rem; color: #0f172a;"><a href="mailto:' + esc(item.email) + '" style="color:#0284c7; text-decoration:none;">' + esc(item.email) + '</a></div>' +
+          '<div style="font-size: 0.8rem; color: #475569; margin-top: 2px; display:flex; align-items:center; gap:4px;">' +
+            '<span>' + esc(item.phone) + '</span>' +
+            (cleanPhone ? '<a href="' + esc(waLink) + '" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem; text-decoration:none;" title="Chat on WhatsApp">💬</a>' : '') +
+          '</div>' +
+        '</td>' +
+        '<td style="padding: 0.75rem 0.85rem; vertical-align: top;">' +
+          '<div style="font-weight: 700; color: #1e293b;">' + esc(item.targetCountry || "Czech Republic") + '</div>' +
+          '<div style="font-size: 0.78rem; color: var(--muted);">' + esc(item.studyLevel || "Bachelor / Master") + '</div>' +
+        '</td>' +
+        '<td style="padding: 0.75rem 0.85rem; text-align: center; vertical-align: top;">' +
+          '<div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; color: #0369a1;">' + esc(item.freeDrinkChoice || "Cold Coffee") + '</div>' +
+          drinkPill +
+        '</td>' +
+        '<td style="padding: 0.75rem 0.85rem; text-align: right; vertical-align: top;">' +
+          '<div style="display: inline-flex; gap: 4px;">' +
+            '<button class="btn btn-outline btn-xs btn-edit-seminar" data-id="' + esc(item.id) + '" style="font-weight: 700;">✏️ Edit</button>' +
+            '<button class="btn btn-outline btn-xs btn-del-seminar" data-id="' + esc(item.id) + '" style="color: #dc2626; border-color: #fca5a5; font-weight: 700;">🗑️</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join("");
+
+    tbody.innerHTML = html;
+
+    // Attach Toggle Drink Claimed listener
+    tbody.querySelectorAll(".btn-toggle-drink").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        var currentClaimed = this.getAttribute("data-claimed") === "true";
+        toggleSeminarDrinkClaimed(id, !currentClaimed);
+      };
+    });
+
+    // Attach Edit listener
+    tbody.querySelectorAll(".btn-edit-seminar").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        var match = allSeminarList.filter(function (x) { return x.id === id; })[0];
+        if (match) openSeminarEditorModal(match);
+      };
+    });
+
+    // Attach Delete listener
+    tbody.querySelectorAll(".btn-del-seminar").forEach(function (btn) {
+      btn.onclick = function () {
+        var id = this.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this seminar registration?")) {
+          api("adminDeleteSeminarRegistration", { id: id }).then(function (res) {
+            if (res && res.ok) {
+              if (typeof showToast === "function") showToast("Registration deleted!", "success");
+              loadAdminSeminarRegistrations();
+            } else {
+              alert("Failed to delete registration.");
+            }
+          });
+        }
+      };
+    });
+  }
+
+  function toggleSeminarDrinkClaimed(id, newStatus) {
+    api("adminUpdateSeminarRegistration", { id: id, freeDrinkClaimed: newStatus }).then(function (res) {
+      if (res && res.ok) {
+        if (typeof showToast === "function") {
+          showToast(newStatus ? "🥤 Free Drink Pass marked as CLAIMED!" : "⏳ Free Drink Pass marked as PENDING", "success");
+        }
+        loadAdminSeminarRegistrations();
+      }
+    }).catch(function (err) {
+      alert("Error updating drink claim status: " + err.message);
+    });
+  }
+
+  function openSeminarEditorModal(item) {
+    var modal = document.getElementById("modal-seminar-editor");
+    if (!modal) return;
+
+    var titleEl = document.getElementById("modal-seminar-title");
+    var idEl = document.getElementById("sem-edit-id");
+    var nameEl = document.getElementById("sem-edit-name");
+    var idNumEl = document.getElementById("sem-edit-studentid");
+    var deptEl = document.getElementById("sem-edit-dept");
+    var yearEl = document.getElementById("sem-edit-year");
+    var emailEl = document.getElementById("sem-edit-email");
+    var phoneEl = document.getElementById("sem-edit-phone");
+    var countryEl = document.getElementById("sem-edit-country");
+    var drinkEl = document.getElementById("sem-edit-drink");
+    var claimedEl = document.getElementById("sem-edit-claimed");
+    var notesEl = document.getElementById("sem-edit-notes");
+    var msgEl = document.getElementById("sem-modal-msg");
+
+    if (msgEl) msgEl.textContent = "";
+
+    if (item) {
+      titleEl.textContent = "✏️ Edit GSTU Seminar Registration (" + (item.ticketCode || item.id) + ")";
+      idEl.value = item.id || "";
+      nameEl.value = item.fullName || "";
+      idNumEl.value = item.studentId || "";
+      deptEl.value = item.department || "";
+      yearEl.value = item.academicYear || "4th Year";
+      emailEl.value = item.email || "";
+      phoneEl.value = item.phone || "";
+      countryEl.value = item.targetCountry || "Czech Republic";
+      drinkEl.value = item.freeDrinkChoice || "Cold Coffee";
+      claimedEl.checked = item.freeDrinkClaimed === true;
+      notesEl.value = item.notes || "";
+    } else {
+      titleEl.textContent = "🎓 Walk-in / On-Spot GSTU Seminar Registration";
+      idEl.value = "";
+      nameEl.value = "";
+      idNumEl.value = "";
+      deptEl.value = "CSE";
+      yearEl.value = "4th Year";
+      emailEl.value = "";
+      phoneEl.value = "";
+      countryEl.value = "Czech Republic";
+      drinkEl.value = "Cold Coffee";
+      claimedEl.checked = true; // Walk-ins at counter get drink immediately
+      notesEl.value = "On-spot counter registration";
+    }
+
+    modal.classList.remove("hidden");
+    modal.classList.add("show");
+    modal.style.display = "flex";
+  }
+
+  function closeSeminarEditorModal() {
+    var modal = document.getElementById("modal-seminar-editor");
+    if (modal) {
+      modal.classList.remove("show");
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function saveSeminarEntry() {
+    var msgEl = document.getElementById("sem-modal-msg");
+    if (msgEl) msgEl.textContent = "Saving registration...";
+
+    var payload = {
+      id: document.getElementById("sem-edit-id").value,
+      fullName: document.getElementById("sem-edit-name").value,
+      studentId: document.getElementById("sem-edit-studentid").value,
+      department: document.getElementById("sem-edit-dept").value,
+      academicYear: document.getElementById("sem-edit-year").value,
+      email: document.getElementById("sem-edit-email").value,
+      phone: document.getElementById("sem-edit-phone").value,
+      targetCountry: document.getElementById("sem-edit-country").value,
+      freeDrinkChoice: document.getElementById("sem-edit-drink").value,
+      freeDrinkClaimed: document.getElementById("sem-edit-claimed").checked,
+      notes: document.getElementById("sem-edit-notes").value
+    };
+
+    api("adminSaveSeminarRegistration", payload).then(function (res) {
+      if (res && res.ok) {
+        if (msgEl) msgEl.textContent = "Saved!";
+        if (typeof showToast === "function") showToast("GSTU Seminar registration saved!", "success");
+        closeSeminarEditorModal();
+        loadAdminSeminarRegistrations();
+      } else {
+        if (msgEl) msgEl.textContent = "Error saving registration.";
+      }
+    }).catch(function (err) {
+      if (msgEl) msgEl.textContent = "Server error: " + err.message;
+    });
+  }
+
+  function exportSeminarCSV() {
+    if (!allSeminarList || !allSeminarList.length) {
+      alert("No seminar registrations to export.");
+      return;
+    }
+
+    var csvData = allSeminarList.map(function (x) {
+      return {
+        "Ticket Code": x.ticketCode || x.id,
+        "Student Full Name": x.fullName,
+        "GSTU Student ID": x.studentId,
+        "Department": x.department,
+        "Academic Year": x.academicYear,
+        "Email Address": x.email,
+        "Phone / WhatsApp": x.phone,
+        "Target Study Country": x.targetCountry,
+        "Free Drink Choice": x.freeDrinkChoice,
+        "Drink Pass Claimed": x.freeDrinkClaimed ? "YES (CLAIMED)" : "NO (PENDING)",
+        "Registered At": x.registeredAt || x.createdAt,
+        "Questions & Notes": x.notes || ""
+      };
+    });
+
+    triggerDownload(csvData, "GSTU-Special-Seminar-Registrations-FreeDrinks", "csv");
   }
 
 })();

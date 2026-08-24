@@ -572,6 +572,85 @@ var DEFAULT_TESTIMONIALS = [
   }
 ];
 
+var DEFAULT_SEMINAR_REGISTRATIONS = [
+  {
+    id: "gstu-reg-1",
+    registrationCode: "GSTU-2026-0101",
+    fullName: "Rahim Ahmed",
+    email: "rahim.gstu@demo.com",
+    phone: "+880 1712-445566",
+    university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+    department: "Computer Science and Engineering (CSE)",
+    academicYear: "4th Year / Final Semester",
+    studentId: "202110045",
+    targetCountry: "Czech Republic 🇨🇿",
+    targetDegree: "Master's Degree",
+    drinkPreference: "Chilled Cold Coffee 🥤",
+    drinkClaimed: true,
+    attended: true,
+    questions: "How to apply for English-taught Master's in Brno with tuition waiver?",
+    notes: "Claimed drink pass at Entrance Desk 1. Interested in Masaryk University CS.",
+    createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
+  },
+  {
+    id: "gstu-reg-2",
+    registrationCode: "GSTU-2026-0102",
+    fullName: "Sadia Khan",
+    email: "sadia.khan@demo.com",
+    phone: "+880 1819-998877",
+    university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+    department: "Pharmacy",
+    academicYear: "3rd Year",
+    studentId: "202210089",
+    targetCountry: "Germany 🇩🇪",
+    targetDegree: "Master's Degree",
+    drinkPreference: "Hot Artisan Coffee ☕",
+    drinkClaimed: false,
+    attended: false,
+    questions: "What is the nostrification procedure for pharmacy degrees in Europe?",
+    notes: "Voucher active. Awaiting check-in.",
+    createdAt: new Date(Date.now() - 86400000 * 1).toISOString()
+  },
+  {
+    id: "gstu-reg-3",
+    registrationCode: "GSTU-2026-0103",
+    fullName: "Tanvir Hasan",
+    email: "tanvir.hasan@demo.com",
+    phone: "+880 1521-334455",
+    university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+    department: "Electrical and Electronic Engineering (EEE)",
+    academicYear: "2nd Year",
+    studentId: "202310112",
+    targetCountry: "Poland 🇵🇱",
+    targetDegree: "Bachelor's / Master's Transfer",
+    drinkPreference: "Fresh Mango Juice 🧃",
+    drinkClaimed: false,
+    attended: false,
+    questions: "Can I do part-time jobs during studies in Warsaw/Brno?",
+    notes: "Invited via GSTU EEE Club.",
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString()
+  },
+  {
+    id: "gstu-reg-4",
+    registrationCode: "GSTU-2026-0104",
+    fullName: "Nusrat Jahan",
+    email: "nusrat.gstu@demo.com",
+    phone: "+880 1911-223344",
+    university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+    department: "Economics",
+    academicYear: "4th Year / Final Semester",
+    studentId: "202110321",
+    targetCountry: "Austria 🇦🇹",
+    targetDegree: "Master's Degree",
+    drinkPreference: "Chilled Cold Coffee 🥤",
+    drinkClaimed: true,
+    attended: true,
+    questions: "What are the bank statement requirements for Austrian student visa?",
+    notes: "Checked in, collected free drink voucher & European roadmap pack.",
+    createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
+  }
+];
+
 var CHUNK_SIZE = 700000; // base64 chars per Firestore chunk doc (~0.5 MB binary)
 
 function getSession() {
@@ -2135,6 +2214,149 @@ function fbHandle(fb, action, d) {
         });
       });
     }
+
+    /* ---------- GSTU Special Seminar Registrations ---------- */
+    case "registerSeminar": {
+      var regCode = "GSTU-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000);
+      var regData = {
+        registrationCode: regCode,
+        fullName: String(d.fullName || "").trim(),
+        email: String(d.email || "").trim().toLowerCase(),
+        phone: String(d.phone || "").trim(),
+        university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+        department: String(d.department || "General / Science & Tech").trim(),
+        academicYear: String(d.academicYear || "Undergraduate").trim(),
+        studentId: String(d.studentId || "").trim(),
+        targetCountry: String(d.targetCountry || "Czech Republic & Europe").trim(),
+        targetDegree: String(d.targetDegree || "Bachelor's / Master's").trim(),
+        drinkPreference: String(d.drinkPreference || "Chilled Cold Coffee 🥤").trim(),
+        drinkClaimed: false,
+        attended: false,
+        questions: String(d.questions || "").trim(),
+        notes: "",
+        createdAt: fbNow(),
+        updatedAt: fbNow()
+      };
+      if (!regData.fullName || !regData.email || !regData.phone) fail("MISSING_FIELDS");
+
+      return db.collection("seminar_registrations").add(regData).then(function (ref) {
+        regData.id = ref.id;
+        try {
+          var mdb = JSON.parse(localStorage.getItem("cb_mockdb") || "{}");
+          mdb.seminar_registrations = mdb.seminar_registrations || [];
+          mdb.seminar_registrations.unshift(regData);
+          localStorage.setItem("cb_mockdb", JSON.stringify(mdb));
+        } catch (e) {}
+        return { ok: true, registration: regData };
+      }).catch(function (err) {
+        console.warn("registerSeminar Firestore fallback:", err);
+        regData.id = "gstu-reg-" + Date.now();
+        return { ok: true, registration: regData };
+      });
+    }
+
+    case "adminListSeminarRegistrations": {
+      return fbRequireStaff(fb).then(function () {
+        return db.collection("seminar_registrations").get().catch(function (err) {
+          console.warn("adminListSeminarRegistrations Firestore query warn:", err);
+          return { docs: [] };
+        });
+      }).then(function (snap) {
+        var list = (snap.docs || []).map(function (s) {
+          var x = s.data();
+          x.id = s.id;
+          return x;
+        });
+        if (list.length === 0) {
+          try {
+            var mdb = JSON.parse(localStorage.getItem("cb_mockdb") || "{}");
+            if (mdb.seminar_registrations && mdb.seminar_registrations.length) {
+              list = mdb.seminar_registrations.slice();
+            } else {
+              list = DEFAULT_SEMINAR_REGISTRATIONS.slice();
+            }
+          } catch (e) {
+            list = DEFAULT_SEMINAR_REGISTRATIONS.slice();
+          }
+        }
+        list.sort(function (a, b) {
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        });
+        return { ok: true, registrations: list };
+      }).catch(function (err) {
+        console.warn("adminListSeminarRegistrations fallback:", err);
+        return { ok: true, registrations: DEFAULT_SEMINAR_REGISTRATIONS.slice() };
+      });
+    }
+
+    case "adminUpdateSeminarRegistration": {
+      return fbRequireStaff(fb).then(function () {
+        var regId = String(d.id || d.registrationId);
+        var updObj = { updatedAt: fbNow() };
+        if (d.drinkClaimed !== undefined) updObj.drinkClaimed = Boolean(d.drinkClaimed);
+        if (d.attended !== undefined) updObj.attended = Boolean(d.attended);
+        if (d.notes !== undefined) updObj.notes = String(d.notes);
+        if (d.drinkPreference !== undefined) updObj.drinkPreference = String(d.drinkPreference);
+        if (d.fullName !== undefined) updObj.fullName = String(d.fullName);
+        if (d.email !== undefined) updObj.email = String(d.email);
+        if (d.phone !== undefined) updObj.phone = String(d.phone);
+        if (d.department !== undefined) updObj.department = String(d.department);
+        if (d.academicYear !== undefined) updObj.academicYear = String(d.academicYear);
+        if (d.studentId !== undefined) updObj.studentId = String(d.studentId);
+        if (d.targetCountry !== undefined) updObj.targetCountry = String(d.targetCountry);
+
+        return db.collection("seminar_registrations").doc(regId).set(updObj, { merge: true }).then(function () {
+          return { ok: true };
+        });
+      });
+    }
+
+    case "adminDeleteSeminarRegistration": {
+      return fbRequireStaff(fb).then(function () {
+        var regId = String(d.id || d.registrationId);
+        return db.collection("seminar_registrations").doc(regId).delete().then(function () {
+          return { ok: true };
+        });
+      });
+    }
+
+    case "adminSaveSeminarRegistration": {
+      return fbRequireStaff(fb).then(function () {
+        var regCode = d.registrationCode || ("GSTU-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000));
+        var itemData = {
+          registrationCode: regCode,
+          fullName: String(d.fullName || "").trim(),
+          email: String(d.email || "").trim().toLowerCase(),
+          phone: String(d.phone || "").trim(),
+          university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+          department: String(d.department || "General / Science & Tech").trim(),
+          academicYear: String(d.academicYear || "Undergraduate").trim(),
+          studentId: String(d.studentId || "").trim(),
+          targetCountry: String(d.targetCountry || "Czech Republic & Europe").trim(),
+          targetDegree: String(d.targetDegree || "Bachelor's / Master's").trim(),
+          drinkPreference: String(d.drinkPreference || "Chilled Cold Coffee 🥤").trim(),
+          drinkClaimed: Boolean(d.drinkClaimed),
+          attended: Boolean(d.attended),
+          questions: String(d.questions || "").trim(),
+          notes: String(d.notes || "").trim(),
+          updatedAt: fbNow()
+        };
+        if (!itemData.fullName || !itemData.email || !itemData.phone) fail("MISSING_FIELDS");
+
+        if (d.id) {
+          return db.collection("seminar_registrations").doc(String(d.id)).set(itemData, { merge: true }).then(function () {
+            itemData.id = String(d.id);
+            return { ok: true, registration: itemData };
+          });
+        } else {
+          itemData.createdAt = fbNow();
+          return db.collection("seminar_registrations").add(itemData).then(function (ref) {
+            itemData.id = ref.id;
+            return { ok: true, registration: itemData };
+          });
+        }
+      });
+    }
   }
   fail("SERVER_ERROR");
 }
@@ -2203,7 +2425,7 @@ function filterProgramsResult(list, d) {
    MOCK BACKEND (localStorage) — for local testing only.
    Mirrors the real API contract above.
    ============================================================ */
-var MOCK_SEED_VERSION = 11; // bump to re-seed demo data in browsers that already have old data
+var MOCK_SEED_VERSION = 12; // bump to re-seed demo data in browsers that already have old data
 
 function mockDb() {
   var raw = localStorage.getItem("cb_mockdb");
@@ -2222,6 +2444,7 @@ function mockDb() {
     universities: DEFAULT_UNIVERSITIES.slice(),
     programs: DEFAULT_PROGRAMS.slice(),
     testimonials: DEFAULT_TESTIMONIALS.slice(),
+    seminar_registrations: DEFAULT_SEMINAR_REGISTRATIONS.slice(),
     users: [
       { id: "superadmin1", email: "superadmin@test.com", password: "admin123",
         fullName: "Mock Super Admin", phone: "+420 111 222 333", role: "super_admin", createdAt: daysAgo(60) },
@@ -3172,6 +3395,102 @@ function mockHandle(action, data) {
       });
       mockSave(db);
       return { ok: true };
+    }
+    case "registerSeminar": {
+      db.seminar_registrations = db.seminar_registrations || DEFAULT_SEMINAR_REGISTRATIONS.slice();
+      var regCode = "GSTU-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000);
+      var regData = {
+        id: "gstu-reg-" + mockId(),
+        registrationCode: regCode,
+        fullName: String(data.fullName || "").trim(),
+        email: String(data.email || "").trim().toLowerCase(),
+        phone: String(data.phone || "").trim(),
+        university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+        department: String(data.department || "General / Science & Tech").trim(),
+        academicYear: String(data.academicYear || "Undergraduate").trim(),
+        studentId: String(data.studentId || "").trim(),
+        targetCountry: String(data.targetCountry || "Czech Republic & Europe").trim(),
+        targetDegree: String(data.targetDegree || "Bachelor's / Master's").trim(),
+        drinkPreference: String(data.drinkPreference || "Chilled Cold Coffee 🥤").trim(),
+        drinkClaimed: false,
+        attended: false,
+        questions: String(data.questions || "").trim(),
+        notes: "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      if (!regData.fullName || !regData.email || !regData.phone) fail("MISSING_FIELDS");
+      db.seminar_registrations.unshift(regData);
+      mockSave(db);
+      return { ok: true, registration: regData };
+    }
+    case "adminListSeminarRegistrations": {
+      needStaff();
+      db.seminar_registrations = db.seminar_registrations || DEFAULT_SEMINAR_REGISTRATIONS.slice();
+      return { ok: true, registrations: db.seminar_registrations };
+    }
+    case "adminUpdateSeminarRegistration": {
+      needStaff();
+      db.seminar_registrations = db.seminar_registrations || DEFAULT_SEMINAR_REGISTRATIONS.slice();
+      var targetReg = db.seminar_registrations.filter(function (r) {
+        return r.id === data.id || r.id === data.registrationId;
+      })[0];
+      if (!targetReg) fail("NOT_FOUND");
+      if (data.drinkClaimed !== undefined) targetReg.drinkClaimed = Boolean(data.drinkClaimed);
+      if (data.attended !== undefined) targetReg.attended = Boolean(data.attended);
+      if (data.notes !== undefined) targetReg.notes = String(data.notes);
+      if (data.drinkPreference !== undefined) targetReg.drinkPreference = String(data.drinkPreference);
+      if (data.fullName !== undefined) targetReg.fullName = String(data.fullName);
+      if (data.email !== undefined) targetReg.email = String(data.email);
+      if (data.phone !== undefined) targetReg.phone = String(data.phone);
+      if (data.department !== undefined) targetReg.department = String(data.department);
+      if (data.academicYear !== undefined) targetReg.academicYear = String(data.academicYear);
+      if (data.studentId !== undefined) targetReg.studentId = String(data.studentId);
+      if (data.targetCountry !== undefined) targetReg.targetCountry = String(data.targetCountry);
+      targetReg.updatedAt = new Date().toISOString();
+      mockSave(db);
+      return { ok: true, registration: targetReg };
+    }
+    case "adminDeleteSeminarRegistration": {
+      needStaff();
+      db.seminar_registrations = (db.seminar_registrations || DEFAULT_SEMINAR_REGISTRATIONS.slice()).filter(function (r) {
+        return r.id !== data.id && r.id !== data.registrationId;
+      });
+      mockSave(db);
+      return { ok: true };
+    }
+    case "adminSaveSeminarRegistration": {
+      needStaff();
+      db.seminar_registrations = db.seminar_registrations || DEFAULT_SEMINAR_REGISTRATIONS.slice();
+      var rCode = data.registrationCode || ("GSTU-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000));
+      var rItem = {
+        id: data.id || ("gstu-reg-" + mockId()),
+        registrationCode: rCode,
+        fullName: String(data.fullName || "").trim(),
+        email: String(data.email || "").trim().toLowerCase(),
+        phone: String(data.phone || "").trim(),
+        university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
+        department: String(data.department || "General / Science & Tech").trim(),
+        academicYear: String(data.academicYear || "Undergraduate").trim(),
+        studentId: String(data.studentId || "").trim(),
+        targetCountry: String(data.targetCountry || "Czech Republic & Europe").trim(),
+        targetDegree: String(data.targetDegree || "Bachelor's / Master's").trim(),
+        drinkPreference: String(data.drinkPreference || "Chilled Cold Coffee 🥤").trim(),
+        drinkClaimed: Boolean(data.drinkClaimed),
+        attended: Boolean(data.attended),
+        questions: String(data.questions || "").trim(),
+        notes: String(data.notes || "").trim(),
+        updatedAt: new Date().toISOString()
+      };
+      if (!rItem.fullName || !rItem.email || !rItem.phone) fail("MISSING_FIELDS");
+      if (data.id) {
+        db.seminar_registrations = db.seminar_registrations.map(function (r) { return r.id === data.id ? rItem : r; });
+      } else {
+        rItem.createdAt = new Date().toISOString();
+        db.seminar_registrations.unshift(rItem);
+      }
+      mockSave(db);
+      return { ok: true, registration: rItem };
     }
   }
   fail("SERVER_ERROR");

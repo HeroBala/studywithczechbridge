@@ -203,6 +203,14 @@ service cloud.firestore {
     }
 
     // ------------------------------------------------------------
+    // Seminar registrations (Open for GSTU Seminar registration + Free Drink Pass)
+    // ------------------------------------------------------------
+    match /seminar_registrations/{regId} {
+      allow read, create: if true;
+      allow update, delete: if isStaff() || isAdmin() || isSuperAdmin();
+    }
+
+    // ------------------------------------------------------------
     // Tasks, Alerts, & Operations
     // ------------------------------------------------------------
     match /tasks/{taskId} {
