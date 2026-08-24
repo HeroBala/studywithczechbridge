@@ -5,4 +5,7 @@ firebase-debug.log
 .DS_Store
 Thumbs.db
 screenshots/
-.env.example
+.env
+.env.*
+!.env.example
+email-config.json

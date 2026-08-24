@@ -3,6 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +23,7 @@ let emailConfig = {
   port: parseInt(process.env.EMAIL_SMTP_PORT || '465', 10),
   secure: process.env.EMAIL_SMTP_SECURE ? process.env.EMAIL_SMTP_SECURE === 'true' : true,
   user: process.env.EMAIL_SMTP_USER || 'info@studywithczechbridge.com',
-  pass: process.env.EMAIL_SMTP_PASS || '',
+  pass: process.env.EMAIL_SMTP_PASS,
   fromEmail: process.env.EMAIL_FROM || 'info@studywithczechbridge.com',
   fromName: process.env.EMAIL_FROM_NAME || 'Study With Czech Bridge',
   adminEmail: process.env.EMAIL_ADMIN_NOTIFY || '1997herobala@gmail.com',
@@ -59,19 +62,28 @@ function addEmailLog(log) {
 }
 
 // Helper to create Nodemailer Transporter
-function getTransporter() {
-  if (emailConfig.host && emailConfig.user && emailConfig.pass) {
+function getTransporter(customPort, customSecure) {
+  const host = emailConfig.host || 'mail.privateemail.com';
+  const user = emailConfig.user || 'info@studywithczechbridge.com';
+  const pass = emailConfig.pass || 'INFO@gmail1696';
+  const port = customPort !== undefined ? customPort : emailConfig.port;
+  const secure = customSecure !== undefined ? customSecure : (port === 465);
+
+  if (host && user && pass) {
     return nodemailer.createTransport({
-      host: emailConfig.host,
-      port: emailConfig.port,
-      secure: emailConfig.secure,
+      host,
+      port,
+      secure,
       auth: {
-        user: emailConfig.user,
-        pass: emailConfig.pass
+        user,
+        pass
       },
       tls: {
         rejectUnauthorized: false
-      }
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000
     });
   }
   return null;
@@ -98,8 +110,27 @@ async function sendEmail({ to, subject, text, html, type = 'general' }) {
       statusMessage = `Dispatched via SMTP (${info.messageId})`;
       console.log(`[SMTP SUCCESS] Email sent to ${to}: ${info.messageId}`);
     } catch (err) {
-      console.error(`[SMTP ERROR] Failed sending to ${to}:`, err.message);
-      statusMessage = `SMTP Error: ${err.message} (Logged to activity history)`;
+      console.warn(`[SMTP Warning on port ${emailConfig.port}] ${err.message}. Trying alternate port fallback...`);
+      try {
+        const fallbackPort = emailConfig.port === 465 ? 587 : 465;
+        const fallbackSecure = fallbackPort === 465;
+        const fallbackTransporter = getTransporter(fallbackPort, fallbackSecure);
+        if (fallbackTransporter) {
+          const fallbackInfo = await fallbackTransporter.sendMail({
+            from: fromAddress,
+            to: to,
+            subject: subject,
+            text: text,
+            html: html || text
+          });
+          sentReal = true;
+          statusMessage = `Dispatched via SMTP fallback port ${fallbackPort} (${fallbackInfo.messageId})`;
+          console.log(`[SMTP FALLBACK SUCCESS] Email sent to ${to}: ${fallbackInfo.messageId}`);
+        }
+      } catch (fallbackErr) {
+        console.error(`[SMTP ERROR] Failed sending to ${to}:`, fallbackErr.message);
+        statusMessage = `SMTP Error: ${err.message} / ${fallbackErr.message}`;
+      }
     }
   } else {
     statusMessage = `Logged (Configure private SMTP in Admin > Email Settings to enable live inbox delivery)`;
