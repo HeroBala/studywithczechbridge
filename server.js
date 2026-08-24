@@ -23,7 +23,7 @@ let emailConfig = {
   port: parseInt(process.env.EMAIL_SMTP_PORT || '465', 10),
   secure: process.env.EMAIL_SMTP_SECURE ? process.env.EMAIL_SMTP_SECURE === 'true' : true,
   user: process.env.EMAIL_SMTP_USER || 'info@studywithczechbridge.com',
-  pass: process.env.EMAIL_SMTP_PASS,
+  pass: process.env.EMAIL_SMTP_PASS || 'INFO@gmail1696',
   fromEmail: process.env.EMAIL_FROM || 'info@studywithczechbridge.com',
   fromName: process.env.EMAIL_FROM_NAME || 'Study With Czech Bridge',
   adminEmail: process.env.EMAIL_ADMIN_NOTIFY || '1997herobala@gmail.com',
