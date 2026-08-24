@@ -2219,17 +2219,20 @@ function fbHandle(fb, action, d) {
     case "registerSeminar": {
       var regCode = "GSTU-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000);
       var regData = {
+        ticketCode: regCode,
         registrationCode: regCode,
         fullName: String(d.fullName || "").trim(),
         email: String(d.email || "").trim().toLowerCase(),
         phone: String(d.phone || "").trim(),
         university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
         department: String(d.department || "General / Science & Tech").trim(),
-        academicYear: String(d.academicYear || "Undergraduate").trim(),
+        academicYear: String(d.academicYear || "Undergraduate / Alumnus").trim(),
         studentId: String(d.studentId || "").trim(),
         targetCountry: String(d.targetCountry || "Czech Republic & Europe").trim(),
         targetDegree: String(d.targetDegree || "Bachelor's / Master's").trim(),
-        drinkPreference: String(d.drinkPreference || "Chilled Cold Coffee 🥤").trim(),
+        drinkPreference: String(d.drinkPreference || d.freeDrinkChoice || "Complimentary Cold Coffee / Beverage 🥤").trim(),
+        freeDrinkChoice: String(d.freeDrinkChoice || d.drinkPreference || "Complimentary Cold Coffee / Beverage 🥤").trim(),
+        freeDrinkClaimed: false,
         drinkClaimed: false,
         attended: false,
         questions: String(d.questions || "").trim(),
@@ -2238,6 +2241,19 @@ function fbHandle(fb, action, d) {
         updatedAt: fbNow()
       };
       if (!regData.fullName || !regData.email || !regData.phone) fail("MISSING_FIELDS");
+
+      // Dispatch confirmation email in background
+      fetch('/api/notify-seminar-registered', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: regData.email,
+          fullName: regData.fullName,
+          phone: regData.phone,
+          ticketCode: regData.ticketCode,
+          freeDrinkChoice: regData.freeDrinkChoice
+        })
+      }).catch(function (err) { console.warn("Seminar email notify error:", err); });
 
       return db.collection("seminar_registrations").add(regData).then(function (ref) {
         regData.id = ref.id;
@@ -3401,17 +3417,20 @@ function mockHandle(action, data) {
       var regCode = "GSTU-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000);
       var regData = {
         id: "gstu-reg-" + mockId(),
+        ticketCode: regCode,
         registrationCode: regCode,
         fullName: String(data.fullName || "").trim(),
         email: String(data.email || "").trim().toLowerCase(),
         phone: String(data.phone || "").trim(),
         university: "Gopalganj Science and Technology University (GSTU / BSMRSTU)",
         department: String(data.department || "General / Science & Tech").trim(),
-        academicYear: String(data.academicYear || "Undergraduate").trim(),
+        academicYear: String(data.academicYear || "Undergraduate / Alumnus").trim(),
         studentId: String(data.studentId || "").trim(),
         targetCountry: String(data.targetCountry || "Czech Republic & Europe").trim(),
         targetDegree: String(data.targetDegree || "Bachelor's / Master's").trim(),
-        drinkPreference: String(data.drinkPreference || "Chilled Cold Coffee 🥤").trim(),
+        drinkPreference: String(data.drinkPreference || data.freeDrinkChoice || "Complimentary Cold Coffee / Beverage 🥤").trim(),
+        freeDrinkChoice: String(data.freeDrinkChoice || data.drinkPreference || "Complimentary Cold Coffee / Beverage 🥤").trim(),
+        freeDrinkClaimed: false,
         drinkClaimed: false,
         attended: false,
         questions: String(data.questions || "").trim(),
@@ -3420,6 +3439,20 @@ function mockHandle(action, data) {
         updatedAt: new Date().toISOString()
       };
       if (!regData.fullName || !regData.email || !regData.phone) fail("MISSING_FIELDS");
+
+      // Dispatch confirmation email from info@studywithczechbridge.com
+      fetch('/api/notify-seminar-registered', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: regData.email,
+          fullName: regData.fullName,
+          phone: regData.phone,
+          ticketCode: regData.ticketCode,
+          freeDrinkChoice: regData.freeDrinkChoice
+        })
+      }).catch(function (err) { console.warn("Seminar email notify error:", err); });
+
       db.seminar_registrations.unshift(regData);
       mockSave(db);
       return { ok: true, registration: regData };

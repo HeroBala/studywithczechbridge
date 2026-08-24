@@ -555,6 +555,113 @@ app.post('/api/notify-task-assigned', async (req, res) => {
   res.json({ ok: true, alert: result });
 });
 
+// Route: GSTU Seminar Registration Confirmation Notification
+app.post('/api/notify-seminar-registered', async (req, res) => {
+  const { email, fullName, phone, ticketCode, freeDrinkChoice } = req.body;
+  const timeStr = new Date().toLocaleString();
+  const code = ticketCode || `GSTU-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+  if (!email) {
+    return res.status(400).json({ ok: false, error: "Email is required" });
+  }
+
+  const subject = `🎓 Registration Confirmed: Higher Education in Europe Seminar @ GSTU [Pass: ${code}]`;
+  const text = `Dear ${fullName || 'Student'},\n\nCongratulations! Your registration for the Special Seminar on Higher Education in Europe & European Life at Gopalganj Science and Technology University (GSTU) has been confirmed.\n\nEVENT DETAILS:\n- Event: Higher Education in Europe, Schengen Opportunities & European Life\n- Date: 13 September 2026\n- Time: 15:00 – 18:00 BST (03:00 PM – 06:00 PM)\n- Venue: Central Auditorium / Seminar Hall, GSTU, Gopalganj\n- Your Seminar Pass / Ticket Code: ${code}\n- Registered Phone: ${phone || 'N/A'}\n- Complimentary Drink Voucher: Included for all registered attendees (Claim at the refreshment counter)\n\nSEMINAR AGENDA & HIGHLIGHTS:\n1. Tuition-free & low-cost English-taught degrees in Czech Republic, Germany & Poland (€0 – €2,500/year)\n2. 20-Step direct admission, document legalization & university nostrification guide\n3. Schengen post-study work visas, part-time work rights (20 hrs/week) and European job market\n4. Direct live interactive Q&A with counselors in Brno, Czech Republic\n\nIf you have any questions before the event, reach out to us at info@studywithczechbridge.com or WhatsApp +420 608 147 604.\n\nWe look forward to meeting you on 13 September at GSTU!\n\nBest regards,\nStudyCzechBridge Admissions Team\nVeveří, Brno, Czech Republic\ninfo@studywithczechbridge.com\nhttps://studywithczechbridge.com`;
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; color: #1e293b;">
+      <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; padding: 24px 20px; border-radius: 10px 10px 0 0; text-align: center;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; color: #bae6fd; margin-bottom: 6px;">Official Event Pass &amp; Confirmation</div>
+        <h1 style="margin: 0; font-size: 1.45rem; font-weight: 800; color: #ffffff; line-height: 1.3;">🎓 GSTU Special Campus Seminar</h1>
+        <p style="margin: 6px 0 0 0; font-size: 0.92rem; color: #e0f2fe;">Higher Education in Europe &amp; European Life</p>
+      </div>
+
+      <div style="padding: 22px 4px;">
+        <p style="color: #334155; font-size: 1.05rem; margin-top: 0;">Dear <strong>${fullName || 'Student'}</strong>,</p>
+        <p style="color: #475569; line-height: 1.6; font-size: 0.95rem;">
+          Your registration for the upcoming seminar at <strong>Gopalganj Science and Technology University (GSTU)</strong> has been successfully confirmed. Please keep this email or save your ticket code for entry.
+        </p>
+
+        <!-- Ticket Card Box -->
+        <div style="background: #f8fafc; border: 2px dashed #0284c7; border-radius: 10px; padding: 18px; margin: 20px 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #cbd5e1; padding-bottom: 10px; margin-bottom: 12px;">
+            <div>
+              <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Attendee Name</div>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a;">${fullName || 'Registered Student'}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700;">Ticket Code</div>
+              <div style="font-size: 1.25rem; font-weight: 800; font-family: monospace; color: #0284c7;">${code}</div>
+            </div>
+          </div>
+
+          <table style="width: 100%; font-size: 0.9rem; border-collapse: collapse; line-height: 1.6;">
+            <tr>
+              <td style="padding: 4px 0; color: #64748b; width: 35%;"><strong>🗓️ Date:</strong></td>
+              <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">13 September 2026</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #64748b;"><strong>🕒 Time:</strong></td>
+              <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">15:00 – 18:00 BST (03:00 PM – 06:00 PM)</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #64748b;"><strong>📍 Venue:</strong></td>
+              <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">Central Auditorium / Seminar Hall, GSTU, Gopalganj</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; color: #64748b;"><strong>📞 Contact:</strong></td>
+              <td style="padding: 4px 0; color: #0f172a;">${phone || 'Provided during registration'}</td>
+            </tr>
+          </table>
+
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px 14px; margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="color: #065f46; font-weight: 800; font-size: 0.88rem;">🥤 Complimentary Free Drink Voucher Included</div>
+              <div style="color: #047857; font-size: 0.78rem;">Show this pass at the counter to claim your chilled beverage during the event.</div>
+            </div>
+            <span style="background: #10b981; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 999px;">PASS ACTIVE</span>
+          </div>
+        </div>
+
+        <!-- Key Session Highlights -->
+        <h3 style="color: #0f172a; font-size: 1.05rem; margin: 20px 0 10px 0;">✨ What You Will Discover:</h3>
+        <ul style="color: #475569; font-size: 0.9rem; line-height: 1.6; padding-left: 20px; margin: 0 0 20px 0;">
+          <li><strong>Tuition-free &amp; Low-cost English Degrees:</strong> Explore Bachelor's and Master's programs across Czech Republic, Germany, and Poland (€0 to €2,500/year).</li>
+          <li><strong>20-Step Direct Admissions &amp; Legalization:</strong> Complete roadmap for degree recognition (Nostrification), superlegalization, and visa preparation.</li>
+          <li><strong>European Life &amp; Career Pathways:</strong> Living costs (€450–€600/month), 20-hour weekly part-time work rights, and post-graduation Schengen work permits.</li>
+          <li><strong>Direct Interactive Q&amp;A:</strong> Personalized answers from advisors living in Brno, Czech Republic.</li>
+        </ul>
+
+        <div style="text-align: center; margin: 26px 0;">
+          <a href="https://wa.me/420608147604?text=Hello%20CzechBridge%20team%2C%20I%20registered%20for%20the%20GSTU%20seminar%20(Pass%3A%20${encodeURIComponent(code)})" style="background: #25D366; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 800; font-size: 0.92rem; display: inline-block; box-shadow: 0 4px 10px rgba(37,211,102,0.3);">
+            💬 Join Seminar WhatsApp Group &amp; Connect →
+          </a>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; text-align: center; color: #94a3b8; font-size: 0.8rem; line-height: 1.5;">
+        StudyCzechBridge · Veveří, Brno, Czech Republic<br>
+        Email: <a href="mailto:info@studywithczechbridge.com" style="color: #0284c7; text-decoration: none;">info@studywithczechbridge.com</a> · Support WhatsApp: +420 608 147 604
+      </div>
+    </div>
+  `;
+
+  const result = await sendEmail({
+    to: email,
+    subject,
+    text,
+    html,
+    type: 'seminar_registration'
+  });
+
+  res.json({
+    ok: true,
+    message: `Seminar confirmation email dispatched to ${email}`,
+    ticketCode: code,
+    details: result
+  });
+});
+
 // Route to simulate sending a welcome email
 app.post('/api/welcome', async (req, res) => {
   const { email, fullName } = req.body;

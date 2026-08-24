@@ -54,126 +54,65 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.75rem;">
           <div>
             <h3 style="margin: 0; color: var(--blue-900); font-size: 1.35rem; font-weight: 800;">Free Seminar Registration</h3>
-            <p style="margin: 0.2rem 0 0 0; color: var(--muted); font-size: 0.85rem;">Fill out this form to generate your personal Entry Pass &amp; Free Drink Voucher.</p>
+            <p style="margin: 0.2rem 0 0 0; color: var(--muted); font-size: 0.85rem;">Fast 30-second sign up. No student roll or session details needed.</p>
           </div>
-          <span style="background: #eff6ff; color: #0284c7; font-weight: 800; font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid #bfdbfe;">100% Free</span>
+          <span style="background: #eff6ff; color: #0284c7; font-weight: 800; font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid #bfdbfe;">100% Free Pass</span>
         </div>
 
         <form id="form-seminar-register">
-          <div class="form-group" style="margin-bottom: 1rem;">
+          <div class="form-group" style="margin-bottom: 1.1rem;">
             <label for="sem-input-name" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Full Name <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="sem-input-name" class="form-input" placeholder="e.g. Mahfuzur Rahman" required style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.92rem;">
+            <input type="text" id="sem-input-name" class="form-input" placeholder="e.g. Mahfuzur Rahman" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.95rem;">
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-            <div class="form-group">
-              <label for="sem-input-studentid" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">GSTU Student ID / Roll <span style="color:#ef4444;">*</span></label>
-              <input type="text" id="sem-input-studentid" class="form-input" placeholder="e.g. 20CSE045" required style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.92rem;">
-            </div>
-            <div class="form-group">
-              <label for="sem-input-dept" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Department <span style="color:#ef4444;">*</span></label>
-              <select id="sem-input-dept" class="form-input" required style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.92rem; font-weight: 600;">
-                <option value="">-- Choose Department --</option>
-                <option value="Computer Science & Engineering (CSE)">CSE - Computer Science &amp; Eng</option>
-                <option value="Electrical & Electronic Engineering (EEE)">EEE - Electrical &amp; Electronic Eng</option>
-                <option value="Applied Chemistry & Chemical Engineering (ACCE)">ACCE - Applied Chemistry</option>
-                <option value="Civil Engineering (CE)">Civil Engineering (CE)</option>
-                <option value="Pharmacy">Pharmacy</option>
-                <option value="Biochemistry & Molecular Biology (BMB)">BMB - Biochemistry</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Physics">Physics</option>
-                <option value="Management Studies">Management Studies / BBA</option>
-                <option value="Economics">Economics</option>
-                <option value="English">English</option>
-                <option value="Other">Other Department</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-            <div class="form-group">
-              <label for="sem-input-email" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Email Address <span style="color:#ef4444;">*</span></label>
-              <input type="email" id="sem-input-email" class="form-input" placeholder="student@gstu.ac.bd" required style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.92rem;">
-            </div>
-            <div class="form-group">
-              <label for="sem-input-phone" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Phone / WhatsApp <span style="color:#ef4444;">*</span></label>
-              <input type="tel" id="sem-input-phone" class="form-input" placeholder="017xxxxxxxx" required style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.92rem;">
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-            <div class="form-group">
-              <label for="sem-input-year" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Current Year / Level</label>
-              <select id="sem-input-year" class="form-input" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.92rem;">
-                <option value="4th Year (Graduating Soon)">4th Year (Graduating Soon)</option>
-                <option value="3rd Year">3rd Year</option>
-                <option value="2nd Year">2nd Year</option>
-                <option value="1st Year">1st Year</option>
-                <option value="Masters / Alumnus">Masters / Alumnus</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="sem-input-country" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Target Study Destination</label>
-              <select id="sem-input-country" class="form-input" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.92rem; font-weight: 600;">
-                <option value="Czech Republic">🇨🇿 Czech Republic (Low Cost &amp; Top Tech)</option>
-                <option value="Germany">🇩🇪 Germany (Tuition Free English Programs)</option>
-                <option value="Poland">🇵🇱 Poland (Affordable &amp; Fast Visas)</option>
-                <option value="Austria">🇦🇹 Austria (Vienna / Graz)</option>
-                <option value="Italy">🇮🇹 Italy (Scholarship Options)</option>
-                <option value="United Kingdom">🇬🇧 United Kingdom</option>
-                <option value="Canada">🇨🇦 Canada</option>
-                <option value="Sweden">🇸🇪 Sweden</option>
-                <option value="Other European Country">Other European Country</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Free Drink Selection Feature -->
-          <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px dashed #10b981; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
-              <span style="font-size: 1.2rem;">🥤</span>
-              <strong style="color: #065f46; font-size: 0.95rem;">Select Your Complimentary Free Drink:</strong>
-            </div>
-            <p style="font-size: 0.82rem; color: #047857; margin: 0 0 0.75rem 0;">Every registered GSTU student receives a complimentary beverage voucher valid at the seminar refreshment counter.</p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #064e3b; font-weight: 600; cursor: pointer; background: white; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #a7f3d0;">
-                <input type="radio" name="sem-drink-choice" value="Cold Coffee (Iced Latte)" checked> ☕ Cold Coffee (Iced)
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #064e3b; font-weight: 600; cursor: pointer; background: white; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #a7f3d0;">
-                <input type="radio" name="sem-drink-choice" value="Chilled Mango / Fruit Juice"> 🥭 Chilled Fruit Juice
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #064e3b; font-weight: 600; cursor: pointer; background: white; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #a7f3d0;">
-                <input type="radio" name="sem-drink-choice" value="Fresh Mint Lemonade"> 🍋 Fresh Mint Lemonade
-              </label>
-              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #064e3b; font-weight: 600; cursor: pointer; background: white; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid #a7f3d0;">
-                <input type="radio" name="sem-drink-choice" value="Chilled Soda / Soft Drink"> 🥤 Chilled Soft Drink
-              </label>
+          <div class="form-group" style="margin-bottom: 1.1rem;">
+            <label for="sem-input-email" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Email Address <span style="color:#ef4444;">*</span></label>
+            <input type="email" id="sem-input-email" class="form-input" placeholder="e.g. yourname@gmail.com" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.95rem;">
+            <div style="font-size: 0.78rem; color: #0284c7; margin-top: 0.35rem; font-weight: 600;">
+              ✉️ Confirmation &amp; Seminar Pass will be sent here from <strong>info@studywithczechbridge.com</strong>
             </div>
           </div>
 
           <div class="form-group" style="margin-bottom: 1.25rem;">
-            <label for="sem-input-notes" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Any specific questions about European studies or visas?</label>
-            <textarea id="sem-input-notes" class="form-input" rows="2" placeholder="e.g. Can I work 20 hours part-time in Czech Republic? What are the English proficiency requirements?" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.88rem;"></textarea>
+            <label for="sem-input-phone" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Phone / WhatsApp Number <span style="color:#ef4444;">*</span></label>
+            <input type="tel" id="sem-input-phone" class="form-input" placeholder="e.g. 017xxxxxxxx or +880 1700 000000" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.95rem;">
           </div>
 
-          <button type="submit" id="btn-submit-seminar" class="btn btn-block" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; font-weight: 800; font-size: 1.05rem; padding: 0.85rem; border-radius: 10px; box-shadow: 0 4px 14px rgba(2,132,199,0.35); border: none; cursor: pointer;">
-            🎓 Complete Free Registration &amp; Get Drink Pass →
+          <!-- Free Drink & Pass Badge Note -->
+          <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px dashed #10b981; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem;">
+            <div style="font-size: 1.8rem; line-height: 1;">🥤</div>
+            <div>
+              <strong style="color: #065f46; font-size: 0.92rem; display: block;">Complimentary Refreshment Pass Included</strong>
+              <span style="font-size: 0.8rem; color: #047857;">All registered attendees receive a free chilled drink at the seminar refreshment counter.</span>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-submit-seminar" class="btn btn-block" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; font-weight: 800; font-size: 1.05rem; padding: 0.9rem; border-radius: 10px; box-shadow: 0 4px 14px rgba(2,132,199,0.35); border: none; cursor: pointer;">
+            🎓 Complete Free Registration &amp; Get Pass →
           </button>
         </form>
 
         <!-- Success Ticket View (hidden by default) -->
-        <div id="seminar-success-card" style="display: none; text-align: center; padding: 1.5rem 0;">
-          <div style="background: #dcfce7; color: #15803d; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem auto; box-shadow: 0 4px 12px rgba(22,163,74,0.2);">
+        <div id="seminar-success-card" style="display: none; text-align: center; padding: 1rem 0;">
+          <div style="background: #dcfce7; color: #15803d; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.75rem auto; box-shadow: 0 4px 12px rgba(22,163,74,0.2);">
             ✓
           </div>
-          <h3 style="color: #166534; margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 800;">Registration Confirmed!</h3>
-          <p style="color: #475569; font-size: 0.92rem; margin-bottom: 1.25rem;">
-            Congratulations! You are officially registered for the Special Seminar at Gopalganj Science and Technology University.
+          <h3 style="color: #166534; margin: 0 0 0.35rem 0; font-size: 1.45rem; font-weight: 800;">Registration Confirmed!</h3>
+          <p style="color: #475569; font-size: 0.9rem; margin-bottom: 1rem;">
+            You are officially registered for the Special Seminar at Gopalganj Science and Technology University (GSTU).
           </p>
 
+          <!-- Email Dispatch Alert Banner -->
+          <div style="background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; text-align: left; display: flex; align-items: center; gap: 0.6rem;">
+            <span style="font-size: 1.2rem;">📧</span>
+            <div style="font-size: 0.84rem; color: #1e3a8a; line-height: 1.4;">
+              A confirmation message and digital pass have been dispatched to <strong id="ticket-sent-email" style="color:#0284c7;">your email</strong> from <strong>info@studywithczechbridge.com</strong>.
+            </div>
+          </div>
+
           <!-- Ticket Box -->
-          <div style="background: #f8fafc; border: 2px dashed #0284c7; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: left; position: relative;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.75rem;">
+          <div style="background: #f8fafc; border: 2px dashed #0284c7; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; text-align: left; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; border-bottom: 1px solid var(--line); padding-bottom: 0.65rem;">
               <div>
                 <span style="font-size: 0.72rem; text-transform: uppercase; color: #0284c7; font-weight: 800; letter-spacing: 1px;">Official Seminar Pass</span>
                 <h4 style="margin: 0.2rem 0 0 0; color: var(--blue-900); font-size: 1.15rem;" id="ticket-res-name">—</h4>
@@ -184,20 +123,20 @@
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.85rem; margin-bottom: 1rem;">
-              <div><strong style="color:#64748b;">GSTU ID:</strong> <span id="ticket-res-id" style="font-weight:700; color:#1e293b;">—</span></div>
-              <div><strong style="color:#64748b;">Department:</strong> <span id="ticket-res-dept" style="font-weight:700; color:#1e293b;">—</span></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; font-size: 0.85rem; margin-bottom: 0.85rem;">
+              <div><strong style="color:#64748b;">Registered Email:</strong> <span id="ticket-res-email" style="font-weight:700; color:#1e293b;">—</span></div>
+              <div><strong style="color:#64748b;">Phone / WhatsApp:</strong> <span id="ticket-res-phone" style="font-weight:700; color:#1e293b;">—</span></div>
               <div><strong style="color:#64748b;">Date &amp; Time:</strong> <span style="font-weight:700; color:#1e293b;">13 Sept 2026, 15:00 – 18:00 (03:00 PM – 06:00 PM)</span></div>
               <div><strong style="color:#64748b;">Venue:</strong> <span style="font-weight:700; color:#1e293b;">Central Auditorium, GSTU</span></div>
             </div>
 
             <!-- Free Drink Highlight -->
-            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 0.65rem 0.85rem; display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <div style="font-size: 0.75rem; color: #166534; font-weight: 800; text-transform: uppercase;">🥤 Free Drink Pass</div>
-                <div style="font-weight: 800; color: #15803d; font-size: 0.95rem;" id="ticket-res-drink">Cold Coffee</div>
+                <div style="font-size: 0.72rem; color: #166534; font-weight: 800; text-transform: uppercase;">🥤 Free Refreshment Pass</div>
+                <div style="font-weight: 800; color: #15803d; font-size: 0.88rem;" id="ticket-res-drink">Complimentary Cold Coffee / Beverage Included</div>
               </div>
-              <span style="background: #22c55e; color: white; font-weight: 800; font-size: 0.75rem; padding: 3px 8px; border-radius: 999px;">PASS ACTIVE</span>
+              <span style="background: #22c55e; color: white; font-weight: 800; font-size: 0.72rem; padding: 2px 8px; border-radius: 999px;">PASS ACTIVE</span>
             </div>
           </div>
 
@@ -326,51 +265,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var submitBtn = document.getElementById("btn-submit-seminar");
     submitBtn.disabled = true;
-    submitBtn.textContent = "⏳ Processing Registration...";
+    submitBtn.textContent = "⏳ Registering & Sending Pass...";
 
-    var drinkChoice = "";
-    var selectedDrinkRadio = document.querySelector('input[name="sem-drink-choice"]:checked');
-    if (selectedDrinkRadio) drinkChoice = selectedDrinkRadio.value;
+    var fullName = document.getElementById("sem-input-name").value.trim();
+    var email = document.getElementById("sem-input-email").value.trim();
+    var phone = document.getElementById("sem-input-phone").value.trim();
 
     var payload = {
-      fullName: document.getElementById("sem-input-name").value.trim(),
-      studentId: document.getElementById("sem-input-studentid").value.trim(),
-      department: document.getElementById("sem-input-dept").value,
-      email: document.getElementById("sem-input-email").value.trim(),
-      phone: document.getElementById("sem-input-phone").value.trim(),
-      academicYear: document.getElementById("sem-input-year").value,
-      targetCountry: document.getElementById("sem-input-country").value,
-      freeDrinkChoice: drinkChoice,
-      notes: document.getElementById("sem-input-notes").value.trim()
+      fullName: fullName,
+      email: email,
+      phone: phone,
+      freeDrinkChoice: "Complimentary Cold Coffee / Beverage 🥤"
     };
 
     api("registerSeminar", payload).then(function (res) {
       if (res && res.ok) {
         var reg = res.registration || {};
         
-        // Populate Ticket
-        document.getElementById("ticket-res-name").textContent = reg.fullName || payload.fullName;
-        document.getElementById("ticket-res-code").textContent = reg.ticketCode || ("GSTU-" + Math.floor(1000 + Math.random() * 9000));
-        document.getElementById("ticket-res-id").textContent = reg.studentId || payload.studentId;
-        document.getElementById("ticket-res-dept").textContent = reg.department || payload.department;
-        document.getElementById("ticket-res-drink").textContent = reg.freeDrinkChoice || payload.freeDrinkChoice;
+        // Populate Ticket & UI
+        var ticketCode = reg.ticketCode || reg.registrationCode || ("GSTU-" + Math.floor(1000 + Math.random() * 9000));
+        document.getElementById("ticket-res-name").textContent = reg.fullName || fullName;
+        document.getElementById("ticket-res-code").textContent = ticketCode;
+        if (document.getElementById("ticket-res-email")) {
+          document.getElementById("ticket-res-email").textContent = reg.email || email;
+        }
+        if (document.getElementById("ticket-res-phone")) {
+          document.getElementById("ticket-res-phone").textContent = reg.phone || phone;
+        }
+        if (document.getElementById("ticket-sent-email")) {
+          document.getElementById("ticket-sent-email").textContent = reg.email || email;
+        }
+        if (document.getElementById("ticket-res-drink")) {
+          document.getElementById("ticket-res-drink").textContent = "Complimentary Cold Coffee / Beverage Included";
+        }
 
         // Transition UI
         form.style.display = "none";
         document.getElementById("seminar-success-card").style.display = "block";
 
         if (typeof showToast === "function") {
-          showToast("🎉 Registered successfully for GSTU Seminar! Your Free Drink Pass is ready.", "success");
+          showToast("🎉 Registered successfully! Official confirmation dispatched from info@studywithczechbridge.com", "success");
         }
       } else {
-        alert("Registration could not be completed: " + (res && res.error ? res.error : "Please check form fields"));
+        alert("Registration could not be completed: " + (res && res.error ? res.error : "Please check your name, email, and phone number."));
         submitBtn.disabled = false;
-        submitBtn.textContent = "🎓 Complete Free Registration & Get Drink Pass →";
+        submitBtn.textContent = "🎓 Complete Free Registration & Get Pass →";
       }
     }).catch(function (err) {
       alert("Error submitting registration: " + (err ? err.message : "Network error"));
       submitBtn.disabled = false;
-      submitBtn.textContent = "🎓 Complete Free Registration & Get Drink Pass →";
+      submitBtn.textContent = "🎓 Complete Free Registration & Get Pass →";
     });
   });
 });
