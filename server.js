@@ -23,7 +23,7 @@ let emailConfig = {
   port: parseInt(process.env.EMAIL_SMTP_PORT || '465', 10),
   secure: process.env.EMAIL_SMTP_SECURE ? process.env.EMAIL_SMTP_SECURE === 'true' : true,
   user: process.env.EMAIL_SMTP_USER || 'info@studywithczechbridge.com',
-  pass: process.env.EMAIL_SMTP_PASS || 'INFO@gmail1696',
+  pass: process.env.EMAIL_SMTP_PASS || 'fDgr-E3sx-VsMm-KD39-mB2Z-vgxY',
   fromEmail: process.env.EMAIL_FROM || 'info@studywithczechbridge.com',
   fromName: process.env.EMAIL_FROM_NAME || 'Study With Czech Bridge',
   adminEmail: process.env.EMAIL_ADMIN_NOTIFY || '1997herobala@gmail.com',
@@ -597,7 +597,7 @@ app.post('/api/notify-seminar-registered', async (req, res) => {
   }
 
   const subject = `🎓 Registration Confirmed: Higher Education in Europe Seminar @ GSTU [Pass: ${code}]`;
-  const text = `Dear ${fullName || 'Student'},\n\nCongratulations! Your registration for the Special Seminar on Higher Education in Europe & European Life at Gopalganj Science and Technology University (GSTU) has been confirmed.\n\nEVENT DETAILS:\n- Event: Higher Education in Europe, Schengen Opportunities & European Life\n- Date: 13 September 2026\n- Time: 15:00 – 18:00 BST (03:00 PM – 06:00 PM)\n- Venue: Central Auditorium / Seminar Hall, GSTU, Gopalganj\n- Your Seminar Pass / Ticket Code: ${code}\n- Registered Phone: ${phone || 'N/A'}\n- Complimentary Drink Voucher: Included for all registered attendees (Claim at the refreshment counter)\n\nSEMINAR AGENDA & HIGHLIGHTS:\n1. Tuition-free & low-cost English-taught degrees in Czech Republic, Germany & Poland (€0 – €2,500/year)\n2. 20-Step direct admission, document legalization & university nostrification guide\n3. Schengen post-study work visas, part-time work rights (20 hrs/week) and European job market\n4. Direct live interactive Q&A with counselors in Brno, Czech Republic\n\nIf you have any questions before the event, reach out to us at info@studywithczechbridge.com or WhatsApp +420 608 147 604.\n\nWe look forward to meeting you on 13 September at GSTU!\n\nBest regards,\nStudyCzechBridge Admissions Team\nVeveří, Brno, Czech Republic\ninfo@studywithczechbridge.com\nhttps://studywithczechbridge.com`;
+  const text = `Dear ${fullName || 'Student'},\n\nCongratulations! Your registration for the Special Seminar on Higher Education in Europe & European Life at Gopalganj Science and Technology University (GSTU) has been confirmed.\n\nEVENT DETAILS:\n- Event: Higher Education in Europe, Schengen Opportunities & European Life\n- Date: 12 September 2026\n- Time: 11:00 AM – 02:00 PM BST (11:00 – 14:00)\n- Venue: Central Auditorium / Seminar Hall, GSTU, Gopalganj\n- Your Seminar Pass / Ticket Code: ${code}\n- Registered Phone: ${phone || 'N/A'}\n- Complimentary Drink Voucher: Included for all registered attendees (Claim at the refreshment counter)\n\nSEMINAR AGENDA & HIGHLIGHTS:\n1. Tuition-free & low-cost English-taught degrees in Czech Republic, Germany & Poland (€0 – €2,500/year)\n2. 20-Step direct admission, document legalization & university nostrification guide\n3. Schengen post-study work visas, part-time work rights (20 hrs/week) and European job market\n4. Direct live interactive Q&A with counselors in Brno, Czech Republic\n\nIf you have any questions before the event, reach out to us at info@studywithczechbridge.com or WhatsApp +420 608 147 604.\n\nWe look forward to meeting you on 12 September at GSTU!\n\nBest regards,\nStudyCzechBridge Admissions Team\nVeveří, Brno, Czech Republic\ninfo@studywithczechbridge.com\nhttps://studywithczechbridge.com`;
 
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; color: #1e293b;">
@@ -629,11 +629,11 @@ app.post('/api/notify-seminar-registered', async (req, res) => {
           <table style="width: 100%; font-size: 0.9rem; border-collapse: collapse; line-height: 1.6;">
             <tr>
               <td style="padding: 4px 0; color: #64748b; width: 35%;"><strong>🗓️ Date:</strong></td>
-              <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">13 September 2026</td>
+              <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">12 September 2026</td>
             </tr>
             <tr>
               <td style="padding: 4px 0; color: #64748b;"><strong>🕒 Time:</strong></td>
-              <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">15:00 – 18:00 BST (03:00 PM – 06:00 PM)</td>
+              <td style="padding: 4px 0; color: #0f172a; font-weight: 700;">11:00 AM – 02:00 PM BST (11:00 – 14:00)</td>
             </tr>
             <tr>
               <td style="padding: 4px 0; color: #64748b;"><strong>📍 Venue:</strong></td>
