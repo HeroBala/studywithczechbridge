@@ -17,15 +17,15 @@
   <div class="container">
     
     <!-- Top Announcement Banner -->
-    <div style="background: linear-gradient(135deg, #0369a1 0%, #0f172a 100%); color: #ffffff; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-lg); border: 1px solid rgba(56,189,248,0.3); margin-bottom: 2rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-        <div style="flex: 1; min-width: 300px;">
+    <div class="seminar-hero-card" style="background: linear-gradient(135deg, #0369a1 0%, #0f172a 100%); color: #ffffff; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-lg); border: 1px solid rgba(56,189,248,0.3); margin-bottom: 2rem;">
+      <div class="seminar-hero-flex" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div class="seminar-hero-info" style="flex: 1; min-width: 260px;">
           <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
             <span style="background: #fef08a; color: #854d0e; font-size: 0.78rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px;">🎓 University Campus Event</span>
             <span style="background: rgba(56,189,248,0.2); color: #7dd3fc; font-size: 0.78rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 999px; border: 1px solid rgba(56,189,248,0.4);">Free Entry &amp; Registration</span>
             <span style="background: #dcfce7; color: #166534; font-size: 0.78rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 999px;">🥤 Free Drink for Every Registered User</span>
           </div>
-          <h1 style="margin: 0.4rem 0 0.6rem 0; color: #ffffff; font-size: 2rem; font-weight: 800; line-height: 1.25;">
+          <h1 style="margin: 0.4rem 0 0.6rem 0; color: #ffffff; font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; line-height: 1.25;">
             Special Seminar at Bangabandhu Sheikh Mujibur Rahman Science and Technology University (BSMRSTU / GSTU), Gopalganj
           </h1>
           <h2 style="font-size: 1.15rem; font-weight: 600; color: #bae6fd; margin: 0 0 1rem 0;">
@@ -36,9 +36,9 @@
           </p>
         </div>
 
-        <div style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 1.25rem 1.5rem; border-radius: 12px; min-width: 240px; text-align: center;">
+        <div class="seminar-hero-schedule" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 1.25rem 1.5rem; border-radius: 12px; min-width: 240px; text-align: center;">
           <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #93c5fd; font-weight: 700;">Event Schedule</div>
-          <div style="font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0.3rem 0;">12 September 2026</div>
+          <div style="font-size: 1.4rem; font-weight: 800; color: #ffffff; margin: 0.3rem 0;">19 September 2026</div>
           <div style="font-size: 0.9rem; color: #e0f2fe; font-weight: 600;">🕒 11:00 AM – 02:00 PM BST</div>
           <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 0.4rem; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 0.4rem;">📍 Central Auditorium / Seminar Hall, GSTU</div>
           <a href="#register-box" class="btn btn-block" style="margin-top: 0.85rem; background: #38bdf8; color: #082f49; font-weight: 800; text-decoration: none; border-radius: 8px;">Claim Free Ticket &amp; Drink ↓</a>
@@ -50,7 +50,7 @@
     <div class="grid-2" style="gap: 2rem; align-items: start;" id="register-box">
       
       <!-- Registration Form Box -->
-      <div style="background: #ffffff; border: 1px solid var(--line); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-md);" id="seminar-form-container">
+      <div class="seminar-form-card" style="background: #ffffff; border: 1px solid var(--line); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-md);" id="seminar-form-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.75rem;">
           <div>
             <h3 style="margin: 0; color: var(--blue-900); font-size: 1.35rem; font-weight: 800;">Free Seminar Registration</h3>
@@ -59,15 +59,17 @@
           <span style="background: #eff6ff; color: #0284c7; font-weight: 800; font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid #bfdbfe;">100% Free Pass</span>
         </div>
 
+        <div id="seminar-error-notice" class="notice error" style="display: none; margin-bottom: 1rem;"></div>
+
         <form id="form-seminar-register">
           <div class="form-group" style="margin-bottom: 1.1rem;">
             <label for="sem-input-name" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Full Name <span style="color:#ef4444;">*</span></label>
-            <input type="text" id="sem-input-name" class="form-input" placeholder="e.g. Mahfuzur Rahman" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.95rem;">
+            <input type="text" id="sem-input-name" class="form-input" placeholder="e.g. Mahfuzur Rahman" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 16px;">
           </div>
 
           <div class="form-group" style="margin-bottom: 1.1rem;">
             <label for="sem-input-email" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Email Address <span style="color:#ef4444;">*</span></label>
-            <input type="email" id="sem-input-email" class="form-input" placeholder="e.g. yourname@gmail.com" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.95rem;">
+            <input type="email" id="sem-input-email" class="form-input" placeholder="e.g. yourname@gmail.com" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 16px;">
             <div style="font-size: 0.78rem; color: #0284c7; margin-top: 0.35rem; font-weight: 600;">
               ✉️ Confirmation &amp; Seminar Pass will be sent here from <strong>info@studywithczechbridge.com</strong>
             </div>
@@ -75,7 +77,7 @@
 
           <div class="form-group" style="margin-bottom: 1.25rem;">
             <label for="sem-input-phone" style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 0.35rem;">Phone / WhatsApp Number <span style="color:#ef4444;">*</span></label>
-            <input type="tel" id="sem-input-phone" class="form-input" placeholder="e.g. 017xxxxxxxx or +880 1700 000000" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 0.95rem;">
+            <input type="tel" id="sem-input-phone" class="form-input" placeholder="e.g. 017xxxxxxxx or +880 1700 000000" required style="width: 100%; padding: 0.75rem 0.85rem; border: 1px solid var(--line); border-radius: 8px; font-size: 16px;">
           </div>
 
           <!-- Free Drink & Pass Badge Note -->
@@ -106,7 +108,7 @@
           <div style="background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; text-align: left; display: flex; align-items: center; gap: 0.6rem;">
             <span style="font-size: 1.2rem;">📧</span>
             <div style="font-size: 0.84rem; color: #1e3a8a; line-height: 1.4;">
-              A confirmation message and digital pass have been dispatched to <strong id="ticket-sent-email" style="color:#0284c7;">your email</strong> from <strong>info@studywithczechbridge.com</strong>.
+              A confirmation message and digital pass have been dispatched to <strong id="ticket-sent-email" style="color:#0284c7; word-break: break-all;">your email</strong> from <strong>info@studywithczechbridge.com</strong>.
             </div>
           </div>
 
@@ -123,10 +125,10 @@
               </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; font-size: 0.85rem; margin-bottom: 0.85rem;">
-              <div><strong style="color:#64748b;">Registered Email:</strong> <span id="ticket-res-email" style="font-weight:700; color:#1e293b;">—</span></div>
+            <div class="ticket-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; font-size: 0.85rem; margin-bottom: 0.85rem;">
+              <div><strong style="color:#64748b;">Registered Email:</strong> <span id="ticket-res-email" style="font-weight:700; color:#1e293b; word-break: break-all;">—</span></div>
               <div><strong style="color:#64748b;">Phone / WhatsApp:</strong> <span id="ticket-res-phone" style="font-weight:700; color:#1e293b;">—</span></div>
-              <div><strong style="color:#64748b;">Date &amp; Time:</strong> <span style="font-weight:700; color:#1e293b;">12 Sept 2026, 11:00 AM – 02:00 PM BST</span></div>
+              <div><strong style="color:#64748b;">Date &amp; Time:</strong> <span style="font-weight:700; color:#1e293b;">19 Sept 2026, 11:00 AM – 02:00 PM BST</span></div>
               <div><strong style="color:#64748b;">Venue:</strong> <span style="font-weight:700; color:#1e293b;">Central Auditorium, GSTU</span></div>
             </div>
 
@@ -140,7 +142,7 @@
             </div>
           </div>
 
-          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <div class="ticket-action-btns" style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
             <button class="btn btn-dark" onclick="window.print()" style="font-weight: 700;">🖨️ Print / Save Ticket</button>
             <a href="https://wa.me/420608147604?text=Hello%20CzechBridge%20team%2C%20I%20have%20registered%20for%20the%20GSTU%20seminar." target="_blank" rel="noopener noreferrer" class="btn" style="background: #25D366; color: white; font-weight: 700;">💬 Join Seminar WhatsApp Group</a>
           </div>
@@ -260,8 +262,26 @@ document.addEventListener("DOMContentLoaded", function () {
   var form = document.getElementById("form-seminar-register");
   if (!form) return;
 
+  var errorNotice = document.getElementById("seminar-error-notice");
+
+  function showError(msg) {
+    if (errorNotice) {
+      errorNotice.textContent = msg;
+      errorNotice.style.display = "block";
+      errorNotice.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+
+  function clearError() {
+    if (errorNotice) {
+      errorNotice.textContent = "";
+      errorNotice.style.display = "none";
+    }
+  }
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
+    clearError();
 
     var submitBtn = document.getElementById("btn-submit-seminar");
     submitBtn.disabled = true;
@@ -270,6 +290,13 @@ document.addEventListener("DOMContentLoaded", function () {
     var fullName = document.getElementById("sem-input-name").value.trim();
     var email = document.getElementById("sem-input-email").value.trim();
     var phone = document.getElementById("sem-input-phone").value.trim();
+
+    if (!fullName || !email || !phone) {
+      showError("Please fill in all required fields (Full Name, Email Address, and Phone Number).");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "🎓 Complete Free Registration & Get Pass →";
+      return;
+    }
 
     var payload = {
       fullName: fullName,
@@ -301,18 +328,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Transition UI
         form.style.display = "none";
+        clearError();
         document.getElementById("seminar-success-card").style.display = "block";
 
         if (typeof showToast === "function") {
           showToast("🎉 Registered successfully! Official confirmation dispatched from info@studywithczechbridge.com", "success");
         }
       } else {
-        alert("Registration could not be completed: " + (res && res.error ? res.error : "Please check your name, email, and phone number."));
+        showError("Registration could not be completed: " + (res && res.error ? res.error : "Please check your name, email, and phone number."));
         submitBtn.disabled = false;
         submitBtn.textContent = "🎓 Complete Free Registration & Get Pass →";
       }
     }).catch(function (err) {
-      alert("Error submitting registration: " + (err ? err.message : "Network error"));
+      showError("Error submitting registration: " + (err ? err.message : "Network error. Please try again."));
       submitBtn.disabled = false;
       submitBtn.textContent = "🎓 Complete Free Registration & Get Pass →";
     });
