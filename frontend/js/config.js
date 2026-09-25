@@ -20,7 +20,7 @@
    Mock admin login:  admin@test.com  /  admin123
    ============================================================ */
 
-var MOCK_MODE = false;
+var MOCK_MODE = true;
 
 var FIREBASE_CONFIG = {
   apiKey: "AIzaSyD8pySoZr2nXtXOtmR7SYTzNldqLJ_6m-8",

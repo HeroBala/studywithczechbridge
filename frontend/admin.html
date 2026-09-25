@@ -78,8 +78,10 @@
       <button class="admin-tab" data-tab="taskboard">📋 Task Board</button>
       <button class="admin-tab" data-tab="packages" style="border-color: var(--green); color: var(--green); font-weight:700;">🏷️ Packages &amp; Service Charges</button>
       <button class="admin-tab" data-tab="superdocs" style="border-color: var(--purple-600); color: var(--purple-700); font-weight:700;">📄 Assign Documents</button>
-      <button class="admin-tab" data-tab="users" id="tab-users-btn">👥 Users &amp; Roles</button>
-      <button class="admin-tab" data-tab="email" style="border-color: var(--teal-600); color: var(--teal-700); font-weight:700;">📧 Private Email &amp; SMTP</button>
+      <button class="admin-tab" data-tab="team" id="tab-team-btn" style="border-color: #4338ca; color: #3730a3; font-weight:800; background: #eef2ff;">💼 Team &amp; Staff</button>
+      <button class="admin-tab" data-tab="users" id="tab-users-btn">👥 Students &amp; Users</button>
+      <button class="admin-tab" data-tab="bankaccounts" id="tab-bankaccounts-btn" style="border-color: #059669; color: #065f46; font-weight:800; background: #ecfdf5;">🏦 Team Bank Accounts</button>
+      <button class="admin-tab" data-tab="email" id="tab-email-btn" style="border-color: var(--teal-600); color: var(--teal-700); font-weight:700;">📧 Email &amp; WhatsApp</button>
       <button class="admin-tab" data-tab="extract" style="border-color: var(--gold); color: #9a6d00; font-weight:700;">📊 Extract &amp; Export Data</button>
       <button class="admin-tab" data-tab="messages">💬 Contact Messages</button>
       <button class="admin-tab" data-tab="ops" style="border-color: var(--green); color: var(--green); font-weight:700;">📈 Finance &amp; Ops</button>
@@ -247,12 +249,19 @@
         
         <select id="f-country" style="padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
           <option value="">🌍 All Target Countries</option>
+          <option value="China">🇨🇳 China</option>
           <option value="Czech Republic">🇨🇿 Czech Republic</option>
+          <option value="Germany">🇩🇪 Germany</option>
           <option value="United Kingdom">🇬🇧 United Kingdom</option>
+          <option value="Denmark">🇩🇰 Denmark</option>
+          <option value="Austria">🇦🇹 Austria</option>
+          <option value="Poland">🇵🇱 Poland</option>
+          <option value="Italy">🇮🇹 Italy</option>
+          <option value="Canada">🇨🇦 Canada</option>
+          <option value="Australia">🇦🇺 Australia</option>
           <option value="Iceland">🇮🇸 Iceland</option>
           <option value="Malaysia">🇲🇾 Malaysia</option>
           <option value="Serbia">🇷🇸 Serbia</option>
-          <option value="Poland">🇵🇱 Poland</option>
           <option value="Hungary">🇭🇺 Hungary</option>
           <option value="Slovakia">🇸🇰 Slovakia</option>
         </select>
@@ -374,8 +383,33 @@
           <h3 style="margin: 0 0 1rem 0; font-size: 1.05rem; color: var(--blue-900); font-weight: 800;">⚙️ SMTP Server Credentials</h3>
           
           <form id="form-smtp-config">
+            <!-- Skip SMTP Password Toggle Card -->
+            <div class="field mb-3" style="background: #ecfdf5; border: 1.5px solid #10b981; border-radius: 8px; padding: 0.85rem 1rem;">
+              <label style="display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 0.92rem; color: #065f46; cursor: pointer;">
+                <input type="checkbox" id="smtp-skip-pass" checked style="width: 1.25rem; height: 1.25rem;">
+                <span>🔓 Skip SMTP Password (Direct Simulation &amp; WhatsApp Mode)</span>
+              </label>
+              <p style="margin: 0.4rem 0 0 1.85rem; font-size: 0.82rem; color: #047857; line-height: 1.45;">
+                Active by default. Skips external SMTP authentication errors so all triggers and notifications save instantly without needing an app password.
+              </p>
+            </div>
+
+            <!-- WhatsApp Number Configuration Field -->
+            <div class="field mb-3" style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 0.75rem 1rem;">
+              <label style="font-weight: 800; font-size: 0.85rem; color: #166534; display: flex; align-items: center; gap: 0.4rem;">
+                <span>💬 WhatsApp Support &amp; Dispatch Number</span>
+              </label>
+              <div style="display: flex; gap: 0.5rem; margin-top: 0.35rem;">
+                <input type="text" id="smtp-whatsapp-number" placeholder="+420608147604" value="+420608147604" style="flex: 1; padding: 0.45rem 0.6rem; border-radius: 6px; border: 1px solid #4ade80; font-weight: 700; color: #14532d; font-size: 0.9rem;">
+                <button type="button" class="btn btn-sm" id="btn-test-wa-config" style="background: #25D366; color: white; font-weight: 800; border: none; padding: 0.4rem 0.8rem;">🧪 Test WhatsApp</button>
+              </div>
+              <div style="font-size: 0.78rem; color: #15803d; margin-top: 0.35rem;">
+                Direct WhatsApp contact for candidates, applicants, and instant staff notification links.
+              </div>
+            </div>
+
             <div class="field mb-2">
-              <label style="font-weight: 700; font-size: 0.85rem;">SMTP Host (e.g. smtp.gmail.com or mail.yourdomain.com)</label>
+              <label style="font-weight: 700; font-size: 0.85rem;">SMTP Host (Optional if password skipped)</label>
               <input type="text" id="smtp-host" placeholder="smtp.gmail.com" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
             </div>
 
@@ -397,8 +431,8 @@
             </div>
 
             <div class="field mb-2">
-              <label style="font-weight: 700; font-size: 0.85rem;">SMTP Password / App Password</label>
-              <input type="password" id="smtp-pass" placeholder="••••••••••••" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
+              <label style="font-weight: 700; font-size: 0.85rem;">SMTP Password (Optional — skipped when checkbox above is active)</label>
+              <input type="password" id="smtp-pass" placeholder="Leave empty to skip SMTP password" style="width: 100%; padding: 0.45rem; border-radius: 6px; border: 1px solid var(--line);">
             </div>
 
             <div class="field mb-2">
@@ -417,7 +451,7 @@
             </div>
 
             <div style="text-align: right;">
-              <button type="submit" class="btn btn-primary btn-sm" id="btn-save-smtp">💾 Save Email Configuration</button>
+              <button type="submit" class="btn btn-primary btn-sm" id="btn-save-smtp">💾 Save Email &amp; WhatsApp Settings</button>
             </div>
           </form>
         </div>
@@ -674,6 +708,7 @@
             <input type="text" id="counselor-roster-search" placeholder="Search counselor by name or email..." style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.85rem; width: 240px;">
             <select id="counselor-track-filter" style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.85rem;">
               <option value="all">All Country Specializations</option>
+              <option value="china">🇨🇳 China</option>
               <option value="czech">🇨🇿 Czech Republic</option>
               <option value="germany">🇩🇪 Germany</option>
               <option value="austria">🇦🇹 Austria</option>
@@ -880,14 +915,23 @@
 
     <!-- Tab 3: User & Agent Management -->
     <div class="panel admin-tab-panel hidden" id="panel-users">
+      <!-- Team & User Directory Sub-Navigation Header -->
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; flex-wrap: wrap; align-items: center;">
+        <button id="subtab-team-btn" class="btn btn-outline btn-sm" onclick="switchTab('team')" style="font-weight: 700; border-color: #4338ca; color: #3730a3;">💼 Team &amp; Staff Members</button>
+        <button id="subtab-students-btn" class="btn btn-primary btn-sm" onclick="switchTab('users')" style="font-weight: 700;">🎓 Students &amp; Applicants</button>
+        <button id="subtab-all-users-btn" class="btn btn-outline btn-sm" onclick="showAllUsersDirectory()" style="font-weight: 700;">🌐 All Directory</button>
+        <button id="subtab-users-bank-btn" class="btn btn-outline btn-sm" onclick="switchTab('bankaccounts')" style="font-weight: 700; border-color: #059669; color: #065f46; background: #ecfdf5;">🏦 Team Bank Accounts &amp; Payouts</button>
+      </div>
+
       <div class="panel-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-        <h2>👥 User &amp; Agent Assignment &amp; Role Management</h2>
+        <h2 id="users-panel-title">👥 Students &amp; User Directory</h2>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-outline btn-sm" id="btn-admin-refresh-users" onclick="loadUsers()" title="Refresh Users List">🔄 Refresh</button>
           <button class="btn btn-primary btn-sm" id="btn-admin-create-user">➕ Add New User / Staff</button>
           <button class="btn btn-outline btn-sm" id="btn-admin-add-task">📌 + Assign Task</button>
         </div>
       </div>
-      <p class="muted" style="margin-top:-0.5rem; margin-bottom:1.5rem;">Super Admins and Admins can update roles, allocate dedicated agents, inspect user documents, and assign tasks.</p>
+      <p class="muted" id="users-panel-desc" style="margin-top:-0.5rem; margin-bottom:1.5rem;">Super Admins and Admins can update roles, allocate dedicated agents, inspect user documents, and message candidates on WhatsApp.</p>
 
       <!-- Firebase Super Admin Instruction Card -->
       <div class="panel" style="background: linear-gradient(135deg, #fef8ec 0%, #fffbf0 100%); border-left: 4px solid var(--gold); margin-bottom: 1.5rem; padding: 1.25rem;">
@@ -912,10 +956,11 @@
       <!-- Filter and Search Controls for User Management -->
       <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; background: #f8fafc; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--line);">
         <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; flex: 1;">
-          <input type="text" id="users-search-input" placeholder="🔍 Search user by name or email..." style="padding: 0.45rem 0.8rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.88rem; min-width: 220px; flex: 1;">
+          <input type="text" id="users-search-input" placeholder="🔍 Search user by name, email, or phone..." style="padding: 0.45rem 0.8rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.88rem; min-width: 220px; flex: 1;">
           <select id="users-role-filter" style="padding: 0.45rem 0.8rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.88rem; font-weight: 600;">
-            <option value="all">All Roles</option>
-            <option value="student">🎓 Students</option>
+            <option value="all">All Roles (Students &amp; Team)</option>
+            <option value="staff">💼 Team &amp; Staff (Admins, Counselors, Officers)</option>
+            <option value="student">🎓 Students &amp; Applicants Only</option>
             <option value="counselor">🧭 Counselors</option>
             <option value="admission_officer">🎓 Admission Officers</option>
             <option value="finance_manager">💳 Finance Managers</option>
@@ -932,11 +977,148 @@
         <table class="data">
           <thead>
             <tr>
-              <th>Full Name</th><th>Email</th><th>Current Role</th><th>Assigned Agent</th><th>Documents</th><th>Actions</th>
+              <th>Full Name</th><th>Email &amp; WhatsApp</th><th>Current Role</th><th>Assigned Agent</th><th>Documents</th><th>Actions</th>
             </tr>
           </thead>
           <tbody id="users-body">
             <tr><td colspan="6" class="muted">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab: Team Bank Accounts (Admin Panel -> Team Management -> Bank Accounts) -->
+    <div class="panel admin-tab-panel hidden" id="panel-bankaccounts">
+      <!-- Breadcrumb Navigation -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--blue-800); margin-bottom: 0.75rem; font-weight: 700;">
+        <span>Admin Panel</span>
+        <span>›</span>
+        <a href="javascript:void(0)" onclick="switchTab('users')" style="color: var(--blue-700); text-decoration: underline;">Team Management</a>
+        <span>›</span>
+        <span style="color: #065f46; font-weight: 800;">🏦 Bank Accounts</span>
+      </div>
+
+      <!-- Subnavigation Header -->
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; flex-wrap: wrap;">
+        <button class="btn btn-outline btn-sm" onclick="switchTab('users')" style="font-weight: 700;">👥 Team Members &amp; Roles</button>
+        <button class="btn btn-primary btn-sm" style="font-weight: 800; background: #059669; border-color: #047857;">🏦 Team Bank Accounts &amp; Payouts</button>
+      </div>
+
+      <!-- Header & Actions -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h2 style="margin: 0; color: #065f46; display: flex; align-items: center; gap: 0.5rem;">
+            🏦 Bank Accounts &amp; Payout Database (Users &amp; Team Records)
+          </h2>
+          <p class="muted" style="margin: 0.25rem 0 0 0; font-size: 0.88rem;">
+            Secure financial vault and database keeping record for all students, users, counselors, and staff members. Protected with server-side AES-256-GCM encryption, masked fields by default, and encrypted export.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-outline btn-sm" id="btn-bank-export-csv" style="font-weight: 700; border-color: #059669; color: #065f46;">
+            📥 Export Bank Database (CSV)
+          </button>
+          <button class="btn btn-outline btn-sm" id="btn-bank-audit-logs" style="font-weight: 700; border-color: #6366f1; color: #4338ca;">
+            📜 Security Audit Trail
+          </button>
+          <button class="btn btn-outline btn-sm" id="btn-bank-refresh" style="font-weight: 700;">
+            🔄 Refresh
+          </button>
+          <button class="btn btn-primary btn-sm" id="btn-add-bank-account" style="font-weight: 800; background: #059669; border-color: #047857;">
+            ➕ Add Bank Account
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: white; border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase;">Total Bank Profiles</div>
+          <div id="bank-metric-total" style="font-size: 1.8rem; font-weight: 900; color: var(--blue-900); margin-top: 0.25rem;">0</div>
+        </div>
+        <div style="background: white; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #166534; text-transform: uppercase;">Verified Accounts</div>
+          <div id="bank-metric-verified" style="font-size: 1.8rem; font-weight: 900; color: #15803d; margin-top: 0.25rem;">0</div>
+        </div>
+        <div style="background: white; border: 1px solid #fed7aa; border-radius: 8px; padding: 1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #9a3412; text-transform: uppercase;">Pending Verification</div>
+          <div id="bank-metric-pending" style="font-size: 1.8rem; font-weight: 900; color: #c2410c; margin-top: 0.25rem;">0</div>
+        </div>
+        <div style="background: white; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #991b1b; text-transform: uppercase;">Deactivated / Revoked</div>
+          <div id="bank-metric-deactivated" style="font-size: 1.8rem; font-weight: 900; color: #b91c1c; margin-top: 0.25rem;">0</div>
+        </div>
+      </div>
+
+      <!-- Security Architecture & Compliance Notice -->
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.86rem; color: #166534; line-height: 1.55;">
+        <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+          🛡️ Enterprise Bank Encryption &amp; Zero-Knowledge Compliance Standard
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; margin-top: 0.5rem;">
+          <div>
+            <strong>🔒 Server-Side AES-256-GCM:</strong> Sensitive fields (IBAN, Account Number, SWIFT) are encrypted using authenticated 256-bit Galois/Counter Mode.
+          </div>
+          <div>
+            <strong>🔑 Key Isolation:</strong> Encryption keys are loaded from environment variables and never written to Firestore or committed to GitHub.
+          </div>
+          <div>
+            <strong>👁️ Masked by Default:</strong> Account numbers and IBANs are masked in all standard views. Plaintext is only accessible via authorized audit-tracked reveal.
+          </div>
+          <div>
+            <strong>⛔ Zero Password / PIN Policy:</strong> Bank account passwords, login PINs, and payment card numbers are strictly prohibited from collection.
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div style="display: flex; gap: 0.75rem; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; background: #f8fafc; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--line);">
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; flex: 1;">
+          <input type="text" id="bank-search-input" placeholder="🔍 Search member, email, bank name, or IBAN..." style="padding: 0.45rem 0.8rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.88rem; min-width: 250px; flex: 1;">
+          <select id="bank-role-filter" style="padding: 0.45rem 0.8rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.88rem; font-weight: 600;">
+            <option value="all">All Roles (Users &amp; Team)</option>
+            <option value="student">🎓 Students &amp; Users</option>
+            <option value="counselor">🧭 Counselors &amp; Agents</option>
+            <option value="staff">💼 Team &amp; Staff</option>
+            <option value="admin">🛡️ Admins</option>
+          </select>
+          <select id="bank-status-filter" style="padding: 0.45rem 0.8rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.88rem; font-weight: 600;">
+            <option value="all">All Verification Statuses</option>
+            <option value="verified">🟢 Verified (Cleared for Payouts)</option>
+            <option value="pending">⏳ Pending Verification</option>
+            <option value="deactivated">⛔ Deactivated / Revoked</option>
+          </select>
+          <select id="bank-currency-filter" style="padding: 0.45rem 0.8rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.88rem; font-weight: 600;">
+            <option value="all">All Currencies</option>
+            <option value="CZK">CZK (Czech Koruna)</option>
+            <option value="EUR">EUR (Euro)</option>
+            <option value="DKK">DKK (Danish Krone)</option>
+            <option value="USD">USD (US Dollar)</option>
+            <option value="BDT">BDT (Bangladeshi Taka)</option>
+            <option value="GBP">GBP (British Pound)</option>
+          </select>
+        </div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-dark);">
+          Showing: <span id="bank-count-badge" class="badge" style="background: #065f46; color: white; font-size: 0.85rem; padding: 0.25rem 0.6rem;">0</span>
+        </div>
+      </div>
+
+      <!-- Bank Accounts Table -->
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr>
+              <th>Team Member &amp; Role</th>
+              <th>Beneficiary &amp; Bank</th>
+              <th>Masked IBAN / Account #</th>
+              <th>Currency / Purpose</th>
+              <th>Status</th>
+              <th>Verification Details</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bank-body">
+            <tr><td colspan="7" class="muted" style="text-align:center; padding: 2rem 1rem;">Loading secure bank accounts...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1556,6 +1738,7 @@
         <div>
           <label style="font-weight:700; font-size:0.82rem; color:var(--blue-900);">Country / Track Specialization</label>
           <select id="counselor-modal-track" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+            <option value="🇨🇳 China (Double First-Class & CSC)">🇨🇳 China Track (10 Steps)</option>
             <option value="🇨🇿 Czech Republic (Nostrification & Visa)">🇨🇿 Czech Republic (20 Steps)</option>
             <option value="🇩🇪 Germany (Uni-Assist & Anabin)">🇩🇪 Germany Track</option>
             <option value="🇦🇹 Austria (Zulassungsbescheid)">🇦🇹 Austria Track</option>
@@ -1845,6 +2028,7 @@
         <div>
           <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Preferred Target Country *</label>
           <select id="sem-edit-country" style="width:100%; padding: 0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+            <option value="China">🇨🇳 China (Double First-Class &amp; CSC Scholarships)</option>
             <option value="Czech Republic">🇨🇿 Czech Republic (Free Tuition / Low Cost)</option>
             <option value="Germany">🇩🇪 Germany (Public Universities)</option>
             <option value="Poland">🇵🇱 Poland (Affordable & High Tech)</option>
@@ -1885,6 +2069,268 @@
         </div>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal: Add / Edit Team Bank Account (AES-256 Encrypted Vault) -->
+<div class="modal-backdrop hidden" id="modal-bank-account" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); z-index:9999; padding:1rem; overflow-y:auto;">
+  <div style="background:white; border-radius:12px; max-width:680px; width:100%; padding:1.5rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2); max-height:92vh; overflow-y:auto; border:1px solid #bbf7d0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ecfdf5; padding-bottom: 0.88rem; margin-bottom: 1.25rem;">
+      <h3 id="modal-bank-title" style="margin:0; color:#065f46; font-size:1.25rem; display:flex; align-items:center; gap:0.5rem;">
+        🏦 Add Team Bank Account
+      </h3>
+      <button type="button" id="btn-close-bank-modal" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--muted); line-height:1;">✕</button>
+    </div>
+
+    <!-- Strict Security Notice Banner -->
+    <div style="background:#fffbeb; border:1px solid #fde68a; border-left:4px solid #f59e0b; border-radius:6px; padding:0.75rem 1rem; margin-bottom:1.25rem; font-size:0.83rem; color:#92400e; line-height:1.5;">
+      <strong>⚠️ Zero-Knowledge Security Policy:</strong>
+      Never collect or enter bank login passwords, PINs, or debit/credit card CVV codes. This vault only stores corporate wire transfer routing details for verified commission and payroll dispatches.
+    </div>
+
+    <form id="form-bank-account">
+      <input type="hidden" id="bank-account-id">
+      <input type="hidden" id="bank-user-id">
+
+      <!-- Team Member Selection -->
+      <div style="margin-bottom: 1rem;">
+        <label style="font-weight: 700; font-size: 0.85rem; color: var(--blue-900);">Select Existing Team Member *</label>
+        <select id="bank-member-select" style="width:100%; padding:0.55rem; border-radius:6px; border:1px solid var(--line); font-size:0.9rem; font-weight:600; background:#f8fafc;">
+          <option value="">-- Choose Team Member from Directory --</option>
+        </select>
+        <small class="muted" style="display:block; margin-top:0.25rem;">Select from counselors, agents, admission officers, or administrators, or type below.</small>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Member Full Name *</label>
+          <input type="text" id="bank-member-name" required placeholder="e.g. Joya Sarkar" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+        </div>
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Member Official Email *</label>
+          <input type="email" id="bank-member-email" required placeholder="e.g. joya@studywithczechbridge.com" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">User / Member Role</label>
+          <select id="bank-member-role" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+            <option value="student">🎓 Student / Applicant</option>
+            <option value="user">👤 Platform User</option>
+            <option value="counselor">🧭 Counselor / Agent</option>
+            <option value="admission_officer">🎓 Admission Officer</option>
+            <option value="finance_manager">💳 Finance Manager</option>
+            <option value="admin">🛡️ Admin</option>
+            <option value="super_admin">👑 Super Admin</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Beneficiary Full Name *</label>
+          <input type="text" id="bank-beneficiary-name" required placeholder="Full name registered on bank account" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Bank Institution Name *</label>
+          <input type="text" id="bank-name" required placeholder="e.g. Česká spořitelna, Danske Bank, Komerční banka, Revolut" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+        </div>
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Bank Country *</label>
+          <select id="bank-country" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+            <option value="Czech Republic">🇨🇿 Czech Republic</option>
+            <option value="China">🇨🇳 China</option>
+            <option value="Denmark">🇩🇰 Denmark</option>
+            <option value="United Kingdom">🇬🇧 United Kingdom</option>
+            <option value="Germany">🇩🇪 Germany</option>
+            <option value="Poland">🇵🇱 Poland</option>
+            <option value="Slovakia">🇸🇰 Slovakia</option>
+            <option value="Austria">🇦🇹 Austria</option>
+            <option value="Hungary">🇭🇺 Hungary</option>
+            <option value="Bangladesh">🇧🇩 Bangladesh</option>
+            <option value="India">🇮🇳 India</option>
+            <option value="Other Europe">🇪🇺 Other Europe / SEPA</option>
+            <option value="International">🌍 International (SWIFT)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Payout Currency *</label>
+          <select id="bank-currency" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:700;">
+            <option value="CZK">CZK (Czech Koruna)</option>
+            <option value="EUR">EUR (Euro)</option>
+            <option value="DKK">DKK (Danish Krone)</option>
+            <option value="USD">USD (US Dollar)</option>
+            <option value="BDT">BDT (Bangladeshi Taka)</option>
+            <option value="GBP">GBP (British Pound)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Account Payout Type</label>
+          <select id="bank-account-type" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+            <option value="Personal Student / Refund Account">Personal Student / Refund Account</option>
+            <option value="Commission & Salary Payout">Commission &amp; Salary Payout</option>
+            <option value="Operating Business Account">Operating Business Account</option>
+            <option value="Freelancer Retainer">Freelancer Retainer</option>
+            <option value="Travel & Expense Reimbursement">Travel &amp; Expense Reimbursement</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Sensitive Financial Fields -->
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1rem;">
+        <div style="font-weight:800; font-size:0.85rem; color:#0f172a; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem;">
+          🔒 Sensitive Account Details (Will be AES-256-GCM Encrypted Server-Side)
+        </div>
+
+        <div style="margin-bottom: 0.75rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">IBAN (International Bank Account Number) *</label>
+            <span id="bank-iban-feedback" style="font-size:0.78rem; font-weight:700; color:#16a34a;"></span>
+          </div>
+          <input type="text" id="bank-iban" placeholder="e.g. CZ6508000000001928374650" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--line); font-family:monospace; font-size:0.92rem; text-transform:uppercase; letter-spacing:1px;">
+          <small class="muted" style="display:block; margin-top:0.25rem;">Standard format: Country code (2 letters) + 2 check digits + up to 30 characters.</small>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div>
+            <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Account Number / Local Code</label>
+            <input type="text" id="bank-account-number" placeholder="e.g. 1928374650 / 0800" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-family:monospace; font-size:0.88rem;">
+          </div>
+          <div>
+            <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">SWIFT / BIC Code</label>
+            <input type="text" id="bank-swift-bic" placeholder="e.g. GIGACZPX" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-family:monospace; font-size:0.88rem; text-transform:uppercase;">
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Internal Notes / Payout Instructions</label>
+        <textarea id="bank-notes" rows="2" placeholder="Optional notes (e.g., specific reference line required by counselor's bank)..." style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;"></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding-top: 1rem;">
+        <span id="bank-modal-msg" class="muted" style="font-size:0.85rem; font-weight:700;"></span>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="btn btn-outline btn-sm" id="btn-cancel-bank-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-save-bank-modal" style="font-weight: 800; padding:0.5rem 1.25rem; background:#059669; border-color:#047857;">
+            🔒 Encrypt &amp; Save Profile
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Secure Reveal Bank Details (Audited Decryption View) -->
+<div class="modal-backdrop hidden" id="modal-reveal-bank" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); z-index:9999; padding:1rem;">
+  <div style="background:white; border-radius:12px; max-width:560px; width:100%; padding:1.5rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2); border:1px solid #fed7aa;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #fff7ed; padding-bottom:0.75rem; margin-bottom:1rem;">
+      <h3 style="margin:0; color:#9a3412; font-size:1.2rem; display:flex; align-items:center; gap:0.5rem;">
+        👁️ Decrypted Bank Details (Authorized View)
+      </h3>
+      <button type="button" id="btn-close-reveal-modal" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--muted); line-height:1;">✕</button>
+    </div>
+
+    <!-- Audit Log Alert -->
+    <div style="background:#fef2f2; border:1px solid #fecaca; border-left:4px solid #ef4444; border-radius:6px; padding:0.65rem 0.85rem; margin-bottom:1rem; font-size:0.8rem; color:#991b1b;">
+      <strong>📜 Audit Logged:</strong> This reveal operation has been permanently logged in the security audit trail with your admin username, timestamp, and IP address.
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:0.75rem; font-size:0.88rem; margin-bottom:1.25rem;">
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.4rem;">
+        <span class="muted">Team Member:</span>
+        <strong id="reveal-member-name" style="color:var(--blue-900);">-</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.4rem;">
+        <span class="muted">Beneficiary Name:</span>
+        <strong id="reveal-beneficiary-name">-</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; border-bottom:1px solid #f1f5f9; padding-bottom:0.4rem;">
+        <span class="muted">Bank &amp; Country:</span>
+        <span id="reveal-bank-name">-</span>
+      </div>
+
+      <!-- Decrypted IBAN -->
+      <div style="background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:0.75rem; margin-top:0.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+          <span style="font-weight:700; font-size:0.8rem; color:var(--blue-900);">Decrypted IBAN</span>
+          <button type="button" id="btn-copy-iban" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:0.2rem 0.5rem; font-weight:700;">📋 Copy IBAN</button>
+        </div>
+        <div id="reveal-iban" style="font-family:monospace; font-size:1.05rem; font-weight:800; color:#0f172a; word-break:break-all; letter-spacing:1px;">-</div>
+      </div>
+
+      <!-- Decrypted Account Number & SWIFT -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+        <div style="background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:0.75rem;">
+          <span style="font-weight:700; font-size:0.8rem; color:var(--blue-900); display:block; margin-bottom:0.25rem;">Account Number</span>
+          <div id="reveal-account-number" style="font-family:monospace; font-size:0.95rem; font-weight:700; color:#0f172a;">-</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:0.75rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+            <span style="font-weight:700; font-size:0.8rem; color:var(--blue-900);">SWIFT / BIC</span>
+            <button type="button" id="btn-copy-swift" class="btn btn-outline btn-sm" style="font-size:0.72rem; padding:0.15rem 0.4rem; font-weight:700;">📋 Copy</button>
+          </div>
+          <div id="reveal-swift-bic" style="font-family:monospace; font-size:0.95rem; font-weight:700; color:#0f172a;">-</div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; border-top:1px solid #f1f5f9; padding-top:0.4rem;">
+        <span class="muted">Currency &amp; Account Type:</span>
+        <span id="reveal-currency-type">-</span>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end;">
+      <button type="button" id="btn-done-reveal-modal" class="btn btn-primary btn-sm" style="font-weight:700; padding:0.45rem 1.5rem;">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Bank Vault Security Audit Trail Explorer -->
+<div class="modal-backdrop hidden" id="modal-bank-audit-logs" style="display:none; align-items:center; justify-content:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); z-index:9999; padding:1rem;">
+  <div style="background:white; border-radius:12px; max-width:900px; width:100%; padding:1.5rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2); max-height:90vh; overflow-y:auto; border:1px solid #c7d2fe;">
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eef2ff; padding-bottom:0.75rem; margin-bottom:1rem;">
+      <div>
+        <h3 style="margin:0; color:#3730a3; font-size:1.25rem; display:flex; align-items:center; gap:0.5rem;">
+          📜 Bank Vault Security Audit Trail
+        </h3>
+        <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.83rem;">
+          Immutable cryptographic log of every bank account creation, detail reveal, verification, and revocation event.
+        </p>
+      </div>
+      <button type="button" id="btn-close-audit-modal" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--muted); line-height:1;">✕</button>
+    </div>
+
+    <div style="display:flex; gap:0.75rem; margin-bottom:1rem;">
+      <input type="text" id="audit-search-input" placeholder="🔍 Filter audit logs by actor, action, or member name..." style="flex:1; padding:0.45rem 0.8rem; border-radius:6px; border:1px solid var(--line); font-size:0.85rem;">
+      <button type="button" id="btn-audit-refresh" class="btn btn-outline btn-sm" style="font-weight:700;">🔄 Refresh Logs</button>
+    </div>
+
+    <div class="table-wrap" style="max-height:55vh; overflow-y:auto;">
+      <table class="data" style="font-size:0.82rem;">
+        <thead>
+          <tr>
+            <th style="width:18%;">Timestamp</th>
+            <th style="width:16%;">Security Action</th>
+            <th style="width:20%;">Admin Actor</th>
+            <th style="width:18%;">Target Member</th>
+            <th style="width:28%;">Audit Event Details</th>
+          </tr>
+        </thead>
+        <tbody id="audit-logs-body">
+          <tr><td colspan="5" class="muted" style="text-align:center; padding:2rem 1rem;">Loading security audit logs...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; border-top:1px solid var(--line); padding-top:0.75rem;">
+      <span class="muted" style="font-size:0.8rem;">Audit logs are append-only and cryptographically protected against modification or deletion.</span>
+      <button type="button" id="btn-done-audit-modal" class="btn btn-primary btn-sm" style="font-weight:700;">Close</button>
+    </div>
   </div>
 </div>
 

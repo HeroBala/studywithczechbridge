@@ -33,8 +33,10 @@
         <div class="field">
           <label for="r-country">Target Destination Country *</label>
           <select id="r-country" style="width:100%; padding:0.6rem; border:1px solid var(--line); border-radius:6px; font-size:0.9rem; background:var(--surface); color:var(--text);" required>
+            <option value="China">🇨🇳 China (Double First-Class / CSC Scholarship / X1 Visa / JW202)</option>
             <option value="Czech Republic">🇨🇿 Czech Republic (Higher Education, Nostrification & Degree)</option>
             <option value="Germany">🇩🇪 Germany (Uni-Assist / VPD / Blocked Account €11,904)</option>
+            <option value="Denmark">🇩🇰 Denmark (Optagelse.dk / SIRI ST1 Residence Permit / CPR)</option>
             <option value="Austria">🇦🇹 Austria (Study Permit / OeAD Dormitories / Vienna)</option>
             <option value="Italy">🇮🇹 Italy (Universitaly / CIMEA / Permesso di Soggiorno)</option>
             <option value="United Kingdom">🇬🇧 United Kingdom (Study Visa / CAS / BRP / eVisa)</option>
@@ -105,6 +107,19 @@
     if (noticeEl) {
       noticeEl.innerHTML = '<div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:0.75rem 1rem; border-radius:8px; margin-bottom:1rem; font-weight:600; font-size:0.9rem;">🎯 <strong>Selected Program for Application:</strong> ' + escHtml(selectedProg) + '</div>';
       noticeEl.style.display = "block";
+    }
+  }
+
+  var targetTrack = params.get("track") || params.get("country");
+  if (targetTrack) {
+    var cSelect = document.getElementById("r-country");
+    if (cSelect) {
+      for (var i = 0; i < cSelect.options.length; i++) {
+        if (cSelect.options[i].value.toLowerCase().indexOf(targetTrack.toLowerCase()) !== -1) {
+          cSelect.selectedIndex = i;
+          break;
+        }
+      }
     }
   }
 })();

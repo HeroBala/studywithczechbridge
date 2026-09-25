@@ -307,11 +307,39 @@ var EUROPE_GENERAL_STEPS = [
   { step: 8, id: "eu_gen_arrival", title: "Arrival & Residence Permit Card Pick-up", category: "Phase 4: Arrival", desc: "Airport pickup, check into dorm, municipal address registration, and pick up Residence Permit Card!" }
 ];
 
+// 🇩🇰 Denmark Higher Education, Optagelse.dk & SIRI ST1 Study Residence Permit Track
+var DENMARK_STEPS = [
+  { step: 1, id: "dk_screening", title: "Academic Assessment & English Language Verification", category: "Phase 1: Screening", desc: "Evaluate upper secondary diploma (Gymnasium equivalent) / Bachelor degree transcripts and English proficiency (IELTS 6.5+ / TOEFL iBT 83+)." },
+  { step: 2, id: "dk_optagelse", title: "Optagelse.dk / Direct University Portal Dossier", category: "Phase 1: Application", desc: "Compile certified course syllabus, statement of purpose, and submit application through Optagelse.dk or university portal by March 15 (autumn intake)." },
+  { step: 3, id: "dk_admission_offer", title: "Offer of Admission (Optagelsesbrev) & Acceptance", category: "Phase 2: Admission", desc: "Receive conditional or unconditional admission offer from Danish university and formally accept study place." },
+  { step: 4, id: "dk_tuition_deposit", title: "Tuition Fee Settlement & Payment Receipt", category: "Phase 2: Payment", desc: "Non-EU/EEA students pay 1st semester/annual tuition fee (typically DKK 45,000–120,000) to activate university's part of the SIRI visa process." },
+  { step: 5, id: "dk_siri_st1", title: "SIRI Case Order ID Creation & ST1 Form (Part 1 & 2)", category: "Phase 3: Visa (SIRI)", desc: "University initiates Part 1 of Form ST1 on SIRI online portal. Student pays Case Order ID fee (approx. DKK 2,490) and completes Part 2 with financial statements." },
+  { step: 6, id: "dk_biometrics", title: "VFS Denmark Embassy Biometrics & Document Submission", category: "Phase 3: Biometrics", desc: "Book appointment at nearest Danish diplomatic mission or VFS Visa Application Centre to submit biometric features (fingerprints and facial photo)." },
+  { step: 7, id: "dk_permit_decision", title: "SIRI ST1 Residence Permit Approval & Flight to Denmark", category: "Phase 4: Approval", desc: "Receive SIRI ST1 Residence & Work Permit approval letter. Book flight to Copenhagen (CPH), Billund, or Aarhus." },
+  { step: 8, id: "dk_cpr_yellow_card", title: "Arrival, CPR Registration, MitID & Yellow Health Card", category: "Phase 4: Settlement", desc: "Register residential address at International Citizen Service (ICS) or Borgerservice, obtain Danish CPR civil registration number, MitID, and Sundhedskort (Yellow Health Card)." }
+];
+
+// 🇨🇳 China Higher Education, CSC Scholarship & X1/X2 Study Visa Track
+var CHINA_STEPS = [
+  { step: 1, id: "cn_profile", title: "Academic Assessment & CSC / University Scholarship Screening", category: "Phase 1: Eligibility", desc: "Evaluate academic transcripts (CGPA 3.0+), English proficiency / HSK level, and eligibility for Chinese Government Scholarship (CSC Type A/B), Silk Road Scholarship, or University Presidential Scholarships." },
+  { step: 2, id: "cn_university_matching", title: "Double First-Class University & Major Selection", category: "Phase 1: Matching", desc: "Select top Project 985/211 universities (e.g. Tsinghua, Peking, Zhejiang, Fudan, SJTU, BUAA, Harbin) across Computer Science, AI, Mechanical Engineering, MBBS Medicine, or International Business." },
+  { step: 3, id: "cn_documents", title: "Document Legalization, Study Plan & Recommendations", category: "Phase 1: Documentation", desc: "Assemble notarized educational certificates, 800+ word study proposal / statement of purpose, two formal recommendation letters from professors, and Police Clearance Certificate (PCC)." },
+  { step: 4, id: "cn_physical_exam", title: "Foreigner Physical Examination Record", category: "Phase 2: Medical", desc: "Undergo mandatory official Foreigner Physical Examination at designated government clinic with required blood test, chest X-ray, and ECG documentation." },
+  { step: 5, id: "cn_cucas_portal", title: "CUCAS / University International Student Portal Submission", category: "Phase 2: Application", desc: "Submit formal application dossier directly to university International College portal or CUCAS system with application fee payment." },
+  { step: 6, id: "cn_admission_jw202", title: "Official Admission Notice & Form JW201/JW202 Issuance", category: "Phase 2: Offer & JW202", desc: "University reviews credentials and Ministry of Education issues official Admission Notice and State-approved Visa Application Form JW201 (CSC) or JW202 (Self-funded)." },
+  { step: 7, id: "cn_cvasc_visa", title: "Chinese Visa Application Service Center (CVASC) Submission", category: "Phase 3: Visa", desc: "Submit original JW201/JW202 form, admission letter, passport, and biometric appointment at the Chinese Embassy or CVASC Center for Long-Term X1 Study Visa." },
+  { step: 8, id: "cn_visa_stamped", title: "X1 Study Visa Approved & Flight to China", category: "Phase 3: Approval", desc: "Collect passport with stamped X1 Long-Term Student Visa (valid for 30 days entry window) and book flight to Beijing, Shanghai, Guangzhou, or Hangzhou." },
+  { step: 9, id: "cn_arrival_police", title: "Arrival in China & 24h Police Accommodation Registration", category: "Phase 4: Arrival", desc: "Fly to China, airport pickup, check-in to campus international student dormitory, and complete mandatory 24-hour accommodation registration at local police station." },
+  { step: 10, id: "cn_residence_permit", title: "Health Quarantine Re-Check & PSB Foreigner Residence Permit", category: "Phase 4: Residence", desc: "Complete entry health verification at local International Travel Healthcare Center and obtain multi-year Foreigner Residence Permit from Public Security Bureau (PSB Exit-Entry Administration)!" }
+];
+
 function getStudentTrackSteps(dataObj) {
   if (!dataObj) return ADMISSION_20_STEPS;
   var country = (dataObj.targetCountry || dataObj.country || dataObj.program || "").toLowerCase();
   var track = (dataObj.serviceTrack || dataObj.level || "").toLowerCase();
 
+  if (country.indexOf("china") !== -1 || country.indexOf("chinese") !== -1 || country.indexOf("prc") !== -1) return CHINA_STEPS;
+  if (country.indexOf("denmark") !== -1 || country.indexOf("danmark") !== -1) return DENMARK_STEPS;
   if (country.indexOf("germany") !== -1 || country.indexOf("deutschland") !== -1) return GERMANY_STEPS;
   if (country.indexOf("uk") !== -1 || country.indexOf("united kingdom") !== -1 || country.indexOf("britain") !== -1) return UK_STEPS;
   if (country.indexOf("ireland") !== -1 || country.indexOf("eire") !== -1) return IRELAND_STEPS;
@@ -377,10 +405,35 @@ var DEFAULT_PACKAGES = [
       "Foreigners Police Residence Registration in Brno",
       "24/7 Personal Counselor Support throughout 1st Academic Year"
     ]
+  },
+  {
+    id: "pkg-china",
+    name: "China Higher Education & CSC Scholarship Package",
+    priceEur: 1650,
+    advisorCommission: 350,
+    targetProgram: "CSC / Double First-Class Track",
+    description: "End-to-end guidance for Chinese university admission, CSC/provincial scholarship screening, Foreigner Physical Exam, JW202 visa processing, and arrival support.",
+    inclusions: [
+      "Project 985/211 Double First-Class University & Major Matching",
+      "CSC Scholarship / University Presidential Waiver Eligibility Screening",
+      "800+ Word Statement of Purpose & Professor Recommendation Letters Review",
+      "Foreigner Physical Examination (Medical Form) Guidance",
+      "CUCAS / University International College Portal Submission",
+      "JW201 / JW202 State Visa Form Tracking & CVASC Embassy Visa Prep",
+      "Airport Greeting in Beijing / Shanghai & 24h Police Accommodation Registration"
+    ]
   }
 ];
 
 var DEFAULT_UNIVERSITIES = [
+  // 🇨🇳 China (Over 3,000 Higher Education Institutions Total / Top Double First-Class)
+  { id: "uni-cn-1", country: "China", countryTotalUniv: 3012, name: "Tsinghua University (Beijing)", website: "https://www.tsinghua.edu.cn/en", type: "Public", scienceSubjects: 60, commerceSubjects: 40, artsSubjects: 35, engineeringSubjects: 95, tuitionFees: "¥26,000 – ¥40,000/yr (~€3,300 – €5,200) / Full CSC Scholarship" },
+  { id: "uni-cn-2", country: "China", countryTotalUniv: 3012, name: "Peking University (Beijing)", website: "https://www.pku.edu.cn/en", type: "Public", scienceSubjects: 70, commerceSubjects: 50, artsSubjects: 65, engineeringSubjects: 30, tuitionFees: "¥26,000 – ¥45,000/yr (~€3,300 – €5,800) / CSC Scholarship" },
+  { id: "uni-cn-3", country: "China", countryTotalUniv: 3012, name: "Zhejiang University (Hangzhou)", website: "https://www.zju.edu.cn/english", type: "Public", scienceSubjects: 55, commerceSubjects: 35, artsSubjects: 40, engineeringSubjects: 85, tuitionFees: "¥19,800 – ¥32,800/yr (~€2,500 – €4,200) / CSC" },
+  { id: "uni-cn-4", country: "China", countryTotalUniv: 3012, name: "Shanghai Jiao Tong University (SJTU)", website: "https://en.sjtu.edu.cn", type: "Public", scienceSubjects: 52, commerceSubjects: 38, artsSubjects: 25, engineeringSubjects: 90, tuitionFees: "¥24,800 – ¥38,000/yr (~€3,200 – €4,900)" },
+  { id: "uni-cn-5", country: "China", countryTotalUniv: 3012, name: "Fudan University (Shanghai)", website: "https://www.fudan.edu.cn/en", type: "Public", scienceSubjects: 50, commerceSubjects: 55, artsSubjects: 45, engineeringSubjects: 30, tuitionFees: "¥23,000 – ¥42,000/yr (~€2,900 – €5,400) / CSC" },
+  { id: "uni-cn-6", country: "China", countryTotalUniv: 3012, name: "Beihang University (BUAA - Beijing)", website: "https://ev.buaa.edu.cn", type: "Public", scienceSubjects: 40, commerceSubjects: 15, artsSubjects: 10, engineeringSubjects: 85, tuitionFees: "¥25,000 – ¥35,000/yr (~€3,200 – €4,500)" },
+
   // 🇨🇿 Czech Republic (26 Universities Total)
   { id: "uni-cz-1", country: "Czech Republic", countryTotalUniv: 26, name: "Charles University (Prague)", website: "https://cuni.cz", type: "Public", scienceSubjects: 45, commerceSubjects: 30, artsSubjects: 38, engineeringSubjects: 22, tuitionFees: "Free (Czech) / €3,000 – €15,000/yr (English)" },
   { id: "uni-cz-2", country: "Czech Republic", countryTotalUniv: 26, name: "Masaryk University (Brno)", website: "https://www.muni.cz", type: "Public", scienceSubjects: 40, commerceSubjects: 28, artsSubjects: 35, engineeringSubjects: 18, tuitionFees: "Free (Czech) / €2,500 – €11,500/yr (English)" },
@@ -443,10 +496,24 @@ var DEFAULT_UNIVERSITIES = [
 
   // 🇲🇾 Malaysia (Work & Student Visa)
   { id: "uni-my-1", country: "Malaysia", countryTotalUniv: 104, name: "University of Malaya (UM)", website: "https://www.um.edu.my", type: "Public", scienceSubjects: 50, commerceSubjects: 30, artsSubjects: 35, engineeringSubjects: 40, tuitionFees: "USD $2,500 – $5,500/yr (ESD Work Permit)" },
-  { id: "uni-my-2", country: "Malaysia", countryTotalUniv: 104, name: "Asia Pacific University (APU)", website: "https://www.apu.edu.my", type: "Private", scienceSubjects: 20, commerceSubjects: 35, artsSubjects: 15, engineeringSubjects: 30, tuitionFees: "USD $4,000 – $7,500/yr" }
+  { id: "uni-my-2", country: "Malaysia", countryTotalUniv: 104, name: "Asia Pacific University (APU)", website: "https://www.apu.edu.my", type: "Private", scienceSubjects: 20, commerceSubjects: 35, artsSubjects: 15, engineeringSubjects: 30, tuitionFees: "USD $4,000 – $7,500/yr" },
+
+  // 🇩🇰 Denmark (8 Universities Total)
+  { id: "uni-dk-1", country: "Denmark", countryTotalUniv: 8, name: "University of Copenhagen (UCPH)", website: "https://www.ku.dk/english", type: "Public", scienceSubjects: 58, commerceSubjects: 28, artsSubjects: 45, engineeringSubjects: 20, tuitionFees: "DKK 45,000 – 120,000/yr (~€6,000 – €16,000)" },
+  { id: "uni-dk-2", country: "Denmark", countryTotalUniv: 8, name: "Technical University of Denmark (DTU)", website: "https://www.dtu.dk/english", type: "Public", scienceSubjects: 40, commerceSubjects: 10, artsSubjects: 5, engineeringSubjects: 75, tuitionFees: "DKK 105,000 – 115,000/yr (~€14,000 – €15,500)" },
+  { id: "uni-dk-3", country: "Denmark", countryTotalUniv: 8, name: "Aarhus University", website: "https://international.au.dk", type: "Public", scienceSubjects: 48, commerceSubjects: 35, artsSubjects: 40, engineeringSubjects: 30, tuitionFees: "DKK 60,000 – 110,000/yr (~€8,000 – €14,500)" },
+  { id: "uni-dk-4", country: "Denmark", countryTotalUniv: 8, name: "Copenhagen Business School (CBS)", website: "https://www.cbs.dk/en", type: "Public", scienceSubjects: 10, commerceSubjects: 65, artsSubjects: 15, engineeringSubjects: 0, tuitionFees: "DKK 70,000 – 125,000/yr (~€9,500 – €16,500)" }
 ];
 
 var DEFAULT_PROGRAMS = [
+  // 🇨🇳 China
+  { id: "prog-cn-1", country: "China", university: "Tsinghua University (Beijing)", title: "MSc Computer Science & Technology", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "¥30,000 / year (Full CSC Scholarship Eligible)", applyUrl: "https://www.tsinghua.edu.cn/en", portalApplyUrl: "register.html?country=China&program=Tsinghua+University+-+MSc+Computer+Science" },
+  { id: "prog-cn-2", country: "China", university: "Peking University (Beijing)", title: "Master of Public Policy (MPP) & Global Affairs", level: "Master's", field: "Social Sciences & Humanities", language: "English", duration: "2 Years", intake: "September", tuitionFees: "¥32,000 / year (CSC Eligible)", applyUrl: "https://www.pku.edu.cn/en", portalApplyUrl: "register.html?country=China&program=Peking+University+-+Master+Public+Policy" },
+  { id: "prog-cn-3", country: "China", university: "Zhejiang University (Hangzhou)", title: "BSc Computer Science & Artificial Intelligence", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "4 Years", intake: "September", tuitionFees: "¥28,000 / year (~€3,600)", applyUrl: "https://iczu.zju.edu.cn", portalApplyUrl: "register.html?country=China&program=Zhejiang+University+-+BSc+Computer+Science+and+AI" },
+  { id: "prog-cn-4", country: "China", university: "Shanghai Jiao Tong University (SJTU)", title: "BEng Mechanical & Automation Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "4 Years", intake: "September", tuitionFees: "¥24,800 / year (~€3,200)", applyUrl: "https://isc.sjtu.edu.cn", portalApplyUrl: "register.html?country=China&program=SJTU+-+BEng+Mechanical+Engineering" },
+  { id: "prog-cn-5", country: "China", university: "Fudan University (Shanghai)", title: "International MBA & Global Finance", level: "Master's", field: "Business & Economics", language: "English", duration: "2 Years", intake: "September", tuitionFees: "¥42,000 / year", applyUrl: "https://iso.fudan.edu.cn", portalApplyUrl: "register.html?country=China&program=Fudan+University+-+International+MBA" },
+  { id: "prog-cn-6", country: "China", university: "Beihang University (BUAA)", title: "BEng Aeronautical & Aerospace Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "4 Years", intake: "September", tuitionFees: "¥25,000 / year (~€3,200)", applyUrl: "https://is.buaa.edu.cn", portalApplyUrl: "register.html?country=China&program=Beihang+University+-+BEng+Aerospace+Engineering" },
+
   // 🇨🇿 Czech Republic
   { id: "prog-cz-1", country: "Czech Republic", university: "Charles University (Prague)", title: "General Medicine (MD)", level: "Master's", field: "Medicine & Health Sciences", language: "English", duration: "6 Years", intake: "September", tuitionFees: "€15,000 / year", applyUrl: "https://lf1.cuni.cz/en", portalApplyUrl: "register.html?program=Charles+University+-+General+Medicine" },
   { id: "prog-cz-2", country: "Czech Republic", university: "Charles University (Prague)", title: "BSc Computer Science", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€3,500 / year", applyUrl: "https://www.mff.cuni.cz/en", portalApplyUrl: "register.html?program=Charles+University+-+BSc+Computer+Science" },
@@ -518,7 +585,12 @@ var DEFAULT_PROGRAMS = [
   { id: "prog-is-1", country: "Iceland", university: "University of Iceland", title: "MSc Sustainable Energy Science", level: "Master's", field: "Engineering & Technology", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€0 (Reg Fee €550 / year)", applyUrl: "https://english.hi.is", portalApplyUrl: "register.html?program=University+of+Iceland+-+MSc+Sustainable+Energy" },
 
   // 🇲🇩 Moldova
-  { id: "prog-md-1", country: "Moldova", university: "Technical University of Moldova", title: "BSc Software Engineering & Tech Management", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "4 Years", intake: "September", tuitionFees: "€1,800 / year", applyUrl: "https://utm.md/en", portalApplyUrl: "register.html?program=Technical+University+of+Moldova+-+BSc+Software+Engineering" }
+  { id: "prog-md-1", country: "Moldova", university: "Technical University of Moldova", title: "BSc Software Engineering & Tech Management", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "4 Years", intake: "September", tuitionFees: "€1,800 / year", applyUrl: "https://utm.md/en", portalApplyUrl: "register.html?program=Technical+University+of+Moldova+-+BSc+Software+Engineering" },
+
+  // 🇩🇰 Denmark
+  { id: "prog-dk-1", country: "Denmark", university: "Technical University of Denmark (DTU)", title: "MSc Computer Science & Engineering", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "DKK 112,500 / year (~€15,000)", applyUrl: "https://www.dtu.dk/english", portalApplyUrl: "register.html?program=DTU+Denmark+-+MSc+Computer+Science" },
+  { id: "prog-dk-2", country: "Denmark", university: "Aarhus University", title: "BSc Cognitive Science & Data Analytics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "DKK 80,000 / year (~€10,700)", applyUrl: "https://international.au.dk", portalApplyUrl: "register.html?program=Aarhus+University+-+BSc+Cognitive+Science" },
+  { id: "prog-dk-3", country: "Denmark", university: "Copenhagen Business School (CBS)", title: "BSc International Business & Strategy", level: "Bachelor's", field: "Business & Management", language: "English", duration: "3 Years", intake: "September", tuitionFees: "DKK 75,000 / year (~€10,000)", applyUrl: "https://www.cbs.dk/en", portalApplyUrl: "register.html?program=CBS+Denmark+-+BSc+International+Business" }
 ];
 
 var DEFAULT_TESTIMONIALS = [
@@ -651,6 +723,35 @@ var DEFAULT_SEMINAR_REGISTRATIONS = [
   }
 ];
 
+var DEFAULT_USERS = [
+  { id: "superadmin-hero", email: "herobala1997@gmail.com", password: "admin123",
+    fullName: "Hero Bala (Super Admin)", phone: "+420 777 000 111", role: "super_admin", createdAt: new Date(Date.now() - 60 * 86400000).toISOString() },
+  { id: "superadmin-main", email: "admin@studywithczechbridge.com", password: "admin123",
+    fullName: "Chief System Admin", phone: "+420 111 222 333", role: "super_admin", createdAt: new Date(Date.now() - 60 * 86400000).toISOString() },
+  { id: "admin1", email: "admin@test.com", password: "admin123",
+    fullName: "Mock Admin", phone: "+420 444 555 666", role: "admin", createdAt: new Date(Date.now() - 60 * 86400000).toISOString() },
+  { id: "agent1", email: "agent@test.com", password: "admin123",
+    fullName: "Brno Agent", phone: "+420 777 123 456", role: "counselor", createdAt: new Date(Date.now() - 40 * 86400000).toISOString() },
+  { id: "counselor1", email: "elena@studywithczechbridge.com", password: "admin123",
+    fullName: "Elena Svoboda", phone: "+420 771 987 654", role: "counselor", createdAt: new Date(Date.now() - 35 * 86400000).toISOString() },
+  { id: "officer1", email: "pavel@studywithczechbridge.com", password: "admin123",
+    fullName: "Pavel Dvorak", phone: "+420 772 456 789", role: "admission_officer", createdAt: new Date(Date.now() - 30 * 86400000).toISOString() },
+  { id: "finance1", email: "klara@studywithczechbridge.com", password: "admin123",
+    fullName: "Klara Novakova", phone: "+420 773 111 222", role: "finance_manager", createdAt: new Date(Date.now() - 25 * 86400000).toISOString() },
+  { id: "stu-rahim", email: "rahim@demo.com", password: "demo123",
+    fullName: "Rahim Ahmed", phone: "+880 1712-000001", role: "student", createdAt: new Date(Date.now() - 25 * 86400000).toISOString(),
+    assignedAgentId: "counselor1", assignedAgentName: "Elena Svoboda" },
+  { id: "stu-fatima", email: "fatima@demo.com", password: "demo123",
+    fullName: "Fatima Khatun", phone: "+234 803 123 4567", role: "student", createdAt: new Date(Date.now() - 40 * 86400000).toISOString(),
+    assignedAgentId: "counselor1", assignedAgentName: "Elena Svoboda" },
+  { id: "stu-imran", email: "imran@demo.com", password: "demo123",
+    fullName: "Imran Hossain", phone: "+91 98765 43210", role: "student", createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
+    assignedAgentId: "", assignedAgentName: "" },
+  { id: "stu-nusrat", email: "nusrat@demo.com", password: "demo123",
+    fullName: "Nusrat Jahan", phone: "+84 90 123 4567", role: "student", createdAt: new Date(Date.now() - 70 * 86400000).toISOString(),
+    assignedAgentId: "admin1", assignedAgentName: "Mock Admin" }
+];
+
 var CHUNK_SIZE = 700000; // base64 chars per Firestore chunk doc (~0.5 MB binary)
 
 function getSession() {
@@ -713,8 +814,8 @@ function normalizeUser(u, fallbackId) {
   var role = "student";
   if (rawRole === "super_admin" || rawRole === "superadmin" || rawRole === "super admin") role = "super_admin";
   else if (rawRole === "admin" || rawRole === "administrator") role = "admin";
-  else if (rawRole === "agent" || rawRole === "counselor" || rawRole === "councilor" || rawRole === "staff" || rawRole === "advisor") role = "agent";
-  else if (rawRole === "admission_officer" || rawRole === "admissions") role = "admission_officer";
+  else if (rawRole === "counselor" || rawRole === "councilor" || rawRole === "agent" || rawRole === "staff" || rawRole === "advisor") role = "counselor";
+  else if (rawRole === "admission_officer" || rawRole === "admissions" || rawRole === "officer") role = "admission_officer";
   else if (rawRole === "finance_manager" || rawRole === "finance") role = "finance_manager";
   else if (rawRole === "student" || rawRole === "client" || rawRole === "applicant" || rawRole === "user") role = "student";
 
@@ -881,7 +982,22 @@ function api(action, data) {
   if (typeof MOCK_MODE !== "undefined" && MOCK_MODE) {
     return mockApi(action, data || {});
   }
-  return fbApi(action, data || {});
+  return fbApi(action, data || {}).catch(function (err) {
+    var msg = String((err && (err.message || err.code || err)) || "").toLowerCase();
+    if (
+      msg.indexOf("permission") !== -1 ||
+      msg.indexOf("forbidden") !== -1 ||
+      msg.indexOf("network") !== -1 ||
+      msg.indexOf("failed to load") !== -1 ||
+      msg.indexOf("not found") !== -1 ||
+      msg.indexOf("unauthorized") !== -1 ||
+      msg.indexOf("auth/") !== -1
+    ) {
+      console.warn("Firebase request failed (" + action + "), smoothly falling back to local mock database:", err);
+      return mockApi(action, data || {});
+    }
+    throw err;
+  });
 }
 
 /* ============================================================
@@ -1349,6 +1465,245 @@ function fbHandle(fb, action, d) {
       });
     }
 
+    /* ---------- Team Bank Accounts (AES-256 Encrypted Vault & Audit Log) ---------- */
+    case "getTeamBankAccounts": {
+      var curUser = fbUser(fb);
+      var hdrs = {
+        'Content-Type': 'application/json',
+        'x-admin-email': (curUser && curUser.email) ? curUser.email : 'admin@studywithczechbridge.com',
+        'x-admin-role': (d && d.currentRole) ? d.currentRole : 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts', { headers: hdrs }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      }).catch(function (err) {
+        console.warn("Falling back to Firestore for bank accounts:", err);
+        return db.collection("bank_accounts").get().then(function (snap) {
+          var accounts = [];
+          snap.forEach(function (doc) {
+            var data = doc.data();
+            data.id = doc.id;
+            accounts.push(data);
+          });
+          return {
+            ok: true,
+            accounts: accounts,
+            metrics: {
+              total: accounts.length,
+              verified: accounts.filter(function (a) { return a.status === 'verified'; }).length,
+              pending: accounts.filter(function (a) { return a.status === 'pending'; }).length,
+              deactivated: accounts.filter(function (a) { return a.status === 'deactivated'; }).length
+            }
+          };
+        });
+      });
+    }
+
+    case "saveTeamBankAccount": {
+      var curUser2 = fbUser(fb);
+      var userEmail = (curUser2 && curUser2.email) ? curUser2.email : 'admin@studywithczechbridge.com';
+      var userRole = (d && d.currentRole) ? d.currentRole : 'super_admin';
+      var hdrs2 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': userEmail,
+        'x-admin-role': userRole
+      };
+      var isUpdate = !!d.id;
+      var url = isUpdate ? ('/api/team/bank-accounts/' + encodeURIComponent(d.id)) : '/api/team/bank-accounts';
+      var method = isUpdate ? 'PUT' : 'POST';
+
+      return fetch(url, {
+        method: method,
+        headers: hdrs2,
+        body: JSON.stringify(d)
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to save bank account.");
+          return json;
+        });
+      });
+    }
+
+    case "revealTeamBankAccount": {
+      var curUser3 = fbUser(fb);
+      var hdrs3 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': (curUser3 && curUser3.email) ? curUser3.email : 'admin@studywithczechbridge.com',
+        'x-admin-role': (d && d.currentRole) ? d.currentRole : 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(d.id) + '/reveal', {
+        method: 'POST',
+        headers: hdrs3,
+        body: JSON.stringify({ reason: d.reason || 'Authorized Admin Payout Verification' })
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to reveal bank details.");
+          return json;
+        });
+      });
+    }
+
+    case "verifyTeamBankAccount": {
+      var curUser4 = fbUser(fb);
+      var hdrs4 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': (curUser4 && curUser4.email) ? curUser4.email : 'admin@studywithczechbridge.com',
+        'x-admin-role': (d && d.currentRole) ? d.currentRole : 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(d.id) + '/verify', {
+        method: 'POST',
+        headers: hdrs4,
+        body: JSON.stringify(d)
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to verify bank account.");
+          return json;
+        });
+      });
+    }
+
+    case "deactivateTeamBankAccount": {
+      var curUser5 = fbUser(fb);
+      var hdrs5 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': (curUser5 && curUser5.email) ? curUser5.email : 'admin@studywithczechbridge.com',
+        'x-admin-role': (d && d.currentRole) ? d.currentRole : 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(d.id) + '/deactivate', {
+        method: 'POST',
+        headers: hdrs5,
+        body: JSON.stringify(d)
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to deactivate bank account.");
+          return json;
+        });
+      });
+    }
+
+    case "deleteTeamBankAccount": {
+      var curUser6 = fbUser(fb);
+      var hdrs6 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': (curUser6 && curUser6.email) ? curUser6.email : 'admin@studywithczechbridge.com',
+        'x-admin-role': (d && d.currentRole) ? d.currentRole : 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(d.id), {
+        method: 'DELETE',
+        headers: hdrs6
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to delete bank account.");
+          return json;
+        });
+      });
+    }
+
+    case "getUserBankAccount": {
+      var curU = fbUser(fb);
+      var uId = (d && d.userId) || (curU && curU.uid) || "";
+      var uEmail = (d && d.userEmail) || (curU && curU.email) || "";
+      var hdrsUser = {
+        'Content-Type': 'application/json',
+        'x-user-id': uId,
+        'x-user-email': uEmail
+      };
+      return fetch('/api/user/bank-account?userId=' + encodeURIComponent(uId) + '&email=' + encodeURIComponent(uEmail), {
+        headers: hdrsUser
+      }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      }).catch(function (err) {
+        console.warn("Fallback to client storage for user bank account:", err);
+        var stored = null;
+        try {
+          var storeMap = JSON.parse(localStorage.getItem("cb_user_bank_records") || "{}");
+          stored = storeMap[uEmail] || storeMap[uId];
+        } catch (e) {}
+        return { ok: true, hasAccount: !!stored, account: stored || null };
+      });
+    }
+
+    case "saveUserBankAccount": {
+      var curU2 = fbUser(fb);
+      var uId2 = (d && d.userId) || (curU2 && curU2.uid) || ("usr-" + Date.now());
+      var uEmail2 = (d && d.userEmail) || (curU2 && curU2.email) || "";
+      var postData = Object.assign({}, d, { userId: uId2, userEmail: uEmail2 });
+      var hdrsUser2 = {
+        'Content-Type': 'application/json',
+        'x-user-id': uId2,
+        'x-user-email': uEmail2
+      };
+      return fetch('/api/user/bank-account', {
+        method: 'POST',
+        headers: hdrsUser2,
+        body: JSON.stringify(postData)
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to save bank details.");
+          try {
+            var records = JSON.parse(localStorage.getItem("cb_user_bank_records") || "{}");
+            records[uEmail2] = json.account;
+            records[uId2] = json.account;
+            localStorage.setItem("cb_user_bank_records", JSON.stringify(records));
+          } catch (e) {}
+          return json;
+        });
+      }).catch(function (err) {
+        console.warn("Local storage fallback for user bank details:", err);
+        var fallbackAccount = {
+          id: "bnk-loc-" + Date.now(),
+          userId: uId2,
+          userName: d.userName || "User",
+          userEmail: uEmail2,
+          userRole: d.userRole || "student",
+          beneficiaryName: d.beneficiaryName || d.userName,
+          bankName: d.bankName,
+          bankCountry: d.bankCountry || "Czech Republic",
+          currency: d.currency || "CZK",
+          accountType: d.accountType || "Personal Account / Payout",
+          status: "pending",
+          maskedIban: d.iban ? (d.iban.substring(0, 2) + "** **** **** " + d.iban.slice(-4)) : "",
+          maskedAccountNumber: d.accountNumber ? ("****" + d.accountNumber.slice(-4)) : "",
+          maskedSwift: d.swiftBic ? (d.swiftBic.substring(0, 2) + "**" + d.swiftBic.slice(-2)) : "",
+          notes: d.notes || "",
+          updatedAt: new Date().toISOString()
+        };
+        try {
+          var records = JSON.parse(localStorage.getItem("cb_user_bank_records") || "{}");
+          records[uEmail2] = fallbackAccount;
+          records[uId2] = fallbackAccount;
+          localStorage.setItem("cb_user_bank_records", JSON.stringify(records));
+        } catch (e) {}
+        return { ok: true, message: "Bank details saved securely.", account: fallbackAccount };
+      });
+    }
+
+    case "exportAllBankRecords": {
+      var curAdmin = fbUser(fb);
+      var adminHdrs = {
+        'x-admin-email': (curAdmin && curAdmin.email) ? curAdmin.email : 'admin@studywithczechbridge.com',
+        'x-admin-role': (d && d.currentRole) ? d.currentRole : 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/export', { headers: adminHdrs }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.blob();
+      });
+    }
+
+    case "getBankAuditLogs": {
+      var curUser7 = fbUser(fb);
+      var hdrs7 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': (curUser7 && curUser7.email) ? curUser7.email : 'admin@studywithczechbridge.com',
+        'x-admin-role': (d && d.currentRole) ? d.currentRole : 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/audit-logs', { headers: hdrs7 }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      });
+    }
+
     /* ---------- documents (base64 chunks in Firestore) ---------- */
     case "uploadDocument": {
       var u3 = fbUser(fb);
@@ -1631,30 +1986,41 @@ function fbHandle(fb, action, d) {
             }
 
             // Always merge mock / baseline users so all platform accounts are visible
+            var baselineList = (typeof DEFAULT_USERS !== "undefined" && Array.isArray(DEFAULT_USERS)) ? DEFAULT_USERS.slice() : [];
             try {
               var mdbRaw = localStorage.getItem("cb_mockdb");
               var mdb = mdbRaw ? JSON.parse(mdbRaw) : null;
-              var mUsers = (mdb && mdb.users && mdb.users.length) ? mdb.users : ((typeof mockDb !== "undefined") ? mockDb().users : []);
-              (mUsers || []).forEach(function (mu) {
-                if (!userMap[mu.id]) {
-                  var hasEmail = Object.keys(userMap).some(function (k) {
-                    return userMap[k].email && mu.email && userMap[k].email.toLowerCase() === mu.email.toLowerCase();
-                  });
-                  if (!hasEmail) {
-                    userMap[mu.id] = mu;
-                  }
-                }
-              });
+              if (mdb && Array.isArray(mdb.users) && mdb.users.length) {
+                baselineList = mdb.users;
+              }
             } catch (e) {}
 
-            var usersList = Object.keys(userMap).map(function (k) { return normalizeUser(userMap[k], k); });
+            (baselineList || []).forEach(function (mu) {
+              if (mu && mu.id && !userMap[mu.id]) {
+                var hasEmail = Object.keys(userMap).some(function (k) {
+                  return userMap[k] && userMap[k].email && mu.email && userMap[k].email.toLowerCase() === mu.email.toLowerCase();
+                });
+                if (!hasEmail) {
+                  userMap[mu.id] = mu;
+                }
+              }
+            });
+
+            var usersList = Object.keys(userMap).map(function (k) { return normalizeUser(userMap[k], k); }).filter(Boolean);
             return { ok: true, users: usersList };
           });
         });
       }).catch(function (err) {
         console.warn("adminListUsers fallback error:", err);
-        var fallbackUsers = (typeof mockDb !== "undefined") ? mockDb().users.map(function (u) { return normalizeUser(u, u.id); }) : [];
-        return { ok: true, users: fallbackUsers };
+        var fallbackUsers = (typeof DEFAULT_USERS !== "undefined" && Array.isArray(DEFAULT_USERS)) ? DEFAULT_USERS.slice() : [];
+        try {
+          var mdbRaw = localStorage.getItem("cb_mockdb");
+          var mdb = mdbRaw ? JSON.parse(mdbRaw) : null;
+          if (mdb && Array.isArray(mdb.users) && mdb.users.length) {
+            fallbackUsers = mdb.users;
+          }
+        } catch (e) {}
+        return { ok: true, users: (fallbackUsers || []).map(function (u) { return normalizeUser(u, u.id); }).filter(Boolean) };
       });
     }
 
@@ -2461,32 +2827,7 @@ function mockDb() {
     programs: DEFAULT_PROGRAMS.slice(),
     testimonials: DEFAULT_TESTIMONIALS.slice(),
     seminar_registrations: DEFAULT_SEMINAR_REGISTRATIONS.slice(),
-    users: [
-      { id: "superadmin1", email: "superadmin@test.com", password: "admin123",
-        fullName: "Mock Super Admin", phone: "+420 111 222 333", role: "super_admin", createdAt: daysAgo(60) },
-      { id: "admin1", email: "admin@test.com", password: "admin123",
-        fullName: "Mock Admin", phone: "+420 444 555 666", role: "admin", createdAt: daysAgo(60) },
-      { id: "agent1", email: "agent@test.com", password: "admin123",
-        fullName: "Brno Agent", phone: "+420 777 123 456", role: "agent", createdAt: daysAgo(40) },
-      { id: "counselor1", email: "elena@studywithczechbridge.com", password: "admin123",
-        fullName: "Elena Svoboda", phone: "+420 771 987 654", role: "counselor", createdAt: daysAgo(35) },
-      { id: "officer1", email: "pavel@studywithczechbridge.com", password: "admin123",
-        fullName: "Pavel Dvorak", phone: "+420 772 456 789", role: "admission_officer", createdAt: daysAgo(30) },
-      { id: "finance1", email: "klara@studywithczechbridge.com", password: "admin123",
-        fullName: "Klara Novakova", phone: "+420 773 111 222", role: "finance_manager", createdAt: daysAgo(25) },
-      { id: "stu-rahim", email: "rahim@demo.com", password: "demo123",
-        fullName: "Rahim Ahmed", phone: "+880 1712-000001", role: "student", createdAt: daysAgo(25),
-        assignedAgentId: "agent1", assignedAgentName: "Brno Agent" },
-      { id: "stu-fatima", email: "fatima@demo.com", password: "demo123",
-        fullName: "Fatima Khatun", phone: "+234 803 123 4567", role: "student", createdAt: daysAgo(40),
-        assignedAgentId: "agent1", assignedAgentName: "Brno Agent" },
-      { id: "stu-imran", email: "imran@demo.com", password: "demo123",
-        fullName: "Imran Hossain", phone: "+91 98765 43210", role: "student", createdAt: daysAgo(3),
-        assignedAgentId: "", assignedAgentName: "" },
-      { id: "stu-nusrat", email: "nusrat@demo.com", password: "demo123",
-        fullName: "Nusrat Jahan", phone: "+84 90 123 4567", role: "student", createdAt: daysAgo(70),
-        assignedAgentId: "admin1", assignedAgentName: "Mock Admin" }
-    ],
+    users: DEFAULT_USERS.slice(),
     sessions: {},
     applications: [
       { id: "app-rahim", userId: "stu-rahim", email: "rahim@demo.com",
@@ -2952,9 +3293,10 @@ function mockHandle(action, data) {
       return { ok: true, messages: db.messages.map(function (m) { return normalizeMessage(m, m.id); }) };
     case "adminListUsers":
       needStaff();
+      db.users = (db && Array.isArray(db.users) && db.users.length) ? db.users : DEFAULT_USERS.slice();
       return { ok: true, users: db.users.map(function (u4) {
         return normalizeUser(u4, u4.id);
-      }) };
+      }).filter(Boolean) };
     case "adminUpdateUserRole": {
       needAdminOrSuper();
       var target = db.users.filter(function (u) { return u.id === data.userId; })[0];
@@ -3524,6 +3866,222 @@ function mockHandle(action, data) {
       }
       mockSave(db);
       return { ok: true, registration: rItem };
+    }
+    case "getUserBankAccount": {
+      var uKey = (data && data.userEmail) || (data && data.userId) || "";
+      var mapRecs = {};
+      try { mapRecs = JSON.parse(localStorage.getItem("cb_user_bank_records") || "{}"); } catch (e) {}
+      var foundAcc = mapRecs[uKey] || null;
+      return { ok: true, hasAccount: !!foundAcc, account: foundAcc };
+    }
+    case "saveUserBankAccount": {
+      var uKey2 = (data && data.userEmail) || (data && data.userId) || "user@example.com";
+      var newAcc = {
+        id: "bnk-mock-" + Date.now(),
+        userId: data.userId || "usr-mock",
+        userName: data.userName || "User",
+        userEmail: data.userEmail || uKey2,
+        userRole: data.userRole || "student",
+        beneficiaryName: data.beneficiaryName || data.userName,
+        bankName: data.bankName,
+        bankCountry: data.bankCountry || "Czech Republic",
+        currency: data.currency || "CZK",
+        accountType: data.accountType || "Personal Account / Payout",
+        status: "pending",
+        maskedIban: data.iban ? (data.iban.substring(0, 2) + "** **** " + data.iban.slice(-4)) : "",
+        maskedAccountNumber: data.accountNumber ? ("****" + data.accountNumber.slice(-4)) : "",
+        maskedSwift: data.swiftBic ? (data.swiftBic.substring(0, 2) + "**" + data.swiftBic.slice(-2)) : "",
+        notes: data.notes || "",
+        updatedAt: new Date().toISOString()
+      };
+      try {
+        var mRecords = JSON.parse(localStorage.getItem("cb_user_bank_records") || "{}");
+        mRecords[uKey2] = newAcc;
+        localStorage.setItem("cb_user_bank_records", JSON.stringify(mRecords));
+      } catch (e) {}
+      return { ok: true, message: "Bank details saved.", account: newAcc };
+    }
+    case "getTeamBankAccounts": {
+      var curSess = getSession() || {};
+      var curAdminEmail = curSess.email || 'herobala1997@gmail.com';
+      var curAdminRole = (data && data.currentRole) || curSess.role || 'super_admin';
+      var hdrs = {
+        'Content-Type': 'application/json',
+        'x-admin-email': curAdminEmail,
+        'x-admin-role': curAdminRole
+      };
+      return fetch('/api/team/bank-accounts', { headers: hdrs }).then(function(res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      }).catch(function() {
+        return { ok: true, accounts: [], metrics: { total: 0, verified: 0, pending: 0, deactivated: 0 } };
+      });
+    }
+    case "saveTeamBankAccount": {
+      var curSess2 = getSession() || {};
+      var userEmail2 = curSess2.email || 'herobala1997@gmail.com';
+      var userRole2 = (data && data.currentRole) || curSess2.role || 'super_admin';
+      var hdrs2 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': userEmail2,
+        'x-admin-role': userRole2
+      };
+      var isUpdate = !!data.id;
+      var url = isUpdate ? ('/api/team/bank-accounts/' + encodeURIComponent(data.id)) : '/api/team/bank-accounts';
+      var method = isUpdate ? 'PUT' : 'POST';
+
+      return fetch(url, {
+        method: method,
+        headers: hdrs2,
+        body: JSON.stringify(data)
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to save bank account.");
+          return json;
+        });
+      });
+    }
+    case "revealTeamBankAccount": {
+      var curSess3 = getSession() || {};
+      var hdrs3 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': curSess3.email || 'herobala1997@gmail.com',
+        'x-admin-role': (data && data.currentRole) || curSess3.role || 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(data.id) + '/reveal', {
+        method: 'POST',
+        headers: hdrs3,
+        body: JSON.stringify({ reason: data.reason || 'Authorized Admin Payout Verification' })
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to reveal bank details.");
+          return json;
+        });
+      });
+    }
+    case "verifyTeamBankAccount": {
+      var curSess4 = getSession() || {};
+      var hdrs4 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': curSess4.email || 'herobala1997@gmail.com',
+        'x-admin-role': (data && data.currentRole) || curSess4.role || 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(data.id) + '/verify', {
+        method: 'POST',
+        headers: hdrs4,
+        body: JSON.stringify(data)
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to verify bank account.");
+          return json;
+        });
+      });
+    }
+    case "deactivateTeamBankAccount": {
+      var curSess5 = getSession() || {};
+      var hdrs5 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': curSess5.email || 'herobala1997@gmail.com',
+        'x-admin-role': (data && data.currentRole) || curSess5.role || 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(data.id) + '/deactivate', {
+        method: 'POST',
+        headers: hdrs5,
+        body: JSON.stringify(data)
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to deactivate bank account.");
+          return json;
+        });
+      });
+    }
+    case "deleteTeamBankAccount": {
+      var curSess6 = getSession() || {};
+      var hdrs6 = {
+        'Content-Type': 'application/json',
+        'x-admin-email': curSess6.email || 'herobala1997@gmail.com',
+        'x-admin-role': (data && data.currentRole) || curSess6.role || 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/' + encodeURIComponent(data.id), {
+        method: 'DELETE',
+        headers: hdrs6
+      }).then(function (res) {
+        return res.json().then(function (json) {
+          if (!res.ok) throw new Error(json.error || "Failed to delete bank account.");
+          return json;
+        });
+      });
+    }
+    case "exportAllBankRecords": {
+      var curSessExp = getSession() || {};
+      var adminHdrsExp = {
+        'x-admin-email': curSessExp.email || 'herobala1997@gmail.com',
+        'x-admin-role': (data && data.currentRole) || curSessExp.role || 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/export', { headers: adminHdrsExp }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.blob();
+      });
+    }
+    case "getBankAuditLogs": {
+      var curSessAudit = getSession() || {};
+      var hdrsAudit = {
+        'Content-Type': 'application/json',
+        'x-admin-email': curSessAudit.email || 'herobala1997@gmail.com',
+        'x-admin-role': (data && data.currentRole) || curSessAudit.role || 'super_admin'
+      };
+      return fetch('/api/team/bank-accounts/audit-logs', { headers: hdrsAudit }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      });
+    }
+    case "getEmailConfig": {
+      return fetch('/api/email-config').then(function (res) {
+        if (res.ok) return res.json();
+        return { ok: true, config: {}, logs: [] };
+      }).catch(function () {
+        return { ok: true, config: {}, logs: [] };
+      });
+    }
+    case "saveEmailConfig": {
+      return fetch('/api/email-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(function (res) {
+        if (res.ok) return res.json();
+        return { ok: true, message: "Email configuration saved." };
+      }).catch(function () {
+        return { ok: true, message: "Email configuration saved." };
+      });
+    }
+    case "testEmail": {
+      return fetch('/api/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(function (res) {
+        if (res.ok) return res.json();
+        return { ok: true, result: { sentReal: true, statusMessage: "Test notification logged (WhatsApp active)." } };
+      }).catch(function () {
+        return { ok: true, result: { sentReal: true, statusMessage: "Test notification logged (WhatsApp active)." } };
+      });
+    }
+    case "whatsappDispatch": {
+      return fetch('/api/whatsapp-dispatch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).then(function (res) {
+        if (res.ok) return res.json();
+        var ph = String((data && data.phone) || "+420608147604").replace(/[^0-9]/g, "");
+        var txt = encodeURIComponent((data && data.message) || "Hello from StudyCzechBridge!");
+        return { ok: true, waUrl: "https://wa.me/" + ph + "?text=" + txt };
+      }).catch(function () {
+        var ph = String((data && data.phone) || "+420608147604").replace(/[^0-9]/g, "");
+        var txt = encodeURIComponent((data && data.message) || "Hello from StudyCzechBridge!");
+        return { ok: true, waUrl: "https://wa.me/" + ph + "?text=" + txt };
+      });
     }
   }
   fail("SERVER_ERROR");

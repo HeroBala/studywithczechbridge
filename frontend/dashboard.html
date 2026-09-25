@@ -36,6 +36,7 @@
           <select id="dash-country-select" style="padding: 0.65rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.92rem; border: 1px solid rgba(255,255,255,0.3); background: #1e293b; color: #ffffff; cursor: pointer; min-width: 260px;">
             <option value="Czech Republic">🇨🇿 Czech Republic (Higher Education, Nostrification & Degree)</option>
             <option value="Germany">🇩🇪 Germany (Uni-Assist / VPD / Blocked Account €11,904)</option>
+            <option value="Denmark">🇩🇰 Denmark (Optagelse.dk / SIRI ST1 Residence Permit / CPR)</option>
             <option value="Austria">🇦🇹 Austria (Study Permit / OeAD Dormitories / Vienna)</option>
             <option value="Italy">🇮🇹 Italy (Universitaly / CIMEA / Permesso di Soggiorno)</option>
             <option value="United Kingdom">🇬🇧 United Kingdom (Study Visa / CAS / BRP / eVisa)</option>
@@ -374,6 +375,135 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- User / Team Member Bank Details Form & Vault -->
+    <div class="panel" id="user-bank-vault-panel" style="border: 1px solid var(--line); border-radius: 12px; padding: 1.5rem; background: var(--surface);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--line); padding-bottom: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 1.4rem;">🏦</span>
+            <h2 style="margin: 0; color: var(--blue-900);">My Official Bank Details (Payouts &amp; Refunds)</h2>
+          </div>
+          <p class="muted" style="margin: 0.25rem 0 0 0; font-size: 0.88rem;">
+            Keep your official bank details on record for university fee refunds, commission disbursements, scholarship payouts, and secure transactions. Stored with AES-256 military-grade encryption.
+          </p>
+        </div>
+        <div id="user-bank-status-badge" style="display: none;">
+          <span class="badge st-pending" id="user-bank-badge-text" style="font-size: 0.85rem; padding: 0.35rem 0.8rem; font-weight: 700;">🟡 Under Verification</span>
+        </div>
+      </div>
+
+      <!-- Current Saved Bank Summary Card (Shown when details exist) -->
+      <div id="user-bank-summary-card" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #64748b; letter-spacing: 0.5px;">Registered Bank Account</div>
+            <h3 id="ub-summary-bank-name" style="margin: 0.2rem 0; color: #1e293b; font-size: 1.15rem;">—</h3>
+            <div id="ub-summary-beneficiary" style="font-size: 0.9rem; color: #475569; font-weight: 600;">—</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-bank-edit" style="font-weight: 700;">
+            ✏️ Edit Bank Details
+          </button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; font-size: 0.85rem;">
+          <div><span style="color: #64748b;">Masked IBAN:</span> <strong id="ub-summary-iban" style="font-family: monospace; color: #0f172a;">—</strong></div>
+          <div><span style="color: #64748b;">Account Number:</span> <strong id="ub-summary-acc-num" style="font-family: monospace; color: #0f172a;">—</strong></div>
+          <div><span style="color: #64748b;">SWIFT / BIC:</span> <strong id="ub-summary-swift" style="font-family: monospace; color: #0f172a;">—</strong></div>
+          <div><span style="color: #64748b;">Currency:</span> <strong id="ub-summary-currency" style="color: #0f172a;">—</strong></div>
+          <div><span style="color: #64748b;">Country:</span> <strong id="ub-summary-country" style="color: #0f172a;">—</strong></div>
+          <div><span style="color: #64748b;">Last Updated:</span> <strong id="ub-summary-updated" style="color: #0f172a;">—</strong></div>
+        </div>
+      </div>
+
+      <!-- Bank Details Input / Edit Form -->
+      <form id="user-bank-form" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem;">
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #1e40af; display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.2rem;">🔒</span>
+          <span><strong>Bank-Grade Encryption:</strong> Your IBAN, Account Number, and Swift code are encrypted using AES-256-GCM. Never enter PIN numbers, passwords, or ATM card CVVs.</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div class="field">
+            <label for="ub-beneficiary" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">Account Holder / Beneficiary Name *</label>
+            <input type="text" id="ub-beneficiary" required placeholder="Full legal name as on bank statement" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;">
+          </div>
+          
+          <div class="field">
+            <label for="ub-bank-name" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">Bank Name *</label>
+            <input type="text" id="ub-bank-name" required placeholder="e.g. Fio banka, Česká spořitelna, Danske Bank, HSBC" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;">
+          </div>
+
+          <div class="field">
+            <label for="ub-country" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">Bank Country *</label>
+            <select id="ub-country" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;" required>
+              <option value="Czech Republic">🇨🇿 Czech Republic</option>
+              <option value="Denmark">🇩🇰 Denmark</option>
+              <option value="Germany">🇩🇪 Germany</option>
+              <option value="Poland">🇵🇱 Poland</option>
+              <option value="Austria">🇦🇹 Austria</option>
+              <option value="Bangladesh">🇧🇩 Bangladesh</option>
+              <option value="India">🇮🇳 India</option>
+              <option value="Pakistan">🇵🇰 Pakistan</option>
+              <option value="United Kingdom">🇬🇧 United Kingdom</option>
+              <option value="United States">🇺🇸 United States</option>
+              <option value="Other">🌍 Other International</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="ub-currency" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">Account Currency *</label>
+            <select id="ub-currency" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;" required>
+              <option value="CZK">CZK - Czech Koruna</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="DKK">DKK - Danish Krone</option>
+              <option value="USD">USD - US Dollar</option>
+              <option value="BDT">BDT - Bangladeshi Taka</option>
+              <option value="GBP">GBP - British Pound</option>
+              <option value="PLN">PLN - Polish Zloty</option>
+              <option value="INR">INR - Indian Rupee</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="ub-iban" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">IBAN (International Bank Account Number)</label>
+            <input type="text" id="ub-iban" placeholder="e.g. DK00 0000 0000 0000 00 or CZ23 2010 0000..." style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem; font-family: monospace;">
+          </div>
+
+          <div class="field">
+            <label for="ub-acc-num" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">Local Account Number (if no IBAN)</label>
+            <input type="text" id="ub-acc-num" placeholder="e.g. 152.120.4859" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem; font-family: monospace;">
+          </div>
+
+          <div class="field">
+            <label for="ub-swift" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">SWIFT / BIC Code *</label>
+            <input type="text" id="ub-swift" required placeholder="e.g. FIOBCZPPXXX or DABADKKK" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem; font-family: monospace; text-transform: uppercase;">
+          </div>
+
+          <div class="field">
+            <label for="ub-account-type" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">Account Purpose / Type *</label>
+            <select id="ub-account-type" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;" required>
+              <option value="Personal Student / Refund Account">🎓 Personal Student / Refund Account</option>
+              <option value="Team Member / Counselor Commission Account">💼 Team Member / Counselor Commission Account</option>
+              <option value="Partner / Institutional Account">🏛️ Partner / Institutional Account</option>
+              <option value="Emergency Payout Account">🚨 Emergency Payout Account</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field" style="margin-bottom: 1rem;">
+          <label for="ub-notes" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.3rem; display: block;">Routing, Branch Name, or Payout Instructions (Optional)</label>
+          <input type="text" id="ub-notes" placeholder="e.g. Reg. Nr: 3001, Account: 0001234567, or Branch Code 042" style="width: 100%; padding: 0.55rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.9rem;">
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div id="user-bank-msg" style="font-size: 0.85rem; font-weight: 700;"></div>
+          <button type="submit" id="btn-save-user-bank" class="btn btn-primary" style="font-weight: 700; padding: 0.6rem 1.4rem; background: #059669; border-color: #047857;">
+            🔒 Save Bank Details Securely
+          </button>
+        </div>
+      </form>
     </div>
 
     <!-- Documents -->

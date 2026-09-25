@@ -1,0 +1,67 @@
+[
+  {
+    "id": "log-0e369ln-1789041280633",
+    "timestamp": "2026-09-10T11:54:40.633Z",
+    "action": "EXPORT_ALL_BANK_RECORDS",
+    "targetMember": "Team Member",
+    "actorEmail": "admin@studywithczechbridge.com",
+    "actorRole": "super_admin",
+    "details": "Exported 2 user & team member bank records to CSV.",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": "log-tkqxas9-1789041280607",
+    "timestamp": "2026-09-10T11:54:40.607Z",
+    "action": "USER_CREATE_BANK_RECORD",
+    "targetAccountId": "bnk-1789041280604-557",
+    "targetMember": "Alex Jensen",
+    "actorEmail": "teststudent@example.com",
+    "actorRole": "student",
+    "details": "Alex Jensen (student) saved wire transfer details (Danske Bank, Denmark, DKK).",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": "log-8gntdg4-1789040546790",
+    "timestamp": "2026-09-10T11:42:26.790Z",
+    "action": "SYSTEM_SEED",
+    "targetAccountId": "bnk-1789040546786-1",
+    "targetMember": "Joya Sarkar",
+    "actorEmail": "system@studywithczechbridge.com",
+    "actorRole": "system",
+    "details": "Initial verified Czech operating bank account seeded with AES-256-GCM encryption.",
+    "ip": "internal-app"
+  },
+  {
+    "id": "log-pytgh1s-1788931553963",
+    "timestamp": "2026-09-09T05:25:53.963Z",
+    "action": "REVEAL_BANK_DETAILS",
+    "targetAccountId": "bnk-1788931320121-1",
+    "targetMember": "Joya Sarkar",
+    "actorEmail": "admin@studywithczechbridge.com",
+    "actorRole": "super_admin",
+    "details": "Unmasked full IBAN and SWIFT for payout processing. Purpose: \"Payroll verification test\".",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": "log-krwgqdr-1788931325346",
+    "timestamp": "2026-09-09T05:22:05.346Z",
+    "action": "REVEAL_BANK_DETAILS",
+    "targetAccountId": "bnk-1788931320121-1",
+    "targetMember": "Joya Sarkar",
+    "actorEmail": "admin@studywithczechbridge.com",
+    "actorRole": "super_admin",
+    "details": "Unmasked full IBAN and SWIFT for payout processing. Purpose: \"Quarterly Counselor Commission Audit\".",
+    "ip": "127.0.0.1"
+  },
+  {
+    "id": "log-dq7joci-1788931320123",
+    "timestamp": "2026-09-09T05:22:00.123Z",
+    "action": "SYSTEM_SEED",
+    "targetAccountId": "bnk-1788931320121-1",
+    "targetMember": "Joya Sarkar",
+    "actorEmail": "system@studywithczechbridge.com",
+    "actorRole": "system",
+    "details": "Initial verified Czech operating bank account seeded with AES-256-GCM encryption.",
+    "ip": "internal-app"
+  }
+]

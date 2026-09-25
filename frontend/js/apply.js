@@ -26,7 +26,25 @@
 
     api("getMyApplication").then(function (res) {
       var a = res.application;
-      if (!a) return;
+      if (!a) {
+        // Read URL query parameters for target country and program
+        var params = new URLSearchParams(window.location.search);
+        var urlCountry = params.get("country") || params.get("track");
+        var urlProg = params.get("program");
+        if (urlCountry && el("targetCountry")) {
+          var sel = el("targetCountry");
+          for (var i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].value.toLowerCase().indexOf(urlCountry.toLowerCase()) !== -1) {
+              sel.selectedIndex = i;
+              break;
+            }
+          }
+        }
+        if (urlProg && el("program")) {
+          el("program").value = urlProg;
+        }
+        return;
+      }
       FIELDS.forEach(function (f) {
         if (a[f] != null && a[f] !== "") el(f).value = a[f];
       });

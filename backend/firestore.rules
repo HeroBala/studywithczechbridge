@@ -211,6 +211,45 @@ service cloud.firestore {
     }
 
     // ------------------------------------------------------------
+    // Team Members Bank Accounts (Secure Financial Vault)
+    // Only Super Admin, Admin, and Finance Manager can access
+    // ------------------------------------------------------------
+    match /bank_accounts/{accountId} {
+      allow read, write: if isSuperAdmin() || isAdmin() || (signedIn() && (
+        getUserRole() == 'finance_manager' || 
+        getUserRole() == 'finance' ||
+        (request.auth.token.keys().hasAny(['role']) && (
+          request.auth.token.role == 'finance_manager' ||
+          request.auth.token.role == 'finance'
+        ))
+      ));
+    }
+
+    // ------------------------------------------------------------
+    // Team Bank Accounts Audit Logs (Immutable Security Audit Trail)
+    // Readable only by authorized financial roles, append-only, NO update or delete
+    // ------------------------------------------------------------
+    match /bank_audit_logs/{logId} {
+      allow read: if isSuperAdmin() || isAdmin() || (signedIn() && (
+        getUserRole() == 'finance_manager' || 
+        getUserRole() == 'finance' ||
+        (request.auth.token.keys().hasAny(['role']) && (
+          request.auth.token.role == 'finance_manager' ||
+          request.auth.token.role == 'finance'
+        ))
+      ));
+      allow create: if isSuperAdmin() || isAdmin() || (signedIn() && (
+        getUserRole() == 'finance_manager' || 
+        getUserRole() == 'finance' ||
+        (request.auth.token.keys().hasAny(['role']) && (
+          request.auth.token.role == 'finance_manager' ||
+          request.auth.token.role == 'finance'
+        ))
+      ));
+      allow update, delete: if false;
+    }
+
+    // ------------------------------------------------------------
     // Fallback rule for any other collection
     // ------------------------------------------------------------
     match /{document=**} {

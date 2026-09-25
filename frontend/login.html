@@ -28,6 +28,15 @@
         </div>
         <button type="submit" class="btn btn-primary btn-block" id="l-submit">Log In</button>
       </form>
+      <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px dashed var(--line);">
+        <p style="font-size: 0.8rem; font-weight: 700; color: var(--navy-800); margin-bottom: 0.5rem; text-align: center;">⚡ Quick Demo Login:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="quickLogin('herobala1997@gmail.com', 'admin123')" style="font-size: 0.76rem; padding: 0.4rem 0.6rem; text-align: left;">👑 Super Admin<br><small style="color:var(--muted)">herobala1997@gmail.com</small></button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="quickLogin('admin@studywithczechbridge.com', 'admin123')" style="font-size: 0.76rem; padding: 0.4rem 0.6rem; text-align: left;">🛡️ Admin<br><small style="color:var(--muted)">admin@studywith...</small></button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="quickLogin('agent@test.com', 'admin123')" style="font-size: 0.76rem; padding: 0.4rem 0.6rem; text-align: left;">💼 Counselor / Agent<br><small style="color:var(--muted)">agent@test.com</small></button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="quickLogin('rahim@demo.com', 'demo123')" style="font-size: 0.76rem; padding: 0.4rem 0.6rem; text-align: left;">🎓 Student<br><small style="color:var(--muted)">rahim@demo.com</small></button>
+        </div>
+      </div>
       <p class="center mt-2 muted">New here? <a href="register.html"><strong>Create a free account</strong></a></p>
       <p class="center muted" style="font-size:.8rem;">Forgot your password? Email
         <a href="mailto:support@studywithczechbridge.com">support@studywithczechbridge.com</a></p>
@@ -48,10 +57,16 @@
 (function () {
   var s = getSession();
   if (s && s.token) {
-    var isStaff = s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent";
+    var isStaff = (typeof isStaffRole === "function" && isStaffRole(s.role)) || s.role === "admin" || s.role === "super_admin" || s.role === "staff" || s.role === "agent" || (typeof isKnownAdminEmail === "function" && isKnownAdminEmail(s.email));
     location.href = isStaff ? "admin.html" : "dashboard.html";
   }
 })();
+
+function quickLogin(email, pass) {
+  document.getElementById("l-email").value = email;
+  document.getElementById("l-pass").value = pass;
+  document.getElementById("login-form").dispatchEvent(new Event("submit", { cancelable: true }));
+}
 
 document.getElementById("login-form").addEventListener("submit", function (ev) {
   ev.preventDefault();

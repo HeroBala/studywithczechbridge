@@ -85,6 +85,7 @@
     loadDocuments();
     loadTasks();
     wireUpload();
+    initUserBankSection();
   });
 
   function fmtDate(iso) {
@@ -820,6 +821,182 @@
         URL.revokeObjectURL(url);
       };
     }
+  }
+
+  /* ---------- User / Team Member Bank Details Vault ---------- */
+  function initUserBankSection() {
+    var form = document.getElementById("user-bank-form");
+    var summaryCard = document.getElementById("user-bank-summary-card");
+    var toggleBtn = document.getElementById("btn-toggle-bank-edit");
+    var msgEl = document.getElementById("user-bank-msg");
+    var statusBadgeWrap = document.getElementById("user-bank-status-badge");
+    var badgeText = document.getElementById("user-bank-badge-text");
+
+    if (!form) return;
+
+    function renderSavedBankSummary(bank) {
+      if (!bank || !bank.bankName) {
+        if (summaryCard) summaryCard.style.display = "none";
+        if (form) form.style.display = "block";
+        if (statusBadgeWrap) statusBadgeWrap.style.display = "none";
+        return;
+      }
+
+      if (summaryCard) summaryCard.style.display = "block";
+      if (form) form.style.display = "none";
+
+      var elBankName = document.getElementById("ub-summary-bank-name");
+      if (elBankName) elBankName.textContent = bank.bankName;
+
+      var elBeneficiary = document.getElementById("ub-summary-beneficiary");
+      if (elBeneficiary) elBeneficiary.textContent = "Beneficiary: " + (bank.beneficiaryName || "—");
+
+      var elIban = document.getElementById("ub-summary-iban");
+      if (elIban) elIban.textContent = bank.maskedIban || bank.iban || "—";
+
+      var elAccNum = document.getElementById("ub-summary-acc-num");
+      if (elAccNum) elAccNum.textContent = bank.maskedAccountNumber || bank.accountNumber || "—";
+
+      var elSwift = document.getElementById("ub-summary-swift");
+      if (elSwift) elSwift.textContent = bank.swiftBic || "—";
+
+      var elCurrency = document.getElementById("ub-summary-currency");
+      if (elCurrency) elCurrency.textContent = bank.currency || "EUR";
+
+      var elCountry = document.getElementById("ub-summary-country");
+      if (elCountry) elCountry.textContent = bank.bankCountry || "—";
+
+      var elUpdated = document.getElementById("ub-summary-updated");
+      if (elUpdated) elUpdated.textContent = fmtDate(bank.updatedAt || bank.createdAt);
+
+      if (statusBadgeWrap && badgeText) {
+        statusBadgeWrap.style.display = "block";
+        if (bank.status === "verified") {
+          badgeText.className = "badge st-approved";
+          badgeText.innerHTML = "🟢 Verified for Direct Payouts";
+        } else if (bank.status === "deactivated") {
+          badgeText.className = "badge st-dropped";
+          badgeText.innerHTML = "⛔ Deactivated";
+        } else {
+          badgeText.className = "badge st-pending";
+          badgeText.innerHTML = "🟡 Under Verification";
+        }
+      }
+
+      // Prepopulate form fields for editing
+      var bName = document.getElementById("ub-bank-name");
+      if (bName) bName.value = bank.bankName || "";
+      var bBen = document.getElementById("ub-beneficiary");
+      if (bBen) bBen.value = bank.beneficiaryName || "";
+      var bCtry = document.getElementById("ub-country");
+      if (bCtry) bCtry.value = bank.bankCountry || "Czech Republic";
+      var bCurr = document.getElementById("ub-currency");
+      if (bCurr) bCurr.value = bank.currency || "CZK";
+      var bIban = document.getElementById("ub-iban");
+      if (bIban && bank.maskedIban) bIban.placeholder = "Current: " + bank.maskedIban + " (re-enter to update)";
+      var bSwift = document.getElementById("ub-swift");
+      if (bSwift) bSwift.value = bank.swiftBic || "";
+      var bType = document.getElementById("ub-account-type");
+      if (bType) bType.value = bank.accountType || "Personal Student / Refund Account";
+      var bNotes = document.getElementById("ub-notes");
+      if (bNotes) bNotes.value = bank.notes || "";
+    }
+
+    if (toggleBtn) {
+      toggleBtn.onclick = function () {
+        if (form.style.display === "none") {
+          form.style.display = "block";
+          toggleBtn.textContent = "✕ Close Form";
+        } else {
+          form.style.display = "none";
+          toggleBtn.textContent = "✏️ Edit Bank Details";
+        }
+      };
+    }
+
+    // Fetch existing user bank details
+    api("getUserBankAccount", { userId: sess.uid || sess.id, userEmail: sess.email }).then(function (res) {
+      if (res && res.account) {
+        renderSavedBankSummary(res.account);
+      }
+    }).catch(function (err) {
+      console.warn("Could not load user bank account:", err);
+    });
+
+    // Handle form submit
+    form.onsubmit = function (e) {
+      e.preventDefault();
+      var btn = document.getElementById("btn-save-user-bank");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Encrypting & Storing...";
+      }
+      if (msgEl) {
+        msgEl.style.color = "var(--text)";
+        msgEl.textContent = "Encrypting bank payload with AES-256...";
+      }
+
+      var payload = {
+        userId: sess.uid || sess.id,
+        userEmail: sess.email,
+        userName: sess.fullName || sess.email,
+        userRole: sess.role || "student",
+        beneficiaryName: document.getElementById("ub-beneficiary").value.trim(),
+        bankName: document.getElementById("ub-bank-name").value.trim(),
+        bankCountry: document.getElementById("ub-country").value,
+        currency: document.getElementById("ub-currency").value,
+        iban: document.getElementById("ub-iban").value.trim(),
+        accountNumber: document.getElementById("ub-acc-num").value.trim(),
+        swiftBic: document.getElementById("ub-swift").value.trim().toUpperCase(),
+        accountType: document.getElementById("ub-account-type").value,
+        notes: document.getElementById("ub-notes").value.trim()
+      };
+
+      if (!payload.iban && !payload.accountNumber) {
+        if (msgEl) {
+          msgEl.style.color = "#dc2626";
+          msgEl.textContent = "Please provide either an IBAN or a local account number.";
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "🔒 Save Bank Details Securely";
+        }
+        return;
+      }
+
+      api("saveUserBankAccount", payload).then(function (res) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "🔒 Save Bank Details Securely";
+        }
+        if (res && res.ok) {
+          if (msgEl) {
+            msgEl.style.color = "#15803d";
+            msgEl.textContent = "✓ Bank details securely encrypted and recorded.";
+          }
+          if (res.account) {
+            renderSavedBankSummary(res.account);
+          }
+          if (toggleBtn) {
+            toggleBtn.textContent = "✏️ Edit Bank Details";
+          }
+        } else {
+          if (msgEl) {
+            msgEl.style.color = "#dc2626";
+            msgEl.textContent = "Failed to save: " + (res && res.error ? res.error : "Unknown error");
+          }
+        }
+      }).catch(function (err) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "🔒 Save Bank Details Securely";
+        }
+        if (msgEl) {
+          msgEl.style.color = "#dc2626";
+          msgEl.textContent = "Server error: " + err.message;
+        }
+      });
+    };
   }
 
   function escapeHtml(s) {

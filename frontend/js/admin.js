@@ -93,7 +93,7 @@
       label: "👑 Super Admin",
       badgeClass: "badge-role super_admin",
       defaultTab: "applications",
-      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "bankaccounts", "email", "extract", "messages", "ops"],
       statLabels: ["Students", "Applications", "Documents", "Messages"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -113,7 +113,7 @@
       label: "🛡️ Admin",
       badgeClass: "badge-role admin",
       defaultTab: "applications",
-      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "bankaccounts", "email", "extract", "messages", "ops"],
       statLabels: ["Students", "Applications", "Documents", "Messages"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -132,7 +132,7 @@
       label: "🧭 Education Counselor",
       badgeClass: "badge-role agent",
       defaultTab: "counselor",
-      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "bankaccounts", "email", "extract", "messages", "ops"],
       statLabels: ["Assigned Students", "Active Apps", "Pending Tasks", "Messages"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -151,7 +151,7 @@
       label: "🎓 Admission Officer",
       badgeClass: "badge-role admission_officer",
       defaultTab: "applications",
-      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "bankaccounts", "email", "extract", "messages", "ops"],
       statLabels: ["Total Applications", "Pending Review", "Legalization Apps", "Offer Letters Issued"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -170,7 +170,7 @@
       label: "💳 Finance Manager",
       badgeClass: "badge-role finance_manager",
       defaultTab: "ops",
-      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "email", "extract", "messages", "ops"],
+      allowedTabs: ["seminar", "unidb", "testimonials", "applications", "counselor", "journey", "taskboard", "packages", "superdocs", "users", "bankaccounts", "email", "extract", "messages", "ops"],
       statLabels: ["Package Revenue (€)", "Tuition Deposits (€)", "Active Packages", "Advisor Commissions (€)"],
       bannerHtml: '<div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 1.25rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: var(--shadow-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">' +
         '<div>' +
@@ -706,6 +706,8 @@
     if (rawName === "consultant" || rawName === "consultants" || rawName === "counselors") rawName = "counselor";
     if (rawName === "programs" || rawName === "program" || rawName === "universities") rawName = "unidb";
     if (rawName === "finance" || rawName === "financial" || rawName === "billing") rawName = "ops";
+    if (rawName === "team" || rawName === "teams" || rawName === "user" || rawName === "myteam" || rawName === "team-users" || rawName === "team_users" || rawName === "teamusers" || rawName === "roster" || rawName === "members") rawName = "users";
+    if (rawName === "bank" || rawName === "banks" || rawName === "bankaccount" || rawName === "bank-account" || rawName === "bank-accounts" || rawName === "payouts" || rawName === "payout") rawName = "bankaccounts";
 
     activeTab = rawName;
     
@@ -754,6 +756,8 @@
       initTestimonialsTab();
     } else if (rawName === "seminar" || rawName === "seminars" || rawName === "gstu") {
       initSeminarTab();
+    } else if (rawName === "bankaccounts" || rawName === "bank-accounts") {
+      initBankAccountsTab();
     }
   }
 
@@ -2142,7 +2146,32 @@
     }
 
     if (!filteredUsers.length) {
-      body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center; padding: 2rem 1rem;">No users found matching filter.</td></tr>';
+      if (!allUsers.length) {
+        body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center; padding: 2.5rem 1rem;">' +
+          '<div style="font-size: 1.1rem; font-weight: 700; color: var(--navy-900); margin-bottom: 0.5rem;">👥 No Users or Team Members Found</div>' +
+          '<p style="color: var(--muted); font-size: 0.88rem; margin-bottom: 1rem;">The users directory is currently unpopulated or initializing.</p>' +
+          '<button class="btn btn-primary btn-sm" id="btn-seed-users-roster" style="margin-right: 0.5rem;">🌱 Populate Default Team &amp; Users</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="openCreateUserModal(null)">➕ Create New User / Staff</button>' +
+        '</td></tr>';
+        var seedBtn = document.getElementById("btn-seed-users-roster");
+        if (seedBtn) {
+          seedBtn.addEventListener("click", function () {
+            seedBtn.disabled = true;
+            seedBtn.textContent = "Populating...";
+            try {
+              var mdb = JSON.parse(localStorage.getItem("cb_mockdb") || "{}");
+              mdb.users = (typeof DEFAULT_USERS !== "undefined") ? DEFAULT_USERS.slice() : [];
+              localStorage.setItem("cb_mockdb", JSON.stringify(mdb));
+            } catch(e) {}
+            loadUsers();
+          });
+        }
+      } else {
+        body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center; padding: 2rem 1rem;">' +
+          'No users found matching current filter. ' +
+          '<button class="btn btn-outline btn-sm" style="margin-left:0.5rem;" onclick="var si=document.getElementById(\'users-search-input\'); if(si) si.value=\'\'; var rf=document.getElementById(\'users-role-filter\'); if(rf) rf.value=\'all\'; renderUsers();">Clear Filters</button>' +
+        '</td></tr>';
+      }
       return;
     }
 
@@ -2304,6 +2333,24 @@
         openCreateUserModal(u);
       });
 
+      var bankUserBtn = document.createElement("button");
+      bankUserBtn.className = "btn btn-outline btn-sm";
+      bankUserBtn.textContent = "🏦 Bank";
+      bankUserBtn.title = "View or setup bank payout account";
+      bankUserBtn.style.padding = "0.2rem 0.45rem";
+      bankUserBtn.style.fontSize = "0.75rem";
+      bankUserBtn.style.marginLeft = "0.3rem";
+      bankUserBtn.style.borderColor = "#059669";
+      bankUserBtn.style.color = "#065f46";
+      bankUserBtn.addEventListener("click", function () {
+        switchTab("bankaccounts");
+        setTimeout(function() {
+          if (typeof openBankAccountModal === "function") {
+            openBankAccountModal(null, u);
+          }
+        }, 150);
+      });
+
       var deleteUserBtn = document.createElement("button");
       deleteUserBtn.className = "btn btn-outline btn-sm";
       deleteUserBtn.textContent = "🗑️";
@@ -2332,6 +2379,7 @@
         actionsTd.appendChild(saveRoleBtn);
         actionsTd.appendChild(assignTaskBtn);
         actionsTd.appendChild(editUserBtn);
+        actionsTd.appendChild(bankUserBtn);
         actionsTd.appendChild(deleteUserBtn);
       } else {
         var roleBadge = document.createElement("span");
@@ -2341,6 +2389,7 @@
         actionsTd.appendChild(roleBadge);
         actionsTd.appendChild(assignTaskBtn);
         actionsTd.appendChild(editUserBtn);
+        actionsTd.appendChild(bankUserBtn);
       }
 
       tr.appendChild(nameTd);
@@ -4503,6 +4552,7 @@
   function getCountryFlag(countryName) {
     if (!countryName) return "🌍";
     var c = countryName.toLowerCase();
+    if (c.indexOf("china") !== -1 || c.indexOf("chinese") !== -1 || c.indexOf("prc") !== -1) return "🇨🇳";
     if (c.indexOf("czech") !== -1) return "🇨🇿";
     if (c.indexOf("germany") !== -1) return "🇩🇪";
     if (c.indexOf("poland") !== -1) return "🇵🇱";
@@ -5088,6 +5138,839 @@
 
     triggerDownload(csvData, "GSTU-Special-Seminar-Registrations-FreeDrinks", "csv");
   }
+
+  /* ============================================================
+     12. Team Bank Accounts Management (Encrypted Financial Vault)
+     ============================================================ */
+  var allBankAccounts = [];
+  var allBankAuditLogs = [];
+  var bankAccountsInitialized = false;
+
+  function initBankAccountsTab() {
+    if (!bankAccountsInitialized) {
+      bankAccountsInitialized = true;
+      bindBankAccountEvents();
+    }
+    populateBankMemberDropdown();
+    loadBankAccounts();
+  }
+
+  function bindBankAccountEvents() {
+    var searchInput = document.getElementById("bank-search-input");
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        renderBankAccounts();
+      });
+    }
+
+    var roleFilter = document.getElementById("bank-role-filter");
+    if (roleFilter) {
+      roleFilter.addEventListener("change", function () {
+        renderBankAccounts();
+      });
+    }
+
+    var statusFilter = document.getElementById("bank-status-filter");
+    if (statusFilter) {
+      statusFilter.addEventListener("change", function () {
+        renderBankAccounts();
+      });
+    }
+
+    var currencyFilter = document.getElementById("bank-currency-filter");
+    if (currencyFilter) {
+      currencyFilter.addEventListener("change", function () {
+        renderBankAccounts();
+      });
+    }
+
+    var exportCsvBtn = document.getElementById("btn-bank-export-csv");
+    if (exportCsvBtn) {
+      exportCsvBtn.addEventListener("click", function () {
+        exportBankDatabaseCsv();
+      });
+    }
+
+    var refreshBtn = document.getElementById("btn-bank-refresh");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", function () {
+        loadBankAccounts(true);
+      });
+    }
+
+    var addBtn = document.getElementById("btn-add-bank-account");
+    if (addBtn) {
+      addBtn.addEventListener("click", function () {
+        openBankAccountModal();
+      });
+    }
+
+    var auditBtn = document.getElementById("btn-bank-audit-logs");
+    if (auditBtn) {
+      auditBtn.addEventListener("click", function () {
+        openAuditLogsModal();
+      });
+    }
+
+    var closeBankModalBtn = document.getElementById("btn-close-bank-modal");
+    if (closeBankModalBtn) {
+      closeBankModalBtn.addEventListener("click", closeBankAccountModal);
+    }
+    var cancelBankModalBtn = document.getElementById("btn-cancel-bank-modal");
+    if (cancelBankModalBtn) {
+      cancelBankModalBtn.addEventListener("click", closeBankAccountModal);
+    }
+
+    var formBank = document.getElementById("form-bank-account");
+    if (formBank) {
+      formBank.addEventListener("submit", saveBankAccount);
+    }
+
+    var memberSelect = document.getElementById("bank-member-select");
+    if (memberSelect) {
+      memberSelect.addEventListener("change", function () {
+        var uid = this.value;
+        if (!uid) return;
+        var found = (allUsers || []).find(function (u) { return u.id === uid; });
+        if (found) {
+          document.getElementById("bank-user-id").value = found.id || "";
+          document.getElementById("bank-member-name").value = found.fullName || found.email || "";
+          document.getElementById("bank-member-email").value = found.email || "";
+          if (found.role) {
+            var roleEl = document.getElementById("bank-member-role");
+            if (roleEl) roleEl.value = found.role;
+          }
+          var benEl = document.getElementById("bank-beneficiary-name");
+          if (benEl && !benEl.value) {
+            benEl.value = found.fullName || "";
+          }
+        }
+      });
+    }
+
+    // Live IBAN formatting & check
+    var ibanInput = document.getElementById("bank-iban");
+    var ibanFeedback = document.getElementById("bank-iban-feedback");
+    if (ibanInput) {
+      ibanInput.addEventListener("input", function () {
+        var val = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+        this.value = val;
+        if (ibanFeedback) {
+          if (!val) {
+            ibanFeedback.textContent = "";
+          } else if (val.length < 15 || val.length > 34) {
+            ibanFeedback.textContent = "Length: " + val.length + " chars (IBANs are 15-34 chars)";
+            ibanFeedback.style.color = "#d97706";
+          } else {
+            ibanFeedback.textContent = "✓ Format looks valid (" + val.substring(0, 2) + ")";
+            ibanFeedback.style.color = "#16a34a";
+          }
+        }
+      });
+    }
+
+    // Reveal modal close
+    var closeRevealBtn = document.getElementById("btn-close-reveal-modal");
+    if (closeRevealBtn) closeRevealBtn.addEventListener("click", closeRevealModal);
+    var doneRevealBtn = document.getElementById("btn-done-reveal-modal");
+    if (doneRevealBtn) doneRevealBtn.addEventListener("click", closeRevealModal);
+
+    // Reveal copy buttons
+    var copyIbanBtn = document.getElementById("btn-copy-iban");
+    if (copyIbanBtn) {
+      copyIbanBtn.addEventListener("click", function () {
+        var ibanText = document.getElementById("reveal-iban").textContent.trim();
+        if (ibanText && ibanText !== "-") {
+          navigator.clipboard.writeText(ibanText).then(function () {
+            copyIbanBtn.textContent = "✓ Copied!";
+            setTimeout(function () { copyIbanBtn.textContent = "📋 Copy IBAN"; }, 2000);
+          });
+        }
+      });
+    }
+
+    var copySwiftBtn = document.getElementById("btn-copy-swift");
+    if (copySwiftBtn) {
+      copySwiftBtn.addEventListener("click", function () {
+        var swiftText = document.getElementById("reveal-swift-bic").textContent.trim();
+        if (swiftText && swiftText !== "-") {
+          navigator.clipboard.writeText(swiftText).then(function () {
+            copySwiftBtn.textContent = "✓ Copied!";
+            setTimeout(function () { copySwiftBtn.textContent = "📋 Copy"; }, 2000);
+          });
+        }
+      });
+    }
+
+    // Audit logs modal
+    var closeAuditBtn = document.getElementById("btn-close-audit-modal");
+    if (closeAuditBtn) closeAuditBtn.addEventListener("click", closeAuditLogsModal);
+    var doneAuditBtn = document.getElementById("btn-done-audit-modal");
+    if (doneAuditBtn) doneAuditBtn.addEventListener("click", closeAuditLogsModal);
+    var refreshAuditBtn = document.getElementById("btn-audit-refresh");
+    if (refreshAuditBtn) refreshAuditBtn.addEventListener("click", loadAuditLogs);
+    var searchAuditInput = document.getElementById("audit-search-input");
+    if (searchAuditInput) {
+      searchAuditInput.addEventListener("input", function () {
+        renderAuditLogs();
+      });
+    }
+  }
+
+  function populateBankMemberDropdown() {
+    var select = document.getElementById("bank-member-select");
+    if (!select) return;
+
+    var currentVal = select.value;
+    select.innerHTML = '<option value="">-- Choose Team Member from Directory --</option>';
+
+    if (!allUsers || !allUsers.length) {
+      api("adminListUsers").then(function (res) {
+        if (res && res.users) {
+          allUsers = res.users;
+          populateBankMemberDropdown();
+        }
+      }).catch(function () {});
+      return;
+    }
+
+    // Allow all users, staff, counselors, and applicants
+    var teamMembers = (allUsers || []).slice().sort(function (a, b) {
+      return (a.fullName || a.email || "").localeCompare(b.fullName || b.email || "");
+    });
+
+    teamMembers.forEach(function (u) {
+      var opt = document.createElement("option");
+      opt.value = u.id;
+      opt.textContent = (u.fullName || u.email) + " (" + (u.role || "student/user") + " • " + u.email + ")";
+      if (currentVal && currentVal === u.id) opt.selected = true;
+      select.appendChild(opt);
+    });
+  }
+
+  function loadBankAccounts(notify) {
+    var body = document.getElementById("bank-body");
+    if (body) {
+      body.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center; padding: 2rem 1rem;">Loading secure bank accounts from vault...</td></tr>';
+    }
+
+    api("getTeamBankAccounts", { currentRole: currentActiveRole }).then(function (res) {
+      allBankAccounts = (res && res.accounts) ? res.accounts : [];
+      renderBankAccounts();
+      updateBankMetrics();
+      if (notify && typeof showToast === "function") {
+        showToast("Bank accounts reloaded successfully.", "info");
+      }
+    }).catch(function (err) {
+      console.error("Load bank accounts error:", err);
+      if (body) {
+        body.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#dc2626; padding: 2rem 1rem;">Could not load bank accounts: ' + esc(err.message) + '</td></tr>';
+      }
+    });
+  }
+
+  function updateBankMetrics() {
+    var total = allBankAccounts.length;
+    var verified = allBankAccounts.filter(function (a) { return a.status === "verified"; }).length;
+    var pending = allBankAccounts.filter(function (a) { return a.status === "pending"; }).length;
+    var deactivated = allBankAccounts.filter(function (a) { return a.status === "deactivated"; }).length;
+
+    var mTotal = document.getElementById("bank-metric-total");
+    if (mTotal) mTotal.textContent = total;
+    var mVer = document.getElementById("bank-metric-verified");
+    if (mVer) mVer.textContent = verified;
+    var mPen = document.getElementById("bank-metric-pending");
+    if (mPen) mPen.textContent = pending;
+    var mDeact = document.getElementById("bank-metric-deactivated");
+    if (mDeact) mDeact.textContent = deactivated;
+  }
+
+  function renderBankAccounts() {
+    var body = document.getElementById("bank-body");
+    if (!body) return;
+
+    var searchVal = (document.getElementById("bank-search-input") ? document.getElementById("bank-search-input").value.trim().toLowerCase() : "");
+    var roleVal = (document.getElementById("bank-role-filter") ? document.getElementById("bank-role-filter").value : "all");
+    var statusVal = (document.getElementById("bank-status-filter") ? document.getElementById("bank-status-filter").value : "all");
+    var currVal = (document.getElementById("bank-currency-filter") ? document.getElementById("bank-currency-filter").value : "all");
+
+    var filtered = allBankAccounts.filter(function (acc) {
+      if (roleVal !== "all") {
+        var r = (acc.userRole || "").toLowerCase();
+        if (roleVal === "student" && r !== "student" && r !== "user" && r !== "applicant") return false;
+        if (roleVal === "counselor" && r.indexOf("counselor") === -1 && r.indexOf("agent") === -1) return false;
+        if (roleVal === "staff" && r.indexOf("staff") === -1 && r.indexOf("admission") === -1 && r.indexOf("finance") === -1) return false;
+        if (roleVal === "admin" && r.indexOf("admin") === -1) return false;
+      }
+      if (statusVal !== "all" && acc.status !== statusVal) return false;
+      if (currVal !== "all" && acc.currency !== currVal) return false;
+      if (searchVal) {
+        var str = ((acc.userName || "") + " " + (acc.userEmail || "") + " " + (acc.bankName || "") + " " + (acc.beneficiaryName || "") + " " + (acc.maskedIban || "")).toLowerCase();
+        if (str.indexOf(searchVal) === -1) return false;
+      }
+      return true;
+    });
+
+    var countBadge = document.getElementById("bank-count-badge");
+    if (countBadge) countBadge.textContent = filtered.length + " / " + allBankAccounts.length;
+
+    if (!filtered.length) {
+      body.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center; padding: 2.5rem 1rem;">No bank accounts found matching criteria. Click <strong>➕ Add Team Bank Account</strong> above to register details.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = "";
+
+    filtered.forEach(function (acc) {
+      var tr = document.createElement("tr");
+      if (acc.status === "deactivated") {
+        tr.style.opacity = "0.75";
+        tr.style.background = "#fef2f2";
+      }
+
+      // Member
+      var tdMember = document.createElement("td");
+      var roleBadge = '<span class="badge" style="font-size:0.72rem; padding:1px 6px; background:#e0e7ff; color:#3730a3; border-radius:4px; margin-left:4px;">' + esc(acc.userRole || "staff") + '</span>';
+      tdMember.innerHTML = '<div style="font-weight:700; color:var(--blue-900);">' + esc(acc.userName || "Unnamed Member") + roleBadge + '</div>' +
+                           '<div style="font-size:0.8rem; color:var(--muted);">' + esc(acc.userEmail || "") + '</div>';
+
+      // Beneficiary & Bank
+      var tdBank = document.createElement("td");
+      tdBank.innerHTML = '<div style="font-weight:600;">' + esc(acc.beneficiaryName || "—") + '</div>' +
+                         '<div style="font-size:0.8rem; color:var(--muted);">' + esc(acc.bankName || "—") + ' (' + esc(acc.bankCountry || "CZ") + ')</div>';
+
+      // Masked IBAN / Account
+      var tdIban = document.createElement("td");
+      var ibanDisplay = acc.maskedIban || "—";
+      var accNumDisplay = acc.maskedAccountNumber ? '<div style="font-size:0.78rem; color:var(--muted);">Acc: ' + esc(acc.maskedAccountNumber) + '</div>' : '';
+      var swiftDisplay = acc.swiftBic ? '<div style="font-size:0.75rem; color:#475569; font-weight:600;">SWIFT: ' + esc(acc.swiftBic) + '</div>' : '';
+      tdIban.innerHTML = '<code style="font-size:0.86rem; font-weight:700; background:#f1f5f9; padding:2px 6px; border-radius:4px; color:#0f172a;">' + esc(ibanDisplay) + '</code>' + accNumDisplay + swiftDisplay;
+
+      // Currency & Purpose
+      var tdCurr = document.createElement("td");
+      tdCurr.innerHTML = '<span class="badge" style="background:#0284c7; color:white; font-size:0.78rem; font-weight:800; padding:2px 7px;">' + esc(acc.currency || "CZK") + '</span>' +
+                         '<div style="font-size:0.78rem; color:var(--muted); margin-top:3px;">' + esc(acc.accountType || "Commission Payout") + '</div>';
+
+      // Status
+      var tdStatus = document.createElement("td");
+      if (acc.status === "verified") {
+        tdStatus.innerHTML = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:800; font-size:0.8rem; padding:3px 8px; border-radius:999px;">🟢 Verified</span>';
+      } else if (acc.status === "deactivated") {
+        tdStatus.innerHTML = '<span class="badge" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-weight:800; font-size:0.8rem; padding:3px 8px; border-radius:999px;">⛔ Deactivated</span>';
+      } else {
+        tdStatus.innerHTML = '<span class="badge" style="background:#fef3c7; color:#b45309; border:1px solid #fcd34d; font-weight:800; font-size:0.8rem; padding:3px 8px; border-radius:999px;">⏳ Pending</span>';
+      }
+
+      // Verification details
+      var tdAudit = document.createElement("td");
+      if (acc.verifiedAt) {
+        tdAudit.innerHTML = '<div style="font-size:0.78rem; color:#15803d; font-weight:600;">Verified by: ' + esc(acc.verifiedBy || "Admin") + '</div>' +
+                            '<div style="font-size:0.72rem; color:var(--muted);">' + formatDate(acc.verifiedAt) + '</div>';
+      } else if (acc.deactivatedAt) {
+        tdAudit.innerHTML = '<div style="font-size:0.78rem; color:#b91c1c; font-weight:600;">Revoked: ' + esc(acc.deactivationReason || "Departed") + '</div>' +
+                            '<div style="font-size:0.72rem; color:var(--muted);">' + formatDate(acc.deactivatedAt) + '</div>';
+      } else {
+        tdAudit.innerHTML = '<span style="font-size:0.78rem; color:var(--muted);">Registered ' + formatDate(acc.createdAt) + '</span>';
+      }
+
+      // Actions
+      var tdActions = document.createElement("td");
+      tdActions.style.textAlign = "right";
+      tdActions.style.whiteSpace = "nowrap";
+
+      // 1. Reveal Details
+      var btnReveal = document.createElement("button");
+      btnReveal.className = "btn btn-outline btn-xs";
+      btnReveal.style.fontSize = "0.75rem";
+      btnReveal.style.padding = "0.25rem 0.5rem";
+      btnReveal.style.marginRight = "0.3rem";
+      btnReveal.style.borderColor = "#f59e0b";
+      btnReveal.style.color = "#b45309";
+      btnReveal.style.fontWeight = "700";
+      btnReveal.textContent = "👁️ Reveal";
+      btnReveal.title = "Decrypt & view full IBAN (Audit Logged)";
+      btnReveal.addEventListener("click", function () {
+        revealBankAccount(acc.id);
+      });
+      tdActions.appendChild(btnReveal);
+
+      // 2. Edit Profile
+      var btnEdit = document.createElement("button");
+      btnEdit.className = "btn btn-outline btn-xs";
+      btnEdit.style.fontSize = "0.75rem";
+      btnEdit.style.padding = "0.25rem 0.5rem";
+      btnEdit.style.marginRight = "0.3rem";
+      btnEdit.textContent = "✏️ Edit";
+      btnEdit.addEventListener("click", function () {
+        openBankAccountModal(acc);
+      });
+      tdActions.appendChild(btnEdit);
+
+      // 3. Verify Account (if not verified)
+      if (acc.status !== "verified") {
+        var btnVerify = document.createElement("button");
+        btnVerify.className = "btn btn-xs";
+        btnVerify.style.fontSize = "0.75rem";
+        btnVerify.style.padding = "0.25rem 0.5rem";
+        btnVerify.style.marginRight = "0.3rem";
+        btnVerify.style.background = "#16a34a";
+        btnVerify.style.color = "white";
+        btnVerify.style.borderColor = "#15803d";
+        btnVerify.style.fontWeight = "700";
+        btnVerify.textContent = "✅ Verify";
+        btnVerify.title = "Verify bank ownership & authorize for commission payouts";
+        btnVerify.addEventListener("click", function () {
+          verifyBankAccount(acc.id);
+        });
+        tdActions.appendChild(btnVerify);
+      }
+
+      // 4. Deactivate Account (Access Revocation)
+      if (acc.status !== "deactivated") {
+        var btnDeact = document.createElement("button");
+        btnDeact.className = "btn btn-outline btn-xs";
+        btnDeact.style.fontSize = "0.75rem";
+        btnDeact.style.padding = "0.25rem 0.5rem";
+        btnDeact.style.marginRight = "0.3rem";
+        btnDeact.style.borderColor = "#ef4444";
+        btnDeact.style.color = "#dc2626";
+        btnDeact.textContent = "⛔ Revoke";
+        btnDeact.title = "Revoke payout eligibility (e.g. staff departed)";
+        btnDeact.addEventListener("click", function () {
+          deactivateBankAccount(acc.id);
+        });
+        tdActions.appendChild(btnDeact);
+      }
+
+      // 5. Delete (Super admin only)
+      var normRole = normalizeRole(currentActiveRole);
+      if (normRole === "super_admin") {
+        var btnDel = document.createElement("button");
+        btnDel.className = "btn btn-outline btn-xs";
+        btnDel.style.fontSize = "0.75rem";
+        btnDel.style.padding = "0.25rem 0.4rem";
+        btnDel.style.borderColor = "#cbd5e1";
+        btnDel.style.color = "#64748b";
+        btnDel.textContent = "🗑️";
+        btnDel.title = "Permanently delete record from vault";
+        btnDel.addEventListener("click", function () {
+          deleteBankAccount(acc.id);
+        });
+        tdActions.appendChild(btnDel);
+      }
+
+      tr.appendChild(tdMember);
+      tr.appendChild(tdBank);
+      tr.appendChild(tdIban);
+      tr.appendChild(tdCurr);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdAudit);
+      tr.appendChild(tdActions);
+
+      body.appendChild(tr);
+    });
+  }
+
+  function openBankAccountModal(account, prefillUser) {
+    var modal = document.getElementById("modal-bank-account");
+    if (!modal) return;
+
+    var titleEl = document.getElementById("modal-bank-title");
+    var form = document.getElementById("form-bank-account");
+    if (form) form.reset();
+
+    var msgEl = document.getElementById("bank-modal-msg");
+    if (msgEl) msgEl.textContent = "";
+
+    var ibanFeedback = document.getElementById("bank-iban-feedback");
+    if (ibanFeedback) ibanFeedback.textContent = "";
+
+    populateBankMemberDropdown();
+
+    if (account) {
+      if (titleEl) titleEl.textContent = "✏️ Edit Team Bank Account";
+      document.getElementById("bank-account-id").value = account.id || "";
+      document.getElementById("bank-user-id").value = account.userId || "";
+      document.getElementById("bank-member-name").value = account.userName || "";
+      document.getElementById("bank-member-email").value = account.userEmail || "";
+      document.getElementById("bank-member-role").value = account.userRole || "counselor";
+      document.getElementById("bank-beneficiary-name").value = account.beneficiaryName || "";
+      document.getElementById("bank-name").value = account.bankName || "";
+      document.getElementById("bank-country").value = account.bankCountry || "Czech Republic";
+      document.getElementById("bank-currency").value = account.currency || "CZK";
+      document.getElementById("bank-account-type").value = account.accountType || "Commission & Salary Payout";
+      document.getElementById("bank-notes").value = account.notes || "";
+      document.getElementById("bank-swift-bic").value = account.swiftBic || "";
+      document.getElementById("bank-iban").placeholder = account.maskedIban ? "Leave blank to keep (" + account.maskedIban + ")" : "e.g. CZ6508000000001928374650";
+      document.getElementById("bank-iban").value = "";
+      document.getElementById("bank-account-number").value = "";
+      if (document.getElementById("bank-member-select")) {
+        document.getElementById("bank-member-select").value = account.userId || "";
+      }
+    } else {
+      if (titleEl) titleEl.textContent = "🏦 Add Team Bank Account";
+      document.getElementById("bank-account-id").value = "";
+      document.getElementById("bank-user-id").value = "";
+      document.getElementById("bank-iban").placeholder = "e.g. CZ6508000000001928374650";
+
+      if (prefillUser) {
+        document.getElementById("bank-user-id").value = prefillUser.id || "";
+        document.getElementById("bank-member-name").value = prefillUser.fullName || prefillUser.email || "";
+        document.getElementById("bank-member-email").value = prefillUser.email || "";
+        document.getElementById("bank-member-role").value = prefillUser.role || "counselor";
+        document.getElementById("bank-beneficiary-name").value = prefillUser.fullName || "";
+        if (document.getElementById("bank-member-select")) {
+          document.getElementById("bank-member-select").value = prefillUser.id || "";
+        }
+      }
+    }
+
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+  }
+
+  function closeBankAccountModal() {
+    var modal = document.getElementById("modal-bank-account");
+    if (modal) {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function saveBankAccount(e) {
+    if (e) e.preventDefault();
+
+    var msgEl = document.getElementById("bank-modal-msg");
+    var saveBtn = document.getElementById("btn-save-bank-modal");
+
+    var accountId = document.getElementById("bank-account-id").value.trim();
+    var userId = document.getElementById("bank-user-id").value.trim();
+    var userName = document.getElementById("bank-member-name").value.trim();
+    var userEmail = document.getElementById("bank-member-email").value.trim();
+    var userRole = document.getElementById("bank-member-role").value;
+    var beneficiaryName = document.getElementById("bank-beneficiary-name").value.trim();
+    var bankName = document.getElementById("bank-name").value.trim();
+    var bankCountry = document.getElementById("bank-country").value;
+    var currency = document.getElementById("bank-currency").value;
+    var accountType = document.getElementById("bank-account-type").value;
+    var iban = document.getElementById("bank-iban").value.trim();
+    var accountNumber = document.getElementById("bank-account-number").value.trim();
+    var swiftBic = document.getElementById("bank-swift-bic").value.trim();
+    var notes = document.getElementById("bank-notes").value.trim();
+
+    if (!userName || !userEmail) {
+      alert("Please provide the team member's full name and email.");
+      return;
+    }
+    if (!beneficiaryName || !bankName) {
+      alert("Please provide the beneficiary full name and bank institution name.");
+      return;
+    }
+
+    // For new accounts, IBAN is required
+    if (!accountId && !iban && !accountNumber) {
+      alert("Please enter a valid IBAN or account number for this bank profile.");
+      return;
+    }
+
+    if (msgEl) msgEl.textContent = "🔒 Encrypting & saving to vault...";
+    if (saveBtn) saveBtn.disabled = true;
+
+    var payload = {
+      id: accountId || undefined,
+      userId: userId || undefined,
+      userName: userName,
+      userEmail: userEmail,
+      userRole: userRole,
+      beneficiaryName: beneficiaryName,
+      bankName: bankName,
+      bankCountry: bankCountry,
+      currency: currency,
+      accountType: accountType,
+      iban: iban || undefined,
+      accountNumber: accountNumber || undefined,
+      swiftBic: swiftBic || undefined,
+      notes: notes
+    };
+
+    api("saveTeamBankAccount", { account: payload, currentRole: currentActiveRole }).then(function (res) {
+      if (res && res.ok) {
+        if (msgEl) msgEl.textContent = "Saved securely!";
+        if (typeof showToast === "function") {
+          showToast("🔒 Bank details encrypted & securely stored in vault.", "success");
+        }
+        closeBankAccountModal();
+        loadBankAccounts();
+      } else {
+        if (msgEl) msgEl.textContent = "Error: " + (res.error || "Failed to save");
+      }
+    }).catch(function (err) {
+      if (msgEl) msgEl.textContent = "Server error: " + err.message;
+    }).finally(function () {
+      if (saveBtn) saveBtn.disabled = false;
+    });
+  }
+
+  function revealBankAccount(accountId) {
+    var reason = prompt("Security Audit Protocol:\nPlease state the operational business reason for unmasking this bank account (e.g. 'Processing monthly commission payout via corporate banking'):", "Processing commission payout");
+    if (reason === null) return; // cancelled
+    if (!reason.trim()) reason = "Administrative payout verification";
+
+    api("revealTeamBankAccount", { accountId: accountId, reason: reason, currentRole: currentActiveRole }).then(function (res) {
+      if (res && res.ok && res.account) {
+        var acc = res.account;
+        document.getElementById("reveal-member-name").textContent = (acc.userName || "Staff Member") + " (" + (acc.userEmail || "") + ")";
+        document.getElementById("reveal-beneficiary-name").textContent = acc.beneficiaryName || "—";
+        document.getElementById("reveal-bank-name").textContent = (acc.bankName || "—") + " • " + (acc.bankCountry || "Czech Republic");
+        document.getElementById("reveal-iban").textContent = acc.iban || "—";
+        document.getElementById("reveal-account-number").textContent = acc.accountNumber || "—";
+        document.getElementById("reveal-swift-bic").textContent = acc.swiftBic || "—";
+        document.getElementById("reveal-currency-type").textContent = (acc.currency || "CZK") + " • " + (acc.accountType || "Commission Payout");
+
+        var modal = document.getElementById("modal-reveal-bank");
+        if (modal) {
+          modal.classList.remove("hidden");
+          modal.style.display = "flex";
+        }
+        if (typeof showToast === "function") {
+          showToast("👁️ Decrypted bank details displayed. Action logged to audit trail.", "info");
+        }
+      } else {
+        alert("Failed to decrypt bank account: " + (res && res.error ? res.error : "Unknown error"));
+      }
+    }).catch(function (err) {
+      alert("Security Error: " + err.message);
+    });
+  }
+
+  function closeRevealModal() {
+    var modal = document.getElementById("modal-reveal-bank");
+    if (modal) {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function verifyBankAccount(accountId) {
+    var acc = allBankAccounts.find(function (a) { return a.id === accountId; });
+    var name = acc ? (acc.userName || acc.userEmail) : "this account";
+    if (!confirm("Confirm Verification:\nHave you verified that the bank details for " + name + " match corporate records and official payout verification?\n\nThis will mark the account as Cleared for Payouts.")) {
+      return;
+    }
+
+    api("verifyTeamBankAccount", { accountId: accountId, currentRole: currentActiveRole }).then(function (res) {
+      if (res && res.ok) {
+        if (typeof showToast === "function") {
+          showToast("✅ Bank account verified and cleared for payouts.", "success");
+        }
+        loadBankAccounts();
+      } else {
+        alert("Verification failed: " + (res && res.error ? res.error : "Error"));
+      }
+    }).catch(function (err) {
+      alert("Error: " + err.message);
+    });
+  }
+
+  function deactivateBankAccount(accountId) {
+    var reason = prompt("Access Revocation Protocol:\nPlease specify the reason for deactivating this bank account (e.g. 'Staff member departed', 'Requested account update', 'Suspected inaccuracy'):", "Staff member departed");
+    if (reason === null) return;
+
+    api("deactivateTeamBankAccount", { accountId: accountId, reason: reason, currentRole: currentActiveRole }).then(function (res) {
+      if (res && res.ok) {
+        if (typeof showToast === "function") {
+          showToast("⛔ Bank account deactivated and revoked from payouts.", "info");
+        }
+        loadBankAccounts();
+      } else {
+        alert("Revocation failed: " + (res && res.error ? res.error : "Error"));
+      }
+    }).catch(function (err) {
+      alert("Error: " + err.message);
+    });
+  }
+
+  function deleteBankAccount(accountId) {
+    if (!confirm("Permanent Deletion Warning:\nAre you sure you want to completely remove this bank account record from the encrypted vault?\n\nNote: A deletion event will still be logged to the immutable security audit trail.")) {
+      return;
+    }
+
+    api("deleteTeamBankAccount", { accountId: accountId, currentRole: currentActiveRole }).then(function (res) {
+      if (res && res.ok) {
+        if (typeof showToast === "function") {
+          showToast("🗑️ Bank account record deleted.", "info");
+        }
+        loadBankAccounts();
+      } else {
+        alert("Delete failed: " + (res && res.error ? res.error : "Error"));
+      }
+    }).catch(function (err) {
+      alert("Error: " + err.message);
+    });
+  }
+
+  function exportBankDatabaseCsv() {
+    api("exportAllBankRecords", { currentRole: currentActiveRole }).then(function (blob) {
+      if (blob instanceof Blob) {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "czechbridge-bank-database-" + new Date().toISOString().slice(0, 10) + ".csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        if (typeof showToast === "function") {
+          showToast("📥 Exported Bank Database successfully.", "success");
+        }
+      } else {
+        throw new Error("Invalid blob returned");
+      }
+    }).catch(function (err) {
+      console.warn("Server CSV export error, generating client-side CSV:", err);
+      var headers = ["ID", "User / Member Name", "User Email", "Role", "Beneficiary", "Bank Name", "Country", "Currency", "Masked IBAN", "Masked Account #", "SWIFT/BIC", "Account Purpose", "Status", "Created At", "Updated At"];
+      var rows = (allBankAccounts || []).map(function (a) {
+        return [
+          a.id || "",
+          '"' + (a.userName || "").replace(/"/g, '""') + '"',
+          a.userEmail || "",
+          a.userRole || "",
+          '"' + (a.beneficiaryName || "").replace(/"/g, '""') + '"',
+          '"' + (a.bankName || "").replace(/"/g, '""') + '"',
+          a.bankCountry || "",
+          a.currency || "",
+          a.maskedIban || "",
+          a.maskedAccountNumber || "",
+          a.swiftBic || "",
+          '"' + (a.accountType || "").replace(/"/g, '""') + '"',
+          a.status || "",
+          a.createdAt || "",
+          a.updatedAt || ""
+        ].join(",");
+      });
+      var csvContent = headers.join(",") + "\n" + rows.join("\n");
+      var blob2 = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      var url2 = window.URL.createObjectURL(blob2);
+      var a2 = document.createElement("a");
+      a2.href = url2;
+      a2.download = "czechbridge-bank-database-" + new Date().toISOString().slice(0, 10) + ".csv";
+      document.body.appendChild(a2);
+      a2.click();
+      document.body.removeChild(a2);
+      window.URL.revokeObjectURL(url2);
+      if (typeof showToast === "function") {
+        showToast("📥 Exported Bank Database CSV successfully.", "success");
+      }
+    });
+  }
+
+  function openAuditLogsModal() {
+    var modal = document.getElementById("modal-bank-audit-logs");
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.style.display = "flex";
+    }
+    loadAuditLogs();
+  }
+
+  function closeAuditLogsModal() {
+    var modal = document.getElementById("modal-bank-audit-logs");
+    if (modal) {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+    }
+  }
+
+  function loadAuditLogs() {
+    var body = document.getElementById("audit-logs-body");
+    if (body) {
+      body.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center; padding:2rem 1rem;">Loading security audit logs...</td></tr>';
+    }
+
+    api("getBankAuditLogs", { currentRole: currentActiveRole }).then(function (res) {
+      allBankAuditLogs = (res && res.logs) ? res.logs : [];
+      renderAuditLogs();
+    }).catch(function (err) {
+      if (body) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#dc2626; padding:2rem 1rem;">Failed to fetch audit logs: ' + esc(err.message) + '</td></tr>';
+      }
+    });
+  }
+
+  function renderAuditLogs() {
+    var body = document.getElementById("audit-logs-body");
+    if (!body) return;
+
+    var searchVal = (document.getElementById("audit-search-input") ? document.getElementById("audit-search-input").value.trim().toLowerCase() : "");
+
+    var filtered = allBankAuditLogs.filter(function (l) {
+      if (!searchVal) return true;
+      var str = ((l.action || "") + " " + (l.actorEmail || "") + " " + (l.targetUserName || "") + " " + (l.targetUserEmail || "") + " " + (l.details ? JSON.stringify(l.details) : "")).toLowerCase();
+      return str.indexOf(searchVal) !== -1;
+    });
+
+    if (!filtered.length) {
+      body.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center; padding:2rem 1rem;">No audit logs match filter criteria.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = "";
+
+    filtered.forEach(function (log) {
+      var tr = document.createElement("tr");
+
+      // Timestamp
+      var tdTime = document.createElement("td");
+      var d = new Date(log.timestamp);
+      tdTime.innerHTML = '<span style="font-family:monospace; font-size:0.75rem; color:#475569;">' + (isNaN(d) ? esc(log.timestamp) : d.toLocaleString("en-GB")) + '</span>';
+
+      // Action Badge
+      var tdAction = document.createElement("td");
+      var badgeStyle = "background:#e2e8f0; color:#334155;";
+      if (log.action === "REVEAL_BANK_DETAILS") {
+        badgeStyle = "background:#fef3c7; color:#b45309; border:1px solid #fde68a;";
+      } else if (log.action === "VERIFY_BANK_ACCOUNT") {
+        badgeStyle = "background:#dcfce7; color:#15803d; border:1px solid #86efac;";
+      } else if (log.action === "DEACTIVATE_BANK_ACCOUNT") {
+        badgeStyle = "background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5;";
+      } else if (log.action === "CREATE_BANK_ACCOUNT") {
+        badgeStyle = "background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;";
+      }
+      tdAction.innerHTML = '<span class="badge" style="' + badgeStyle + ' font-size:0.74rem; font-weight:800; padding:2px 6px;">' + esc(log.action) + '</span>';
+
+      // Actor
+      var tdActor = document.createElement("td");
+      tdActor.innerHTML = '<div style="font-weight:700; color:var(--blue-900); font-size:0.8rem;">' + esc(log.actorEmail || "unknown") + '</div>' +
+                          '<span class="badge" style="font-size:0.7rem; padding:1px 5px; background:#f1f5f9;">' + esc(log.actorRole || "admin") + '</span>';
+
+      // Target
+      var tdTarget = document.createElement("td");
+      tdTarget.innerHTML = '<div style="font-weight:600; font-size:0.8rem;">' + esc(log.targetUserName || "—") + '</div>' +
+                           '<div style="font-size:0.75rem; color:var(--muted);">' + esc(log.targetUserEmail || "") + '</div>';
+
+      // Details
+      var tdDetails = document.createElement("td");
+      var det = log.details || {};
+      var detailsText = "";
+      if (det.reason) detailsText += '<strong>Reason:</strong> ' + esc(det.reason) + '<br>';
+      if (det.bankName) detailsText += 'Bank: ' + esc(det.bankName) + ' (' + esc(det.currency || "CZK") + ')<br>';
+      if (det.maskedIban) detailsText += 'IBAN: <code>' + esc(det.maskedIban) + '</code>';
+      if (!detailsText) detailsText = '<span class="muted">—</span>';
+      tdDetails.innerHTML = '<div style="font-size:0.78rem; line-height:1.4;">' + detailsText + '</div>';
+
+      tr.appendChild(tdTime);
+      tr.appendChild(tdAction);
+      tr.appendChild(tdActor);
+      tr.appendChild(tdTarget);
+      tr.appendChild(tdDetails);
+
+      body.appendChild(tr);
+    });
+  }
+
+  // Export functions to window if needed
+  window.initBankAccountsTab = initBankAccountsTab;
+  window.openBankAccountModal = openBankAccountModal;
 
 })();
 

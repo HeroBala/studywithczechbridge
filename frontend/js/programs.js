@@ -190,6 +190,7 @@ function loadUniversities() {
 function getCountryFlag(countryName) {
   if (!countryName) return "🌍";
   var c = countryName.toLowerCase();
+  if (c.indexOf("china") !== -1 || c.indexOf("chinese") !== -1) return "🇨🇳";
   if (c.indexOf("czech") !== -1) return "🇨🇿";
   if (c.indexOf("germany") !== -1) return "🇩🇪";
   if (c.indexOf("poland") !== -1) return "🇵🇱";
@@ -208,6 +209,7 @@ function getCountryFlag(countryName) {
   if (c.indexOf("iceland") !== -1) return "🇮🇸";
   if (c.indexOf("moldova") !== -1) return "🇲🇩";
   if (c.indexOf("sweden") !== -1) return "🇸🇪";
+  if (c.indexOf("denmark") !== -1 || c.indexOf("danmark") !== -1) return "🇩🇰";
   if (c.indexOf("netherland") !== -1) return "🇳🇱";
   return "🌍";
 }
