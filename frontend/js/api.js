@@ -426,83 +426,25 @@ var DEFAULT_PACKAGES = [
 ];
 
 var DEFAULT_UNIVERSITIES = [
-  // 🇨🇳 China (Over 3,000 Higher Education Institutions Total / Top Double First-Class)
+  // 🇨🇳 China (Double First-Class World-Class Universities)
   { id: "uni-cn-1", country: "China", countryTotalUniv: 3012, name: "Tsinghua University (Beijing)", website: "https://www.tsinghua.edu.cn/en", type: "Public", scienceSubjects: 60, commerceSubjects: 40, artsSubjects: 35, engineeringSubjects: 95, tuitionFees: "¥26,000 – ¥40,000/yr (~€3,300 – €5,200) / Full CSC Scholarship" },
   { id: "uni-cn-2", country: "China", countryTotalUniv: 3012, name: "Peking University (Beijing)", website: "https://www.pku.edu.cn/en", type: "Public", scienceSubjects: 70, commerceSubjects: 50, artsSubjects: 65, engineeringSubjects: 30, tuitionFees: "¥26,000 – ¥45,000/yr (~€3,300 – €5,800) / CSC Scholarship" },
   { id: "uni-cn-3", country: "China", countryTotalUniv: 3012, name: "Zhejiang University (Hangzhou)", website: "https://www.zju.edu.cn/english", type: "Public", scienceSubjects: 55, commerceSubjects: 35, artsSubjects: 40, engineeringSubjects: 85, tuitionFees: "¥19,800 – ¥32,800/yr (~€2,500 – €4,200) / CSC" },
-  { id: "uni-cn-4", country: "China", countryTotalUniv: 3012, name: "Shanghai Jiao Tong University (SJTU)", website: "https://en.sjtu.edu.cn", type: "Public", scienceSubjects: 52, commerceSubjects: 38, artsSubjects: 25, engineeringSubjects: 90, tuitionFees: "¥24,800 – ¥38,000/yr (~€3,200 – €4,900)" },
+  { id: "uni-cn-4", country: "China", countryTotalUniv: 3012, name: "Shanghai Jiao Tong University (SJTU)", website: "https://en.sjtu.edu.cn", type: "Public", scienceSubjects: 52, commerceSubjects: 38, artsSubjects: 25, engineeringSubjects: 90, tuitionFees: "¥24,800 – ¥38,000/yr (~€3,200 – €4,900) / CSC" },
   { id: "uni-cn-5", country: "China", countryTotalUniv: 3012, name: "Fudan University (Shanghai)", website: "https://www.fudan.edu.cn/en", type: "Public", scienceSubjects: 50, commerceSubjects: 55, artsSubjects: 45, engineeringSubjects: 30, tuitionFees: "¥23,000 – ¥42,000/yr (~€2,900 – €5,400) / CSC" },
-  { id: "uni-cn-6", country: "China", countryTotalUniv: 3012, name: "Beihang University (BUAA - Beijing)", website: "https://ev.buaa.edu.cn", type: "Public", scienceSubjects: 40, commerceSubjects: 15, artsSubjects: 10, engineeringSubjects: 85, tuitionFees: "¥25,000 – ¥35,000/yr (~€3,200 – €4,500)" },
+  { id: "uni-cn-6", country: "China", countryTotalUniv: 3012, name: "Beihang University (BUAA - Beijing)", website: "https://ev.buaa.edu.cn", type: "Public", scienceSubjects: 40, commerceSubjects: 15, artsSubjects: 10, engineeringSubjects: 85, tuitionFees: "¥25,000 – ¥35,000/yr (~€3,200 – €4,500) / CSC" },
+  { id: "uni-cn-7", country: "China", countryTotalUniv: 3012, name: "Univ. of Science and Technology of China (USTC)", website: "https://en.ustc.edu.cn", type: "Public", scienceSubjects: 65, commerceSubjects: 15, artsSubjects: 8, engineeringSubjects: 75, tuitionFees: "¥26,000 – ¥36,000/yr / Full CSC Stipend" },
+  { id: "uni-cn-8", country: "China", countryTotalUniv: 3012, name: "Harbin Institute of Technology (HIT)", website: "https://en.hit.edu.cn", type: "Public", scienceSubjects: 45, commerceSubjects: 18, artsSubjects: 12, engineeringSubjects: 90, tuitionFees: "¥22,000 – ¥34,000/yr / CSC Scholarship" },
 
-  // 🇨🇿 Czech Republic (26 Universities Total)
+  // 🇨🇿 Czech Republic (Accredited European Higher Education)
   { id: "uni-cz-1", country: "Czech Republic", countryTotalUniv: 26, name: "Charles University (Prague)", website: "https://cuni.cz", type: "Public", scienceSubjects: 45, commerceSubjects: 30, artsSubjects: 38, engineeringSubjects: 22, tuitionFees: "Free (Czech) / €3,000 – €15,000/yr (English)" },
   { id: "uni-cz-2", country: "Czech Republic", countryTotalUniv: 26, name: "Masaryk University (Brno)", website: "https://www.muni.cz", type: "Public", scienceSubjects: 40, commerceSubjects: 28, artsSubjects: 35, engineeringSubjects: 18, tuitionFees: "Free (Czech) / €2,500 – €11,500/yr (English)" },
   { id: "uni-cz-3", country: "Czech Republic", countryTotalUniv: 26, name: "Czech Technical University in Prague (CTU)", website: "https://www.cvut.cz", type: "Public", scienceSubjects: 30, commerceSubjects: 10, artsSubjects: 6, engineeringSubjects: 60, tuitionFees: "Free (Czech) / €2,200 – €5,500/yr (English)" },
   { id: "uni-cz-4", country: "Czech Republic", countryTotalUniv: 26, name: "Brno University of Technology (BUT)", website: "https://www.vut.cz", type: "Public", scienceSubjects: 25, commerceSubjects: 12, artsSubjects: 8, engineeringSubjects: 52, tuitionFees: "Free (Czech) / €2,000 – €5,000/yr (English)" },
   { id: "uni-cz-5", country: "Czech Republic", countryTotalUniv: 26, name: "Prague University of Economics and Business (VŠE)", website: "https://www.vse.cz", type: "Public", scienceSubjects: 10, commerceSubjects: 55, artsSubjects: 12, engineeringSubjects: 5, tuitionFees: "Free (Czech) / €2,500 – €5,000/yr (English)" },
   { id: "uni-cz-6", country: "Czech Republic", countryTotalUniv: 26, name: "Mendel University in Brno", website: "https://mendelu.cz", type: "Public", scienceSubjects: 32, commerceSubjects: 20, artsSubjects: 10, engineeringSubjects: 15, tuitionFees: "Free (Czech) / €1,800 – €4,000/yr (English)" },
-  { id: "uni-cz-7", country: "Czech Republic", countryTotalUniv: 26, name: "University of New York in Prague (UNYP)", website: "https://www.unyp.cz", type: "Private", scienceSubjects: 8, commerceSubjects: 30, artsSubjects: 22, engineeringSubjects: 0, tuitionFees: "€6,800 – €10,500/yr" },
-  { id: "uni-cz-8", country: "Czech Republic", countryTotalUniv: 26, name: "Anglo-American University (AAU)", website: "https://www.aau.edu", type: "Private", scienceSubjects: 5, commerceSubjects: 25, artsSubjects: 30, engineeringSubjects: 0, tuitionFees: "€7,500 – €12,000/yr" },
-
-  // 🇩🇪 Germany (422 Universities Total)
-  { id: "uni-de-1", country: "Germany", countryTotalUniv: 422, name: "Technical University of Munich (TUM)", website: "https://www.tum.de", type: "Public", scienceSubjects: 65, commerceSubjects: 35, artsSubjects: 15, engineeringSubjects: 85, tuitionFees: "€0 – €6,000/yr" },
-  { id: "uni-de-2", country: "Germany", countryTotalUniv: 422, name: "Ludwig Maximilian University of Munich (LMU)", website: "https://www.lmu.de", type: "Public", scienceSubjects: 70, commerceSubjects: 40, artsSubjects: 60, engineeringSubjects: 10, tuitionFees: "€0 – €1,500/yr" },
-  { id: "uni-de-3", country: "Germany", countryTotalUniv: 422, name: "RWTH Aachen University", website: "https://www.rwth-aachen.de", type: "Public", scienceSubjects: 45, commerceSubjects: 18, artsSubjects: 12, engineeringSubjects: 90, tuitionFees: "€0 – €1,000/yr" },
-  { id: "uni-de-4", country: "Germany", countryTotalUniv: 422, name: "GISMA Business School", website: "https://www.gisma.com", type: "Private", scienceSubjects: 10, commerceSubjects: 35, artsSubjects: 5, engineeringSubjects: 12, tuitionFees: "€11,000 – €16,000/yr" },
-
-  // 🇵🇱 Poland (130 Universities Total)
-  { id: "uni-pl-1", country: "Poland", countryTotalUniv: 130, name: "Jagiellonian University (Krakow)", website: "https://www.uj.edu.pl", type: "Public", scienceSubjects: 42, commerceSubjects: 25, artsSubjects: 36, engineeringSubjects: 15, tuitionFees: "€2,000 – €4,500/yr" },
-  { id: "uni-pl-2", country: "Poland", countryTotalUniv: 130, name: "University of Warsaw", website: "https://www.uw.edu.pl", type: "Public", scienceSubjects: 50, commerceSubjects: 35, artsSubjects: 45, engineeringSubjects: 10, tuitionFees: "€1,800 – €4,200/yr" },
-  { id: "uni-pl-3", country: "Poland", countryTotalUniv: 130, name: "Warsaw University of Technology", website: "https://www.pw.edu.pl", type: "Public", scienceSubjects: 28, commerceSubjects: 12, artsSubjects: 6, engineeringSubjects: 65, tuitionFees: "€2,200 – €4,800/yr" },
-  { id: "uni-pl-4", country: "Poland", countryTotalUniv: 130, name: "Kozminski University", website: "https://www.kozminski.edu.pl", type: "Private", scienceSubjects: 5, commerceSubjects: 48, artsSubjects: 10, engineeringSubjects: 0, tuitionFees: "€4,500 – €8,000/yr" },
-
-  // 🇦🇹 Austria (70 Universities Total)
-  { id: "uni-at-1", country: "Austria", countryTotalUniv: 70, name: "University of Vienna", website: "https://www.univie.ac.at", type: "Public", scienceSubjects: 60, commerceSubjects: 35, artsSubjects: 65, engineeringSubjects: 0, tuitionFees: "€1,500/yr (Non-EU)" },
-  { id: "uni-at-2", country: "Austria", countryTotalUniv: 70, name: "TU Wien", website: "https://www.tuwien.at", type: "Public", scienceSubjects: 35, commerceSubjects: 10, artsSubjects: 5, engineeringSubjects: 60, tuitionFees: "€1,500/yr (Non-EU)" },
-  { id: "uni-at-3", country: "Austria", countryTotalUniv: 70, name: "MODUL University Vienna", website: "https://www.modul.ac.at", type: "Private", scienceSubjects: 5, commerceSubjects: 28, artsSubjects: 15, engineeringSubjects: 0, tuitionFees: "€9,800 – €14,000/yr" },
-
-  // 🇮🇹 Italy (98 Universities Total)
-  { id: "uni-it-1", country: "Italy", countryTotalUniv: 98, name: "University of Bologna", website: "https://www.unibo.it", type: "Public", scienceSubjects: 55, commerceSubjects: 35, artsSubjects: 60, engineeringSubjects: 40, tuitionFees: "€1,000 – €3,800/yr" },
-  { id: "uni-it-2", country: "Italy", countryTotalUniv: 98, name: "Politecnico di Milano", website: "https://www.polimi.it", type: "Public", scienceSubjects: 30, commerceSubjects: 15, artsSubjects: 20, engineeringSubjects: 75, tuitionFees: "€1,200 – €3,900/yr" },
-  { id: "uni-it-3", country: "Italy", countryTotalUniv: 98, name: "Bocconi University", website: "https://www.unibocconi.eu", type: "Private", scienceSubjects: 10, commerceSubjects: 60, artsSubjects: 15, engineeringSubjects: 0, tuitionFees: "€14,000 – €18,000/yr" },
-
-  // 🇫🇷 France (120 Universities Total)
-  { id: "uni-fr-1", country: "France", countryTotalUniv: 120, name: "Sorbonne University (Paris)", website: "https://www.sorbonne-universite.fr", type: "Public", scienceSubjects: 65, commerceSubjects: 20, artsSubjects: 55, engineeringSubjects: 25, tuitionFees: "€2,770 – €3,770/yr" },
-  { id: "uni-fr-2", country: "France", countryTotalUniv: 120, name: "HEC Paris Business School", website: "https://www.hec.edu", type: "Private", scienceSubjects: 5, commerceSubjects: 50, artsSubjects: 10, engineeringSubjects: 0, tuitionFees: "€18,000 – €28,000/yr" },
-
-  // 🇪🇸 Spain (88 Universities Total)
-  { id: "uni-es-1", country: "Spain", countryTotalUniv: 88, name: "University of Barcelona", website: "https://www.ub.edu", type: "Public", scienceSubjects: 50, commerceSubjects: 30, artsSubjects: 45, engineeringSubjects: 20, tuitionFees: "€2,000 – €4,500/yr" },
-  { id: "uni-es-2", country: "Spain", countryTotalUniv: 88, name: "IE University (Madrid)", website: "https://www.ie.edu", type: "Private", scienceSubjects: 12, commerceSubjects: 45, artsSubjects: 25, engineeringSubjects: 15, tuitionFees: "€21,000 – €31,000/yr" },
-
-  // 🇭🇺 Hungary (64 Universities Total)
-  { id: "uni-hu-1", country: "Hungary", countryTotalUniv: 64, name: "Eötvös Loránd University (ELTE)", website: "https://www.elte.hu", type: "Public", scienceSubjects: 45, commerceSubjects: 25, artsSubjects: 40, engineeringSubjects: 8, tuitionFees: "€2,400 – €4,800/yr" },
-  { id: "uni-hu-2", country: "Hungary", countryTotalUniv: 64, name: "Budapest University of Technology and Economics", website: "https://www.bme.hu", type: "Public", scienceSubjects: 30, commerceSubjects: 15, artsSubjects: 5, engineeringSubjects: 55, tuitionFees: "€2,800 – €5,200/yr" },
-
-  // 🇸🇪 Sweden (48 Universities Total)
-  { id: "uni-se-1", country: "Sweden", countryTotalUniv: 48, name: "KTH Royal Institute of Technology", website: "https://www.kth.se", type: "Public", scienceSubjects: 40, commerceSubjects: 10, artsSubjects: 5, engineeringSubjects: 70, tuitionFees: "SEK 120,000 – 180,000/yr (~€11,000 – €16,000)" },
-  { id: "uni-se-2", country: "Sweden", countryTotalUniv: 48, name: "Lund University", website: "https://www.lunduniversity.lu.se", type: "Public", scienceSubjects: 55, commerceSubjects: 35, artsSubjects: 45, engineeringSubjects: 30, tuitionFees: "SEK 110,000 – 170,000/yr (~€10,000 – €15,000)" },
-
-  // 🇳🇱 Netherlands (52 Universities Total)
-  { id: "uni-nl-1", country: "Netherlands", countryTotalUniv: 52, name: "University of Amsterdam", website: "https://www.uva.nl", type: "Public", scienceSubjects: 50, commerceSubjects: 40, artsSubjects: 50, engineeringSubjects: 15, tuitionFees: "€9,000 – €16,000/yr" },
-  { id: "uni-nl-2", country: "Netherlands", countryTotalUniv: 52, name: "TU Delft", website: "https://www.tudelft.nl", type: "Public", scienceSubjects: 35, commerceSubjects: 10, artsSubjects: 5, engineeringSubjects: 80, tuitionFees: "€15,000 – €20,000/yr" },
-
-  // 🇮🇪 Ireland (22 Universities Total)
-  { id: "uni-ie-1", country: "Ireland", countryTotalUniv: 22, name: "Trinity College Dublin", website: "https://www.tcd.ie", type: "Public", scienceSubjects: 50, commerceSubjects: 30, artsSubjects: 45, engineeringSubjects: 25, tuitionFees: "€14,000 – €26,000/yr" },
-  { id: "uni-ie-2", country: "Ireland", countryTotalUniv: 22, name: "University College Dublin", website: "https://www.ucd.ie", type: "Public", scienceSubjects: 55, commerceSubjects: 38, artsSubjects: 40, engineeringSubjects: 35, tuitionFees: "€13,500 – €25,500/yr" },
-
-  // 🇷🇸 Serbia (Work & Higher Ed Hub)
-  { id: "uni-rs-1", country: "Serbia", countryTotalUniv: 18, name: "University of Belgrade (Belgrade Work & Study Hub)", website: "https://www.bg.ac.rs", type: "Public", scienceSubjects: 35, commerceSubjects: 25, artsSubjects: 30, engineeringSubjects: 40, tuitionFees: "€1,800 – €3,500/yr (Work Visa: NES Permit Approved)" },
-  { id: "uni-rs-2", country: "Serbia", countryTotalUniv: 18, name: "Singidunum University (Belgrade)", website: "https://singidunum.ac.rs", type: "Private", scienceSubjects: 10, commerceSubjects: 30, artsSubjects: 15, engineeringSubjects: 12, tuitionFees: "€2,200 – €4,000/yr" },
-
-  // 🇲🇾 Malaysia (Work & Student Visa)
-  { id: "uni-my-1", country: "Malaysia", countryTotalUniv: 104, name: "University of Malaya (UM)", website: "https://www.um.edu.my", type: "Public", scienceSubjects: 50, commerceSubjects: 30, artsSubjects: 35, engineeringSubjects: 40, tuitionFees: "USD $2,500 – $5,500/yr (ESD Work Permit)" },
-  { id: "uni-my-2", country: "Malaysia", countryTotalUniv: 104, name: "Asia Pacific University (APU)", website: "https://www.apu.edu.my", type: "Private", scienceSubjects: 20, commerceSubjects: 35, artsSubjects: 15, engineeringSubjects: 30, tuitionFees: "USD $4,000 – $7,500/yr" },
-
-  // 🇩🇰 Denmark (8 Universities Total)
-  { id: "uni-dk-1", country: "Denmark", countryTotalUniv: 8, name: "University of Copenhagen (UCPH)", website: "https://www.ku.dk/english", type: "Public", scienceSubjects: 58, commerceSubjects: 28, artsSubjects: 45, engineeringSubjects: 20, tuitionFees: "DKK 45,000 – 120,000/yr (~€6,000 – €16,000)" },
-  { id: "uni-dk-2", country: "Denmark", countryTotalUniv: 8, name: "Technical University of Denmark (DTU)", website: "https://www.dtu.dk/english", type: "Public", scienceSubjects: 40, commerceSubjects: 10, artsSubjects: 5, engineeringSubjects: 75, tuitionFees: "DKK 105,000 – 115,000/yr (~€14,000 – €15,500)" },
-  { id: "uni-dk-3", country: "Denmark", countryTotalUniv: 8, name: "Aarhus University", website: "https://international.au.dk", type: "Public", scienceSubjects: 48, commerceSubjects: 35, artsSubjects: 40, engineeringSubjects: 30, tuitionFees: "DKK 60,000 – 110,000/yr (~€8,000 – €14,500)" },
-  { id: "uni-dk-4", country: "Denmark", countryTotalUniv: 8, name: "Copenhagen Business School (CBS)", website: "https://www.cbs.dk/en", type: "Public", scienceSubjects: 10, commerceSubjects: 65, artsSubjects: 15, engineeringSubjects: 0, tuitionFees: "DKK 70,000 – 125,000/yr (~€9,500 – €16,500)" }
+  { id: "uni-cz-7", country: "Czech Republic", countryTotalUniv: 26, name: "Palacký University Olomouc", website: "https://www.upol.cz/en", type: "Public", scienceSubjects: 35, commerceSubjects: 18, artsSubjects: 40, engineeringSubjects: 12, tuitionFees: "Free (Czech) / €2,500 – €10,500/yr (English)" },
+  { id: "uni-cz-8", country: "Czech Republic", countryTotalUniv: 26, name: "University of New York in Prague (UNYP)", website: "https://www.unyp.cz", type: "Private", scienceSubjects: 8, commerceSubjects: 30, artsSubjects: 22, engineeringSubjects: 0, tuitionFees: "€6,800 – €10,500/yr" }
 ];
 
 var DEFAULT_PROGRAMS = [
@@ -513,6 +455,8 @@ var DEFAULT_PROGRAMS = [
   { id: "prog-cn-4", country: "China", university: "Shanghai Jiao Tong University (SJTU)", title: "BEng Mechanical & Automation Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "4 Years", intake: "September", tuitionFees: "¥24,800 / year (~€3,200)", applyUrl: "https://isc.sjtu.edu.cn", portalApplyUrl: "register.html?country=China&program=SJTU+-+BEng+Mechanical+Engineering" },
   { id: "prog-cn-5", country: "China", university: "Fudan University (Shanghai)", title: "International MBA & Global Finance", level: "Master's", field: "Business & Economics", language: "English", duration: "2 Years", intake: "September", tuitionFees: "¥42,000 / year", applyUrl: "https://iso.fudan.edu.cn", portalApplyUrl: "register.html?country=China&program=Fudan+University+-+International+MBA" },
   { id: "prog-cn-6", country: "China", university: "Beihang University (BUAA)", title: "BEng Aeronautical & Aerospace Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "4 Years", intake: "September", tuitionFees: "¥25,000 / year (~€3,200)", applyUrl: "https://is.buaa.edu.cn", portalApplyUrl: "register.html?country=China&program=Beihang+University+-+BEng+Aerospace+Engineering" },
+  { id: "prog-cn-7", country: "China", university: "Univ. of Science and Technology of China (USTC)", title: "MSc Applied Physics & Quantum Technology", level: "Master's", field: "Engineering & Technology", language: "English", duration: "2 Years", intake: "September", tuitionFees: "¥30,000 / year (Full CSC Stipend)", applyUrl: "https://en.ustc.edu.cn", portalApplyUrl: "register.html?country=China&program=USTC+-+MSc+Applied+Physics" },
+  { id: "prog-cn-8", country: "China", university: "Harbin Institute of Technology (HIT)", title: "BEng Robotics & Intelligent Systems", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "4 Years", intake: "September", tuitionFees: "¥24,000 / year (~€3,100)", applyUrl: "https://en.hit.edu.cn", portalApplyUrl: "register.html?country=China&program=HIT+-+BEng+Robotics" },
 
   // 🇨🇿 Czech Republic
   { id: "prog-cz-1", country: "Czech Republic", university: "Charles University (Prague)", title: "General Medicine (MD)", level: "Master's", field: "Medicine & Health Sciences", language: "English", duration: "6 Years", intake: "September", tuitionFees: "€15,000 / year", applyUrl: "https://lf1.cuni.cz/en", portalApplyUrl: "register.html?program=Charles+University+-+General+Medicine" },
@@ -522,75 +466,7 @@ var DEFAULT_PROGRAMS = [
   { id: "prog-cz-5", country: "Czech Republic", university: "Czech Technical University in Prague (CTU)", title: "BEng Computer Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€2,400 / year", applyUrl: "https://fit.cvut.cz/en", portalApplyUrl: "register.html?program=CTU+Prague+-+BEng+Computer+Engineering" },
   { id: "prog-cz-6", country: "Czech Republic", university: "Brno University of Technology (BUT)", title: "BEng Mechanical & Automotive Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€2,200 / year", applyUrl: "https://www.fme.vutbr.cz/en", portalApplyUrl: "register.html?program=Brno+Tech+-+BEng+Mechanical+Engineering" },
   { id: "prog-cz-7", country: "Czech Republic", university: "Prague University of Economics & Business (VŠE)", title: "BSc International Business", level: "Bachelor's", field: "Business & Economics", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€3,800 / year", applyUrl: "https://ib.vse.cz", portalApplyUrl: "register.html?program=VSE+Prague+-+BSc+International+Business" },
-  { id: "prog-cz-8", country: "Czech Republic", university: "Mendel University in Brno", title: "MSc Sustainable Agriculture & Agribusiness", level: "Master's", field: "Agriculture & Food Science", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€2,000 / year", applyUrl: "https://af.mendelu.cz/en", portalApplyUrl: "register.html?program=Mendel+University+-+MSc+Agribusiness" },
-
-  // 🇩🇪 Germany
-  { id: "prog-de-1", country: "Germany", university: "Technical University of Munich (TUM)", title: "MSc Management & Technology", level: "Master's", field: "Business & Economics", language: "English", duration: "2 Years", intake: "October", tuitionFees: "€2,000 / year", applyUrl: "https://www.tum.de/en/studies/degree-programs", portalApplyUrl: "register.html?program=TUM+-+MSc+Management+and+Technology" },
-  { id: "prog-de-2", country: "Germany", university: "Ludwig Maximilian University of Munich (LMU)", title: "MSc Data Science & AI", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "October", tuitionFees: "Free / €150 Fee", applyUrl: "https://www.lmu.de/en/study", portalApplyUrl: "register.html?program=LMU+Munich+-+MSc+Data+Science" },
-  { id: "prog-de-3", country: "Germany", university: "RWTH Aachen University", title: "MSc Robotic Systems Engineering", level: "Master's", field: "Engineering & Technology", language: "English", duration: "2 Years", intake: "October", tuitionFees: "Free / €300 Fee", applyUrl: "https://www.rwth-aachen.de", portalApplyUrl: "register.html?program=RWTH+Aachen+-+MSc+Robotic+Systems" },
-  { id: "prog-de-4", country: "Germany", university: "GISMA Business School (Berlin)", title: "BSc Computer Science & Digital Business", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September, January", tuitionFees: "€11,500 / year", applyUrl: "https://www.gisma.com", portalApplyUrl: "register.html?program=GISMA+Berlin+-+BSc+Computer+Science" },
-
-  // 🇵🇱 Poland
-  { id: "prog-pl-1", country: "Poland", university: "Jagiellonian University (Krakow)", title: "MD General Medicine", level: "Master's", field: "Medicine & Health Sciences", language: "English", duration: "6 Years", intake: "October", tuitionFees: "€14,000 / year", applyUrl: "https://medschool.uj.edu.pl", portalApplyUrl: "register.html?program=Jagiellonian+University+-+MD+General+Medicine" },
-  { id: "prog-pl-2", country: "Poland", university: "University of Warsaw", title: "BSc Finance & International Investment", level: "Bachelor's", field: "Business & Economics", language: "English", duration: "3 Years", intake: "October", tuitionFees: "€2,500 / year", applyUrl: "https://en.uw.edu.pl", portalApplyUrl: "register.html?program=University+of+Warsaw+-+BSc+Finance" },
-  { id: "prog-pl-3", country: "Poland", university: "Warsaw University of Technology", title: "BEng Software Engineering & Networks", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3.5 Years", intake: "October, February", tuitionFees: "€2,800 / year", applyUrl: "https://www.pw.edu.pl/engpw", portalApplyUrl: "register.html?program=Warsaw+Tech+-+BEng+Software+Engineering" },
-
-  // 🇦🇹 Austria
-  { id: "prog-at-1", country: "Austria", university: "University of Vienna", title: "MSc Data Science & Analytics", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "October", tuitionFees: "€1,500 / year", applyUrl: "https://studieren.univie.ac.at/en", portalApplyUrl: "register.html?program=University+of+Vienna+-+MSc+Data+Science" },
-  { id: "prog-at-2", country: "Austria", university: "TU Wien", title: "MSc Software Engineering & Internet Computing", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "October", tuitionFees: "€1,500 / year", applyUrl: "https://www.tuwien.at/en/studies", portalApplyUrl: "register.html?program=TU+Wien+-+MSc+Software+Engineering" },
-
-  // 🇮🇹 Italy
-  { id: "prog-it-1", country: "Italy", university: "University of Bologna", title: "MSc Business Administration & Economics", level: "Master's", field: "Business & Economics", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€1,200 / year", applyUrl: "https://www.unibo.it/en", portalApplyUrl: "register.html?program=University+of+Bologna+-+MSc+Business" },
-  { id: "prog-it-2", country: "Italy", university: "Politecnico di Milano", title: "BEng Computer Science Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€1,500 / year", applyUrl: "https://www.polimi.it/en", portalApplyUrl: "register.html?program=Politecnico+di+Milano+-+BEng+Computer+Science" },
-
-  // 🇫🇷 France
-  { id: "prog-fr-1", country: "France", university: "Sorbonne University (Paris)", title: "MSc Artificial Intelligence & Optimization", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€3,770 / year", applyUrl: "https://www.sorbonne-universite.fr/en", portalApplyUrl: "register.html?program=Sorbonne+University+-+MSc+AI" },
-  { id: "prog-fr-2", country: "France", university: "HEC Paris Business School", title: "MSc International Finance", level: "Master's", field: "Business & Economics", language: "English", duration: "1.5 Years", intake: "September", tuitionFees: "€24,000 / year", applyUrl: "https://www.hec.edu/en", portalApplyUrl: "register.html?program=HEC+Paris+-+MSc+International+Finance" },
-
-  // 🇪🇸 Spain
-  { id: "prog-es-1", country: "Spain", university: "University of Barcelona", title: "MSc Bioinformatics & Health Data", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€3,200 / year", applyUrl: "https://www.ub.edu/web/portal/en", portalApplyUrl: "register.html?program=University+of+Barcelona+-+MSc+Bioinformatics" },
-
-  // 🇭🇺 Hungary
-  { id: "prog-hu-1", country: "Hungary", university: "Eötvös Loránd University (ELTE)", title: "BSc Computer Science", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September, February", tuitionFees: "€3,000 / year", applyUrl: "https://www.elte.hu/en", portalApplyUrl: "register.html?program=ELTE+Budapest+-+BSc+Computer+Science" },
-  { id: "prog-hu-2", country: "Hungary", university: "Budapest University of Tech & Econ (BME)", title: "BEng Computer Engineering", level: "Bachelor's", field: "Engineering & Technology", language: "English", duration: "3.5 Years", intake: "September", tuitionFees: "€3,200 / year", applyUrl: "https://www.bme.hu/?language=en", portalApplyUrl: "register.html?program=BME+Budapest+-+BEng+Computer+Engineering" },
-
-  // 🇸🇪 Sweden
-  { id: "prog-se-1", country: "Sweden", university: "KTH Royal Institute of Technology", title: "MSc Machine Learning & AI", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "August", tuitionFees: "SEK 155,000 / year (~€13,500)", applyUrl: "https://www.kth.se/en", portalApplyUrl: "register.html?program=KTH+Sweden+-+MSc+Machine+Learning" },
-
-  // 🇳🇱 Netherlands
-  { id: "prog-nl-1", country: "Netherlands", university: "University of Amsterdam", title: "BSc Computer Science", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "€12,000 / year", applyUrl: "https://www.uva.nl/en", portalApplyUrl: "register.html?program=University+of+Amsterdam+-+BSc+Computer+Science" },
-
-  // 🇮🇪 Ireland
-  { id: "prog-ie-1", country: "Ireland", university: "Trinity College Dublin", title: "MSc Computer Science (Data Science Track)", level: "Master's", field: "Computer Science & IT", language: "English", duration: "1 Year", intake: "September", tuitionFees: "€18,500 / year", applyUrl: "https://www.tcd.ie/courses", portalApplyUrl: "register.html?program=Trinity+College+Dublin+-+MSc+Data+Science" },
-
-  // 🇬🇧 United Kingdom
-  { id: "prog-uk-1", country: "United Kingdom", university: "University of Manchester", title: "BSc Artificial Intelligence & Robotics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "£28,000 / year", applyUrl: "https://www.manchester.ac.uk", portalApplyUrl: "register.html?program=University+of+Manchester+-+BSc+AI" },
-
-  // 🇨🇦 Canada
-  { id: "prog-ca-1", country: "Canada", university: "University of Toronto", title: "BSc Computer Science & Data Analytics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "4 Years", intake: "September", tuitionFees: "CAD $48,000 / year", applyUrl: "https://www.utoronto.ca", portalApplyUrl: "register.html?program=University+of+Toronto+-+BSc+Computer+Science" },
-
-  // 🇦🇺 Australia
-  { id: "prog-au-1", country: "Australia", university: "University of Melbourne", title: "Master of Information Technology", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "February, July", tuitionFees: "AUD $46,000 / year", applyUrl: "https://www.unimelb.edu.au", portalApplyUrl: "register.html?program=University+of+Melbourne+-+Master+of+IT" },
-
-  // 🇷🇸 Serbia
-  { id: "prog-rs-1", country: "Serbia", university: "University of Belgrade", title: "BSc Software & Information Engineering (Work Track)", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "October", tuitionFees: "€2,500 / year", applyUrl: "https://www.bg.ac.rs/en", portalApplyUrl: "register.html?program=University+of+Belgrade+-+BSc+Software+Engineering" },
-
-  // 🇲🇾 Malaysia
-  { id: "prog-my-1", country: "Malaysia", university: "Asia Pacific University (APU)", title: "BSc Cybersecurity & Digital Forensics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September, November, February", tuitionFees: "USD $5,200 / year", applyUrl: "https://www.apu.edu.my", portalApplyUrl: "register.html?program=APU+Malaysia+-+BSc+Cybersecurity" },
-
-  // 🇪🇪 Estonia
-  { id: "prog-ee-1", country: "Estonia", university: "University of Tartu", title: "MSc Software Engineering", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€4,000 / year (Tuition Waivers)", applyUrl: "https://ut.ee/en", portalApplyUrl: "register.html?program=University+of+Tartu+-+MSc+Software+Engineering" },
-
-  // 🇮🇸 Iceland
-  { id: "prog-is-1", country: "Iceland", university: "University of Iceland", title: "MSc Sustainable Energy Science", level: "Master's", field: "Engineering & Technology", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€0 (Reg Fee €550 / year)", applyUrl: "https://english.hi.is", portalApplyUrl: "register.html?program=University+of+Iceland+-+MSc+Sustainable+Energy" },
-
-  // 🇲🇩 Moldova
-  { id: "prog-md-1", country: "Moldova", university: "Technical University of Moldova", title: "BSc Software Engineering & Tech Management", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "4 Years", intake: "September", tuitionFees: "€1,800 / year", applyUrl: "https://utm.md/en", portalApplyUrl: "register.html?program=Technical+University+of+Moldova+-+BSc+Software+Engineering" },
-
-  // 🇩🇰 Denmark
-  { id: "prog-dk-1", country: "Denmark", university: "Technical University of Denmark (DTU)", title: "MSc Computer Science & Engineering", level: "Master's", field: "Computer Science & IT", language: "English", duration: "2 Years", intake: "September", tuitionFees: "DKK 112,500 / year (~€15,000)", applyUrl: "https://www.dtu.dk/english", portalApplyUrl: "register.html?program=DTU+Denmark+-+MSc+Computer+Science" },
-  { id: "prog-dk-2", country: "Denmark", university: "Aarhus University", title: "BSc Cognitive Science & Data Analytics", level: "Bachelor's", field: "Computer Science & IT", language: "English", duration: "3 Years", intake: "September", tuitionFees: "DKK 80,000 / year (~€10,700)", applyUrl: "https://international.au.dk", portalApplyUrl: "register.html?program=Aarhus+University+-+BSc+Cognitive+Science" },
-  { id: "prog-dk-3", country: "Denmark", university: "Copenhagen Business School (CBS)", title: "BSc International Business & Strategy", level: "Bachelor's", field: "Business & Management", language: "English", duration: "3 Years", intake: "September", tuitionFees: "DKK 75,000 / year (~€10,000)", applyUrl: "https://www.cbs.dk/en", portalApplyUrl: "register.html?program=CBS+Denmark+-+BSc+International+Business" }
+  { id: "prog-cz-8", country: "Czech Republic", university: "Mendel University in Brno", title: "MSc Sustainable Agriculture & Agribusiness", level: "Master's", field: "Agriculture & Food Science", language: "English", duration: "2 Years", intake: "September", tuitionFees: "€2,000 / year", applyUrl: "https://af.mendelu.cz/en", portalApplyUrl: "register.html?program=Mendel+University+-+MSc+Agribusiness" }
 ];
 
 var DEFAULT_TESTIMONIALS = [
@@ -620,11 +496,11 @@ var DEFAULT_TESTIMONIALS = [
   },
   {
     id: "vt-3",
-    studentName: "Imran H.",
-    location: "Sylhet, Bangladesh",
-    university: "Technical University of Munich 🇩🇪",
-    program: "MSc Mechanical Engineering",
-    quote: "Honest, transparent and fast. They helped me get admission to TUM in Germany and assisted with my blocked account and visa paperwork. Highly recommended!",
+    studentName: "Wei L.",
+    location: "Kuala Lumpur, Malaysia",
+    university: "Tsinghua University, Beijing 🇨🇳",
+    program: "MSc Computer Science & AI (CSC Scholarship)",
+    quote: "CzechBridge helped me secure the full Chinese Government CSC Scholarship at Tsinghua with free tuition, free dorm, and monthly living stipend. The JW202 and X1 visa process went smoothly!",
     rating: 5,
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
     posterUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=800&auto=format&fit=crop&q=80",
@@ -634,9 +510,9 @@ var DEFAULT_TESTIMONIALS = [
     id: "vt-4",
     studentName: "Ananya S.",
     location: "Delhi, India",
-    university: "Warsaw University of Technology 🇵🇱",
-    program: "BSc Automotive Engineering",
-    quote: "I wanted to study in Poland for engineering. Czech Bridge took care of my university pre-enrolment, e-Konsulat appointment, and housing in Warsaw!",
+    university: "Brno University of Technology (BUT) 🇨🇿",
+    program: "BEng Mechanical Engineering",
+    quote: "I wanted to study high-tech engineering in Central Europe. Czech Bridge handled my high school nostrification in Brno, embassy interview booking, and Czech student residence registration!",
     rating: 5,
     videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
     posterUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&auto=format&fit=crop&q=80",

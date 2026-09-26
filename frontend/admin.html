@@ -239,7 +239,7 @@
       <div class="panel-row" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem;">
         <div>
           <h2 style="margin:0; color:var(--blue-900);">📋 Applications &amp; Candidate Management</h2>
-          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.85rem;">Manage university admissions &amp; work permit candidates across Czechia, UK, Iceland, Malaysia, Serbia, Poland &amp; Europe.</p>
+          <p class="muted" style="margin:0.2rem 0 0 0; font-size:0.85rem;">Manage university admissions &amp; scholarship candidates across Czech Republic &amp; China.</p>
         </div>
       </div>
 
@@ -249,21 +249,8 @@
         
         <select id="f-country" style="padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
           <option value="">🌍 All Target Countries</option>
-          <option value="China">🇨🇳 China</option>
           <option value="Czech Republic">🇨🇿 Czech Republic</option>
-          <option value="Germany">🇩🇪 Germany</option>
-          <option value="United Kingdom">🇬🇧 United Kingdom</option>
-          <option value="Denmark">🇩🇰 Denmark</option>
-          <option value="Austria">🇦🇹 Austria</option>
-          <option value="Poland">🇵🇱 Poland</option>
-          <option value="Italy">🇮🇹 Italy</option>
-          <option value="Canada">🇨🇦 Canada</option>
-          <option value="Australia">🇦🇺 Australia</option>
-          <option value="Iceland">🇮🇸 Iceland</option>
-          <option value="Malaysia">🇲🇾 Malaysia</option>
-          <option value="Serbia">🇷🇸 Serbia</option>
-          <option value="Hungary">🇭🇺 Hungary</option>
-          <option value="Slovakia">🇸🇰 Slovakia</option>
+          <option value="China">🇨🇳 China</option>
         </select>
 
         <select id="f-track" style="padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
@@ -572,7 +559,7 @@
           <input type="hidden" id="tpl-edit-id">
           <div class="field mb-2">
             <label for="tpl-edit-title" style="font-weight:700; font-size:0.85rem;">Template Title / Name</label>
-            <input type="text" id="tpl-edit-title" placeholder="e.g. Serbia Work Permit Approval Notice">
+            <input type="text" id="tpl-edit-title" placeholder="e.g. Visa Approval Notice or CSC Scholarship Award">
           </div>
           <div class="field mb-2">
             <label for="tpl-edit-category" style="font-weight:700; font-size:0.85rem;">Category</label>
@@ -708,12 +695,9 @@
             <input type="text" id="counselor-roster-search" placeholder="Search counselor by name or email..." style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.85rem; width: 240px;">
             <select id="counselor-track-filter" style="padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid var(--line); font-size: 0.85rem;">
               <option value="all">All Country Specializations</option>
-              <option value="china">🇨🇳 China</option>
-              <option value="czech">🇨🇿 Czech Republic</option>
-              <option value="germany">🇩🇪 Germany</option>
-              <option value="austria">🇦🇹 Austria</option>
-              <option value="uk">🇬🇧 United Kingdom</option>
-              <option value="global">🌐 Global / All Tracks</option>
+              <option value="czech">🇨🇿 Czech Republic Track</option>
+              <option value="china">🇨🇳 China Track</option>
+              <option value="global">🌐 Both Tracks / General</option>
             </select>
           </div>
         </div>
@@ -1738,14 +1722,9 @@
         <div>
           <label style="font-weight:700; font-size:0.82rem; color:var(--blue-900);">Country / Track Specialization</label>
           <select id="counselor-modal-track" style="width:100%; padding:0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
+            <option value="🇨🇿 Czech Republic (Nostrification & Visa)">🇨🇿 Czech Republic Track (20 Steps)</option>
             <option value="🇨🇳 China (Double First-Class & CSC)">🇨🇳 China Track (10 Steps)</option>
-            <option value="🇨🇿 Czech Republic (Nostrification & Visa)">🇨🇿 Czech Republic (20 Steps)</option>
-            <option value="🇩🇪 Germany (Uni-Assist & Anabin)">🇩🇪 Germany Track</option>
-            <option value="🇦🇹 Austria (Zulassungsbescheid)">🇦🇹 Austria Track</option>
-            <option value="🇮🇹 Italy (Universitaly & CIMEA)">🇮🇹 Italy Track</option>
-            <option value="🇬🇧 United Kingdom (CAS & Visa)">🇬🇧 United Kingdom Track</option>
-            <option value="🇨🇦 Canada (DLI & PAL)">🇨🇦 Canada Track</option>
-            <option value="🌐 Global Multi-Country Expert">🌐 Global Multi-Country</option>
+            <option value="🌐 Czech & China Dual Specialist">🌐 Czech &amp; China Dual Specialist</option>
           </select>
         </div>
       </div>
@@ -1842,7 +1821,7 @@
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.88rem;">
         <div>
           <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">1. Country Name *</label>
-          <input type="text" id="uni-edit-country" required placeholder="e.g. Czech Republic, Germany" style="width:100%; padding: 0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
+          <input type="text" id="uni-edit-country" required placeholder="e.g. Czech Republic or China" style="width:100%; padding: 0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem;">
         </div>
         <div>
           <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">3. Total Univ. in Country *</label>
@@ -2028,14 +2007,8 @@
         <div>
           <label style="font-weight: 700; font-size: 0.82rem; color: var(--blue-900);">Preferred Target Country *</label>
           <select id="sem-edit-country" style="width:100%; padding: 0.45rem; border-radius:6px; border:1px solid var(--line); font-size:0.88rem; font-weight:600;">
-            <option value="China">🇨🇳 China (Double First-Class &amp; CSC Scholarships)</option>
-            <option value="Czech Republic">🇨🇿 Czech Republic (Free Tuition / Low Cost)</option>
-            <option value="Germany">🇩🇪 Germany (Public Universities)</option>
-            <option value="Poland">🇵🇱 Poland (Affordable & High Tech)</option>
-            <option value="Austria">🇦🇹 Austria (Public Universities)</option>
-            <option value="United Kingdom">🇬🇧 United Kingdom</option>
-            <option value="Italy">🇮🇹 Italy (Regional Scholarships)</option>
-            <option value="Other Europe">🇪🇺 Other Europe / Schengen</option>
+            <option value="Czech Republic">🇨🇿 Czech Republic (Free Tuition / European Degree)</option>
+            <option value="China">🇨🇳 China (Double First-Class &amp; CSC Full Scholarships)</option>
           </select>
         </div>
         <div>

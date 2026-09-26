@@ -15,7 +15,24 @@ runOnReady(function () {
   var progResetBtn = document.getElementById("prog-reset-btn");
 
   if (progSearchInput) progSearchInput.addEventListener("input", debounce(loadPrograms, 300));
-  if (progCountrySelect) progCountrySelect.addEventListener("change", loadPrograms);
+  if (progCountrySelect) {
+    progCountrySelect.addEventListener("change", function() {
+      var val = progCountrySelect.value;
+      var tabs = document.querySelectorAll("#prog-quick-tabs .prog-quick-btn");
+      if (tabs) {
+        tabs.forEach(function(b) {
+          if (b.getAttribute("data-country") === val) {
+            b.classList.add("active", "btn-dark");
+            b.classList.remove("btn-outline");
+          } else {
+            b.classList.remove("active", "btn-dark");
+            b.classList.add("btn-outline");
+          }
+        });
+      }
+      loadPrograms();
+    });
+  }
   if (progLevelSelect) progLevelSelect.addEventListener("change", loadPrograms);
   if (progFieldSelect) progFieldSelect.addEventListener("change", loadPrograms);
   if (progResetBtn) {
@@ -24,7 +41,37 @@ runOnReady(function () {
       if (progCountrySelect) progCountrySelect.value = "";
       if (progLevelSelect) progLevelSelect.value = "";
       if (progFieldSelect) progFieldSelect.value = "";
+      var tabs = document.querySelectorAll("#prog-quick-tabs .prog-quick-btn");
+      if (tabs) {
+        tabs.forEach(function(b) {
+          if (!b.getAttribute("data-country")) {
+            b.classList.add("active", "btn-dark");
+            b.classList.remove("btn-outline");
+          } else {
+            b.classList.remove("active", "btn-dark");
+            b.classList.add("btn-outline");
+          }
+        });
+      }
       loadPrograms();
+    });
+  }
+
+  // Quick Tabs for Programs
+  var progQuickTabs = document.querySelectorAll("#prog-quick-tabs .prog-quick-btn");
+  if (progQuickTabs) {
+    progQuickTabs.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        progQuickTabs.forEach(function(b) {
+          b.classList.remove("active", "btn-dark");
+          b.classList.add("btn-outline");
+        });
+        btn.classList.add("active", "btn-dark");
+        btn.classList.remove("btn-outline");
+        var c = btn.getAttribute("data-country") || "";
+        if (progCountrySelect) progCountrySelect.value = c;
+        loadPrograms();
+      });
     });
   }
 
@@ -35,14 +82,61 @@ runOnReady(function () {
   var uniResetBtn = document.getElementById("uni-reset-btn");
 
   if (uniSearchInput) uniSearchInput.addEventListener("input", debounce(loadUniversities, 300));
-  if (uniCountrySelect) uniCountrySelect.addEventListener("change", loadUniversities);
+  if (uniCountrySelect) {
+    uniCountrySelect.addEventListener("change", function() {
+      var val = uniCountrySelect.value;
+      var tabs = document.querySelectorAll("#uni-quick-tabs .uni-quick-btn");
+      if (tabs) {
+        tabs.forEach(function(b) {
+          if (b.getAttribute("data-country") === val) {
+            b.classList.add("active", "btn-dark");
+            b.classList.remove("btn-outline");
+          } else {
+            b.classList.remove("active", "btn-dark");
+            b.classList.add("btn-outline");
+          }
+        });
+      }
+      loadUniversities();
+    });
+  }
   if (uniTypeSelect) uniTypeSelect.addEventListener("change", loadUniversities);
   if (uniResetBtn) {
     uniResetBtn.addEventListener("click", function () {
       if (uniSearchInput) uniSearchInput.value = "";
       if (uniCountrySelect) uniCountrySelect.value = "";
       if (uniTypeSelect) uniTypeSelect.value = "";
+      var tabs = document.querySelectorAll("#uni-quick-tabs .uni-quick-btn");
+      if (tabs) {
+        tabs.forEach(function(b) {
+          if (!b.getAttribute("data-country")) {
+            b.classList.add("active", "btn-dark");
+            b.classList.remove("btn-outline");
+          } else {
+            b.classList.remove("active", "btn-dark");
+            b.classList.add("btn-outline");
+          }
+        });
+      }
       loadUniversities();
+    });
+  }
+
+  // Quick Tabs for Universities
+  var uniQuickTabs = document.querySelectorAll("#uni-quick-tabs .uni-quick-btn");
+  if (uniQuickTabs) {
+    uniQuickTabs.forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        uniQuickTabs.forEach(function(b) {
+          b.classList.remove("active", "btn-dark");
+          b.classList.add("btn-outline");
+        });
+        btn.classList.add("active", "btn-dark");
+        btn.classList.remove("btn-outline");
+        var c = btn.getAttribute("data-country") || "";
+        if (uniCountrySelect) uniCountrySelect.value = c;
+        loadUniversities();
+      });
     });
   }
 

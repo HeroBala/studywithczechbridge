@@ -1,6 +1,6 @@
 {
   "name": "StudyWithCzechBridge",
-  "description": "Comprehensive higher education admission support, Denmark SIRI ST1 and European visa guidance, documentation legalization, and an encrypted database vault for student and team member bank payout records.",
+  "description": "Comprehensive higher education admission support and visa guidance for the Czech Republic and China, degree nostrification, CSC scholarships, and student tracking.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

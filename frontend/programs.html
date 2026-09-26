@@ -14,18 +14,25 @@
 
 <section class="page-hero">
   <div class="container">
-    <h1>Study Programs & Academic Database</h1>
-    <p>Search accredited Bachelor's, Master's & Doctorate degree programs across all top destination countries with direct application links and portal registration.</p>
+    <h1>Study Programs &amp; Universities — Czech Republic 🇨🇿 &amp; China 🇨🇳</h1>
+    <p>Search accredited Bachelor's, Master's &amp; PhD degree programs across top Czech universities and Double First-Class Chinese universities, with full scholarship options and direct registration.</p>
   </div>
 </section>
 
-<!-- SECTION 1: GLOBAL STUDY PROGRAMS DATABASE (WITH APPLICATION LINKS) -->
+<!-- SECTION 1: STUDY PROGRAMS DATABASE -->
 <section class="section" id="programs-database-section" style="padding-top: 2.5rem; padding-bottom: 2.5rem;">
   <div class="container">
     <div class="section-head" style="text-align: left; margin-bottom: 1.5rem;">
       <div class="kicker">Live Admissions Directory</div>
-      <h2>🎓 Global Study Programs Database</h2>
-      <p class="muted">Search top English-taught programs across 18+ destination countries. Click <strong>Apply Now</strong> to submit your application directly or visit the official university portal.</p>
+      <h2>🎓 Study Programs in Czech Republic &amp; China</h2>
+      <p class="muted">Search top English-taught degrees in Europe and Asia. Click <strong>Apply Now</strong> to submit your application directly or visit the official university portal.</p>
+    </div>
+
+    <!-- Destination Filter Buttons -->
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;" id="prog-quick-tabs">
+      <button class="btn btn-dark prog-quick-btn active" data-country="" style="border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;">🌍 Both Destinations</button>
+      <button class="btn btn-outline prog-quick-btn" data-country="Czech Republic" style="border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;">🇨🇿 Czech Republic</button>
+      <button class="btn btn-outline prog-quick-btn" data-country="China" style="border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;">🇨🇳 China</button>
     </div>
 
     <!-- Search & Filter Controls -->
@@ -34,8 +41,10 @@
         <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; flex: 1; min-width: 280px;">
           <input type="text" id="prog-search" placeholder="🔍 Search degree, field, university, or country..." style="flex: 1.5; min-width: 220px; padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem;">
           
-          <select id="prog-country-filter" style="padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 160px; background: white;">
-            <option value="">🌍 All Countries</option>
+          <select id="prog-country-filter" style="padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 170px; background: white;">
+            <option value="">🌍 All Destinations</option>
+            <option value="Czech Republic">🇨🇿 Czech Republic</option>
+            <option value="China">🇨🇳 China</option>
           </select>
 
           <select id="prog-level-filter" style="padding: 0.6rem 0.9rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 150px; background: white;">
@@ -140,8 +149,15 @@
   <div class="container">
     <div class="section-head" style="text-align: left; margin-bottom: 1.5rem;">
       <div class="kicker">Comprehensive Directory</div>
-      <h2>🏛️ Global Universities &amp; Country Database</h2>
-      <p class="muted">Explore accredited public and private universities across destination countries. View official website links, department subject counts, and tuition fee ranges.</p>
+      <h2>🏛️ Universities Directory — Czech Republic &amp; China</h2>
+      <p class="muted">Explore accredited public and private universities in Czech Republic and China. View official website links, department subject counts, and tuition fee ranges.</p>
+    </div>
+
+    <!-- Quick Destination Tabs -->
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;" id="uni-quick-tabs">
+      <button class="btn btn-dark uni-quick-btn active" data-country="" style="border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;">🌍 Both Destinations</button>
+      <button class="btn btn-outline uni-quick-btn" data-country="Czech Republic" style="border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;">🇨🇿 Czech Republic</button>
+      <button class="btn btn-outline uni-quick-btn" data-country="China" style="border-radius: 20px; padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;">🇨🇳 China</button>
     </div>
 
     <!-- Search & Filter Bar -->
@@ -151,7 +167,9 @@
           <input type="text" id="uni-search" placeholder="🔍 Search university name, country, website, tuition fees..." style="flex: 1; min-width: 220px; padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem;">
           
           <select id="uni-country-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 170px;">
-            <option value="">🌍 All Countries</option>
+            <option value="">🌍 All Destinations</option>
+            <option value="Czech Republic">🇨🇿 Czech Republic</option>
+            <option value="China">🇨🇳 China</option>
           </select>
 
           <select id="uni-type-filter" style="padding: 0.55rem 0.85rem; border-radius: 8px; border: 1px solid var(--line); font-size: 0.9rem; font-weight: 600; min-width: 140px;">
